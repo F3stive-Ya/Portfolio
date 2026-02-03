@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Outer gear -->
+  <path fill="#808080" d="M24 4l3 6h6l4-4 4 4-4 4v6l6 3v4l-6 3v6l4 4-4 4-4-4h-6l-3 6h-4l-3-6h-6l-4 4-4-4 4-4v-6l-6-3v-4l6-3v-6l-4-4 4-4 4 4h6l3-6h4z"/>
+  <path fill="#c0c0c0" d="M24 6l2.5 5h7l3-3 2 2-3 3v7l5 2.5v2l-5 2.5v7l3 3-2 2-3-3h-7l-2.5 5h-2l-2.5-5h-7l-3 3-2-2 3-3v-7l-5-2.5v-2l5-2.5v-7l-3-3 2-2 3 3h7l2.5-5h2z"/>
+  <!-- Inner circle -->
+  <circle fill="#808080" cx="24" cy="24" r="10"/>
+  <circle fill="#000080" cx="24" cy="24" r="8"/>
+  <circle fill="#1084d0" cx="24" cy="24" r="5"/>
+  <!-- Highlight -->
+  <ellipse fill="rgba(255,255,255,0.3)" cx="22" cy="22" rx="2" ry="1.5"/>
+</svg>

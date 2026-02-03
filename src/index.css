@@ -1,0 +1,709 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=SUSE+Mono:ital,wght@0,100..800;1,100..800&family=Space+Grotesk:wght@300..700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --taskbar-h: 36px;
+  /* Theme colors (can be overridden by ThemeContext) */
+  --titlebar-start: #000080;
+  --titlebar-end: #1084d0;
+  --taskbar-start: #d4d0c8;
+  --taskbar-end: #a8a0a0;
+  --button-bg: #c0c0c0;
+  --active-task-btn: #000000;
+  --start-btn-start: #000080;
+  --start-btn-end: #1084d0;
+  --accent-color: #000080;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, #c0c0c0 0%, #9dbcd4 50%, #a0a0a0 100%);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 11px;
+  color: var(--accent-color);
+}
+
+.desktop {
+  height: 100vh;
+  position: relative;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(139, 69, 19, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 80% 20%, rgba(139, 69, 19, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* ===== Modern icon layout (left-to-right grid) ===== */
+.icon-area {
+  position: absolute;
+  inset: 0;
+  padding: 16px 14px calc(var(--taskbar-h) + 14px) 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 96px);
+  grid-auto-rows: 92px;
+  gap: 10px 12px;
+  align-content: start;
+  justify-content: start;
+}
+
+/* Top-right positioned icons (Settings, My Computer) */
+.icon-area-right {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+/* Desktop selection box (cosmetic) */
+.selection-box {
+  position: absolute;
+  border: 1px dashed rgba(0, 0, 128, 0.8);
+  background: rgba(0, 0, 128, 0.15);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.icon {
+  position: relative;
+  width: 96px;
+  height: 92px;
+  margin: 0;
+  padding: 6px 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  border: 2px outset transparent;
+  transition: all 0.15s;
+  -webkit-user-drag: none;
+}
+
+.icon:hover {
+  background: rgba(255, 255, 255, 0.55);
+  border: 2px inset #dfdfdf;
+  border-radius: 4px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.icon-inner {
+  width: 48px;
+  height: 48px;
+  margin: 0px 0 6px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+}
+
+.icon-img {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+}
+
+.icon-label {
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 1.05;
+  color: var(--accent-color);
+  text-shadow: 1px 1px #fff;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* ===== Taskbar ===== */
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--taskbar-h);
+  background: linear-gradient(to bottom, var(--taskbar-start), var(--taskbar-end));
+  border-top: 3px outset #efefef;
+  box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  z-index: 1000;
+  font-size: 11px;
+}
+
+.start-btn {
+  background: linear-gradient(to bottom, var(--start-btn-start), var(--start-btn-end));
+  color: #fff;
+  border: 2px outset var(--start-btn-end);
+  padding: 4px 12px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 6px;
+  text-shadow: 0 1px #000;
+  border-radius: 3px 3px 0 0;
+}
+
+.start-btn:active {
+  border: 2px inset var(--start-btn-end);
+}
+
+.task-buttons {
+  flex: 1;
+  display: flex;
+  gap: 2px;
+  padding-left: 6px;
+  overflow: hidden;
+}
+
+.task-btn {
+  background: linear-gradient(to bottom, var(--button-bg), #a0a0a0);
+  border: 2px outset #efefef;
+  padding: 2px 8px;
+  cursor: pointer;
+  min-width: 90px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+.task-btn.active {
+  background: linear-gradient(to bottom, var(--active-task-btn), #404040);
+  color: #fff;
+  border: 2px inset #808080;
+}
+
+.tray {
+  display: flex;
+  align-items: center;
+  margin-left: 6px;
+  padding-left: 6px;
+  border-left: 2px inset #efefef;
+}
+
+.tray-date,
+.tray-clock {
+  text-align: right;
+  padding: 2px 6px;
+  background: var(--button-bg);
+  border: 2px inset #808080;
+  color: #000;
+  font-family: "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.tray-date {
+  min-width: 70px;
+}
+
+.tray-clock {
+  min-width: 58px;
+}
+
+.start-menu {
+  position: fixed;
+  left: 6px;
+  bottom: var(--taskbar-h);
+  width: 240px;
+  background: var(--button-bg);
+  border: 2px outset #efefef;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.35);
+  display: none;
+  z-index: 2000;
+}
+
+.start-banner {
+  width: 32px;
+  background: linear-gradient(to bottom, var(--titlebar-start), #000);
+  color: #fff;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  padding: 10px 6px;
+  font-family: "MS Sans Serif", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.start-items {
+  display: flex;
+  gap: 0;
+}
+
+.start-menu {
+  display: none;
+}
+
+.start-menu.open {
+  display: flex;
+}
+
+.start-items {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+}
+
+.start-section-label {
+  padding: 4px 8px 2px;
+  font-size: 10px;
+  color: #666;
+  font-style: italic;
+  font-family: "MS Sans Serif", sans-serif;
+}
+
+.start-item {
+  padding: 6px 8px;
+  cursor: pointer;
+  user-select: none;
+  font-family: "MS Sans Serif", sans-serif;
+  color: #000;
+}
+
+.start-item:hover {
+  background: var(--titlebar-start);
+  color: #fff;
+}
+
+.start-sep {
+  height: 1px;
+  background: #808080;
+  margin: 4px 0;
+}
+
+/* Run dialog: no maximize (more authentic) */
+.window.run-window .btn.maximize {
+  display: none;
+}
+
+/* ===== Windows ===== */
+.window {
+  position: fixed;
+  border: 4px outset #dfdfdf;
+  background: linear-gradient(to bottom, #f0f0f0, #d0d0d0);
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.5);
+  display: none;
+  min-width: 320px;
+  min-height: 240px;
+  z-index: 10;
+  font-size: 11px;
+}
+
+.window.visible {
+  display: block;
+}
+
+.window.maximized {
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: calc(100vh - var(--taskbar-h)) !important;
+}
+
+.titlebar {
+  height: 28px;
+  background: linear-gradient(to right, var(--titlebar-start), var(--titlebar-end));
+  color: #fff;
+  font-weight: bold;
+  padding: 4px 6px 0 10px;
+  display: flex;
+  align-items: center;
+  cursor: move;
+  border-bottom: 2px inset #000040;
+  text-shadow: 0 1px #000;
+  user-select: none;
+}
+
+.title {
+  flex: 1;
+  font-size: 12px;
+}
+
+.window-controls {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.btn {
+  border: 2px outset var(--button-bg);
+  background: var(--button-bg);
+  width: 18px;
+  height: 16px;
+  cursor: pointer;
+  margin-top: 1px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "MS Sans Serif", sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  color: #000;
+  user-select: none;
+}
+
+.btn:active {
+  border: 2px inset #808080;
+  background: #a0a0a0;
+}
+
+.btn::after {
+  position: absolute;
+  left: 4px;
+  top: -2px;
+  color: #000;
+  font-weight: 700;
+  line-height: 1;
+  content: '';
+}
+
+.btn.minimize::after {
+  content: "_";
+  top: -7px;
+  left: 2px;
+  font-size: 16px;
+}
+
+.btn.maximize::after {
+  content: "□";
+  top: -3px;
+  left: 4px;
+  font-size: 12px;
+}
+
+.btn.close::after {
+  content: "×";
+  top: -3px;
+  left: 5px;
+  font-size: 14px;
+}
+
+.window-body {
+  padding: 12px;
+  height: calc(100% - 32px);
+  overflow: auto;
+  background: #fff;
+  border-top: 2px inset #dfdfdf;
+}
+
+.project {
+  margin-bottom: 12px;
+  padding: 10px;
+  background: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
+  border: 2px outset #dfdfdf;
+  border-radius: 4px;
+}
+
+.project h3 {
+  margin: 0 0 6px 0;
+  color: var(--accent-color);
+  font-size: 13px;
+}
+
+ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  font-size: 11px;
+}
+
+a {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+/* Run Window */
+.run-window {
+  min-width: 420px;
+  min-height: 190px;
+}
+
+.run-form-container {
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.run-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.run-input-row label {
+  min-width: 46px;
+  color: #000;
+}
+
+.run-input {
+  flex: 1;
+  border: 2px inset #808080;
+  padding: 3px 6px;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+}
+
+.run-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.run-btn {
+  min-width: 70px;
+  border: 2px outset #efefef;
+  background: var(--button-bg);
+  font-family: 'MS Sans Serif', sans-serif;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.run-btn:active {
+  border: 2px inset #808080;
+}
+
+/* ===== Settings Window ===== */
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings-description {
+  margin: 0;
+  color: #333;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.settings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-row label {
+  font-size: 11px;
+  color: #000;
+  min-width: 120px;
+}
+
+.color-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-input {
+  width: 40px;
+  height: 24px;
+  padding: 0;
+  border: 2px inset #808080;
+  cursor: pointer;
+  background: none;
+}
+
+.color-input::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.color-input::-webkit-color-swatch {
+  border: none;
+}
+
+.color-value {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px;
+  color: #666;
+  min-width: 60px;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid #ccc;
+  margin-top: 8px;
+}
+
+.settings-btn {
+  min-width: 100px;
+  border: 2px outset #efefef;
+  background: var(--button-bg);
+  font-family: 'MS Sans Serif', sans-serif;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.settings-btn:hover {
+  background: #d0d0d0;
+}
+
+.settings-btn:active {
+  border: 2px inset #808080;
+}
+
+/* ===== My Computer Window ===== */
+.mycomputer-content h3 {
+  margin: 0 0 12px 0;
+  color: var(--accent-color);
+  font-size: 14px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 8px;
+}
+
+.system-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px;
+  background: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
+  border: 2px inset #dfdfdf;
+}
+
+.system-info-row {
+  display: flex;
+  gap: 12px;
+}
+
+.info-label {
+  font-weight: 700;
+  min-width: 70px;
+  color: #333;
+}
+
+.info-value {
+  color: #000;
+}
+
+.drives-section h4 {
+  margin: 0 0 8px 0;
+  color: var(--accent-color);
+  font-size: 12px;
+}
+
+.drives-section p {
+  margin: 0;
+  padding: 8px;
+  background: #fff;
+  border: 2px inset #dfdfdf;
+}
+
+/* ===== BIOS Screen ===== */
+.bios-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 40px;
+  overflow: hidden;
+}
+
+.bios-content {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 14px;
+  color: #ffffff;
+  line-height: 1.6;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.bios-line {
+  white-space: pre;
+  animation: fadeInLine 0.1s ease-out;
+}
+
+@keyframes fadeInLine {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bios-cursor {
+  opacity: 0;
+  color: #ffffff;
+  animation: none;
+}
+
+.bios-cursor.visible {
+  opacity: 1;
+}
+
+.waiting-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.waiting-screen .bios-content {
+  text-align: center;
+}
+
+.waiting-screen .bios-cursor {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* CRT scanline effect overlay */
+.bios-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px);
+  pointer-events: none;
+}
+
+/* CRT glow effect */
+.bios-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+      transparent 0%,
+      rgba(0, 0, 0, 0.3) 100%);
+  pointer-events: none;
+}
