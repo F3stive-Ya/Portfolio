@@ -1,0 +1,412 @@
+import { useState } from 'react'
+
+// File system structure mimicking Windows 95
+const FILE_SYSTEM = {
+    'C:': {
+        type: 'drive',
+        name: 'Local Disk (C:)',
+        icon: 'icons/computer.svg',
+        children: {
+            'Desktop': {
+                type: 'folder',
+                name: 'Desktop',
+                icon: 'icons/directory_closed_cool-0.png',
+                children: {
+                    'About Me.txt': { type: 'file', name: 'About Me', icon: 'icons/text.svg', windowId: 'about' },
+                    'File Explorer': { type: 'shortcut', name: 'File Explorer', icon: 'icons/directory_explorer-5.png', windowId: 'fileexplorer' },
+                    'Contact': { type: 'file', name: 'Contact', icon: 'icons/contact.svg', windowId: 'contact' },
+                    'My Computer': { type: 'shortcut', name: 'My Computer', icon: 'icons/computer.svg', windowId: 'mycomputer' },
+                    'Resume.pdf': { type: 'file', name: 'Resume', icon: 'icons/text.svg', windowId: 'resume' },
+                    'Settings': { type: 'shortcut', name: 'Settings', icon: 'icons/settings.svg', windowId: 'settings' }
+                }
+            },
+            'Documents': {
+                type: 'folder',
+                name: 'My Documents',
+                icon: 'icons/directory_closed_cool-0.png',
+                children: {
+                    'Resume.pdf': { type: 'file', name: 'Resume', icon: 'icons/text.svg', windowId: 'resume' }
+                }
+            },
+            'Projects': {
+                type: 'folder',
+                name: 'Projects',
+                icon: 'icons/directory_closed_cool-0.png',
+                children: {
+                    'Python': {
+                        type: 'folder',
+                        name: 'Python',
+                        icon: 'icons/directory_closed_cool-0.png',
+                        children: {
+                            'DiceGame': { type: 'project', name: 'Dice Game', id: 'dice-game' },
+                            'CarRacer': { type: 'project', name: 'Car Racer', id: 'car-racer' },
+                            'PasswordMaker': { type: 'project', name: 'Password Maker', id: 'password-maker' },
+                            'CommonFactors': { type: 'project', name: 'Common Factors', id: 'common-factors' }
+                        }
+                    },
+                    'Assembly': {
+                        type: 'folder',
+                        name: 'Assembly',
+                        icon: 'icons/directory_closed_cool-0.png',
+                        children: {
+                            'Calculator': { type: 'project', name: 'Assembly Calculator', id: 'assembly-calculator' }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Project details
+const PROJECTS_DATA = {
+    'dice-game': {
+        name: 'Dice Game',
+        description: 'Python program that simulates two dice being rolled. User can roll the dice as many times as they want and quit the game at any time.',
+        tech: ['Python'],
+        github: 'https://github.com/F3stive-Ya/DiceGame'
+    },
+    'assembly-calculator': {
+        name: 'Assembly Calculator',
+        description: 'Assembly program that simulates a calculator. User can add, subtract, multiply, and divide two numbers.',
+        tech: ['Assembly', 'x86'],
+        github: 'https://github.com/F3stive-Ya/AssemblyCalculator'
+    },
+    'car-racer': {
+        name: 'Car Racer',
+        description: 'A Python program that simulates a car race. Randomly generated cars race against each other with winner presented to user.',
+        tech: ['Python'],
+        github: 'https://github.com/F3stive-Ya/CarRacer'
+    },
+    'password-maker': {
+        name: 'Password Maker',
+        description: 'A Python program that generates random passwords based on input word. Adds randomly generated characters, integers, and special-characters.',
+        tech: ['Python', 'Security'],
+        github: 'https://github.com/F3stive-Ya/PasswordMaker'
+    },
+    'common-factors': {
+        name: 'Common Factors Finder',
+        description: 'A Python program that finds the common factors of two numbers.',
+        tech: ['Python', 'Math'],
+        github: 'https://github.com/F3stive-Ya/CommonFactors'
+    }
+}
+
+function TreeItem({ item, path, level = 0, selectedPath, onSelect, expandedPaths, onToggle, onDoubleClick }) {
+    const isFolder = item.type === 'folder' || item.type === 'drive'
+    const fullPath = path
+    const isExpanded = expandedPaths.includes(fullPath)
+    const isSelected = selectedPath === fullPath
+
+    const handleClick = () => {
+        if (isFolder) {
+            onToggle(fullPath)
+        }
+        onSelect(fullPath, item)
+    }
+
+    const handleDoubleClick = () => {
+        if (onDoubleClick) {
+            onDoubleClick(fullPath, item)
+        }
+    }
+
+    return (
+        <div>
+            <div
+                className={`tree-item ${isSelected ? 'selected' : ''}`}
+                style={{ paddingLeft: `${8 + level * 16}px` }}
+                onClick={handleClick}
+                onDoubleClick={handleDoubleClick}
+            >
+                {isFolder && (
+                    <span className="tree-item-toggle">
+                        {isExpanded ? '▼' : '▶'}
+                    </span>
+                )}
+                <img
+                    src={(isFolder && isExpanded && item.icon === 'icons/directory_closed_cool-0.png') ? 'icons/directory_open_cool-0.png' : (item.icon || 'icons/directory_closed_cool-0.png')}
+                    alt=""
+                    className="tree-item-icon"
+                />
+                <span style={{ marginLeft: 4 }}>{item.name}</span>
+            </div>
+            {isFolder && isExpanded && item.children && (
+                <div className="tree-children">
+                    {Object.entries(item.children).map(([key, child]) => (
+                        <TreeItem
+                            key={key}
+                            item={child}
+                            path={`${fullPath}\\${key}`}
+                            level={level + 1}
+                            selectedPath={selectedPath}
+                            onSelect={onSelect}
+                            expandedPaths={expandedPaths}
+                            onToggle={onToggle}
+                            onDoubleClick={onDoubleClick}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
+function FileItem({ item, itemKey, onDoubleClick }) {
+    const isFolder = item.type === 'folder'
+
+    return (
+        <div
+            className="file-item"
+            onDoubleClick={() => onDoubleClick(item, itemKey)}
+        >
+            <img
+                src={item.icon || 'icons/directory_closed_cool-0.png'}
+                alt=""
+                className="file-item-icon"
+            />
+            <span className="file-item-name">{item.name}</span>
+        </div>
+    )
+}
+
+function ProjectCard({ project }) {
+    return (
+        <div className="project-card">
+            <div className="project-card-header">
+                <img src="icons/directory_closed_cool-0.png" alt="" style={{ width: 16, height: 16 }} />
+                {project.name}
+            </div>
+            <div className="project-card-body">
+                <div className="project-card-description">
+                    {project.description}
+                </div>
+                <div className="project-card-tech">
+                    {project.tech.map((tech, index) => (
+                        <span key={index} className="tech-badge">{tech}</span>
+                    ))}
+                </div>
+                <div className="project-card-links">
+                    <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="project-link"
+                    >
+                        📁 View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function FileExplorer({ onOpenWindow }) {
+    const [currentPath, setCurrentPath] = useState('C:\\Desktop')
+    const [selectedPath, setSelectedPath] = useState('C:\\Desktop')
+    const [expandedPaths, setExpandedPaths] = useState(['C:', 'C:\\Projects', 'C:\\Projects\\Python'])
+    const [history, setHistory] = useState(['C:\\Desktop'])
+    const [historyIndex, setHistoryIndex] = useState(0)
+    const [addressInput, setAddressInput] = useState('C:\\Desktop')
+
+    const toggleExpand = (path) => {
+        setExpandedPaths(prev =>
+            prev.includes(path)
+                ? prev.filter(p => p !== path)
+                : [...prev, path]
+        )
+    }
+
+    // Get item at a specific path (moved up for use in navigation)
+    const getItemAtPath = (path) => {
+        const parts = path.split('\\').filter(p => p)
+        let current = FILE_SYSTEM[parts[0]]
+        for (let i = 1; i < parts.length && current; i++) {
+            current = current.children?.[parts[i]]
+        }
+        return current
+    }
+
+    const navigateTo = (path, item) => {
+        if (item?.type === 'folder' || item?.type === 'drive') {
+            setCurrentPath(path)
+            setAddressInput(path)
+            // Add to history
+            const newHistory = history.slice(0, historyIndex + 1)
+            newHistory.push(path)
+            setHistory(newHistory)
+            setHistoryIndex(newHistory.length - 1)
+        }
+        setSelectedPath(path)
+    }
+
+    // Handle address bar Enter key
+    const handleAddressKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            const item = getItemAtPath(addressInput)
+            if (item && (item.type === 'folder' || item.type === 'drive')) {
+                navigateTo(addressInput, item)
+                // Expand path in tree
+                const parts = addressInput.split('\\')
+                const pathsToExpand = []
+                for (let i = 1; i <= parts.length; i++) {
+                    pathsToExpand.push(parts.slice(0, i).join('\\'))
+                }
+                setExpandedPaths(prev => [...new Set([...prev, ...pathsToExpand])])
+            }
+        }
+    }
+
+    // Handle tree item double-click
+    const handleTreeDoubleClick = (path, item) => {
+        if (item.type === 'folder' || item.type === 'drive') {
+            navigateTo(path, item)
+        } else if (item.windowId && onOpenWindow) {
+            onOpenWindow(item.windowId)
+        }
+    }
+
+    const goBack = () => {
+        if (historyIndex > 0) {
+            setHistoryIndex(historyIndex - 1)
+            setCurrentPath(history[historyIndex - 1])
+            setSelectedPath(history[historyIndex - 1])
+        }
+    }
+
+    const goForward = () => {
+        if (historyIndex < history.length - 1) {
+            setHistoryIndex(historyIndex + 1)
+            setCurrentPath(history[historyIndex + 1])
+            setSelectedPath(history[historyIndex + 1])
+        }
+    }
+
+    const goUp = () => {
+        const parts = currentPath.split('\\')
+        if (parts.length > 1) {
+            const parentPath = parts.slice(0, -1).join('\\') || 'C:'
+            const parentItem = getItemAtPath(parentPath)
+            navigateTo(parentPath, parentItem)
+        }
+    }
+
+    const currentItem = getItemAtPath(currentPath)
+    const currentChildren = currentItem?.children || {}
+
+    const handleItemDoubleClick = (item, key) => {
+        const newPath = `${currentPath}\\${key}`
+
+        if (item.type === 'folder') {
+            navigateTo(newPath, item)
+            if (!expandedPaths.includes(newPath)) {
+                setExpandedPaths([...expandedPaths, newPath])
+            }
+        } else if (item.windowId && onOpenWindow) {
+            onOpenWindow(item.windowId)
+        } else if (item.type === 'project') {
+            // Show project details
+            setSelectedPath(newPath)
+        }
+    }
+
+    // Check if selected item is a project
+    const selectedItem = getItemAtPath(selectedPath)
+    const selectedProject = selectedItem?.type === 'project' ? PROJECTS_DATA[selectedItem.id] : null
+
+    return (
+        <div className="file-explorer">
+            <div className="file-explorer-toolbar">
+                <button
+                    className="file-explorer-toolbar-btn"
+                    onClick={goBack}
+                    disabled={historyIndex === 0}
+                    title="Back"
+                >
+                    ←
+                </button>
+                <button
+                    className="file-explorer-toolbar-btn"
+                    onClick={goForward}
+                    disabled={historyIndex >= history.length - 1}
+                    title="Forward"
+                >
+                    →
+                </button>
+                <button
+                    className="file-explorer-toolbar-btn"
+                    onClick={goUp}
+                    disabled={currentPath === 'C:'}
+                    title="Up One Level"
+                >
+                    ↑
+                </button>
+            </div>
+            <div className="file-explorer-address">
+                <span>Address:</span>
+                <input
+                    type="text"
+                    className="file-explorer-address-input"
+                    value={addressInput}
+                    onChange={(e) => setAddressInput(e.target.value)}
+                    onKeyDown={handleAddressKeyDown}
+                    onBlur={() => setAddressInput(currentPath)}
+                />
+                <button
+                    className="file-explorer-toolbar-btn"
+                    onClick={() => {
+                        const item = getItemAtPath(addressInput)
+                        if (item && (item.type === 'folder' || item.type === 'drive')) {
+                            navigateTo(addressInput, item)
+                        }
+                    }}
+                    title="Go"
+                >
+                    →
+                </button>
+            </div>
+            <div className="file-explorer-main">
+                <div className="file-explorer-sidebar">
+                    {Object.entries(FILE_SYSTEM).map(([key, item]) => (
+                        <TreeItem
+                            key={key}
+                            item={item}
+                            path={key}
+                            selectedPath={selectedPath}
+                            onSelect={navigateTo}
+                            expandedPaths={expandedPaths}
+                            onToggle={toggleExpand}
+                            onDoubleClick={handleTreeDoubleClick}
+                        />
+                    ))}
+                </div>
+                <div className="file-explorer-content">
+                    {selectedProject ? (
+                        <ProjectCard project={selectedProject} />
+                    ) : (
+                        <div className="file-grid">
+                            {Object.entries(currentChildren).map(([key, item]) => (
+                                <FileItem
+                                    key={key}
+                                    item={item}
+                                    itemKey={key}
+                                    onDoubleClick={handleItemDoubleClick}
+                                />
+                            ))}
+                            {Object.keys(currentChildren).length === 0 && (
+                                <div style={{ padding: 20, color: '#808080' }}>
+                                    This folder is empty.
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+            <div className="file-explorer-status">
+                {Object.keys(currentChildren).length} object(s)
+            </div>
+        </div>
+    )
+}
+
+export default FileExplorer

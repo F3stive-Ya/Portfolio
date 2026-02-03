@@ -23,7 +23,7 @@ body {
   padding: 0;
   height: 100vh;
   overflow: hidden;
-  background: linear-gradient(135deg, #c0c0c0 0%, #9dbcd4 50%, #a0a0a0 100%);
+  background: #008080;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 11px;
   color: var(--accent-color);
@@ -51,15 +51,26 @@ body {
   justify-content: start;
 }
 
-/* Top-right positioned icons (Settings, My Computer) */
-.icon-area-right {
+/* Icon wrapper for absolute positioning */
+.icon-wrapper {
   position: absolute;
-  top: 16px;
-  right: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-end;
+  cursor: grab;
+}
+
+.icon-wrapper.dragging {
+  cursor: grabbing;
+  opacity: 0.8;
+}
+
+.icon-wrapper.dragging .icon {
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 128, 0.1);
+  border: 2px dashed #000080;
+}
+
+/* Top-right positioned icons (Settings, My Computer) - now handled in JS */
+.icon-area-right {
+  display: none;
 }
 
 /* Desktop selection box (cosmetic) */
@@ -94,6 +105,22 @@ body {
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.35);
 }
 
+.icon.selected {
+  background: rgba(0, 0, 128, 0.15);
+  border: 1px dotted #000080;
+  border-radius: 4px;
+}
+
+.icon.selected .icon-label {
+  background: #000080;
+  color: #fff;
+  padding: 2px 4px;
+}
+
+.icon-wrapper.selected .icon {
+  background: rgba(0, 0, 128, 0.1);
+}
+
 .icon-inner {
   width: 48px;
   height: 48px;
@@ -116,8 +143,8 @@ body {
   font-size: 11px;
   letter-spacing: 0;
   line-height: 1.05;
-  color: var(--accent-color);
-  text-shadow: 1px 1px #fff;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000, -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000;
   overflow: hidden;
   text-overflow: clip;
   white-space: nowrap;
@@ -706,4 +733,883 @@ a {
       transparent 0%,
       rgba(0, 0, 0, 0.3) 100%);
   pointer-events: none;
+}
+
+/* ===== Mobile Message ===== */
+.mobile-message {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #000080 0%, #1084d0 50%, #000040 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.mobile-message-content {
+  text-align: center;
+  padding: 40px;
+  background: linear-gradient(to bottom, #f0f0f0, #d0d0d0);
+  border: 4px outset #dfdfdf;
+  box-shadow: 8px 8px 24px rgba(0, 0, 0, 0.5);
+  max-width: 90%;
+  border-radius: 4px;
+}
+
+.mobile-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.mobile-message-content h1 {
+  margin: 0 0 12px 0;
+  color: #000080;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+.mobile-message-content p {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* ===== Win95 Scrollbars ===== */
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(90deg, #ffffff 0%, #c0c0c0 30%, #c0c0c0 70%, #808080 100%);
+  border: 1px solid #808080;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #dfdfdf, #c0c0c0);
+  border: 2px outset #dfdfdf;
+  box-shadow: inset -1px -1px 0px #808080;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #e8e8e8, #c8c8c8);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(to bottom, #b0b0b0, #909090);
+  border: 2px inset #808080;
+}
+
+::-webkit-scrollbar-button {
+  background: linear-gradient(to bottom, #dfdfdf, #c0c0c0);
+  border: 2px outset #dfdfdf;
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-button:hover {
+  background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+}
+
+::-webkit-scrollbar-button:active {
+  background: linear-gradient(to bottom, #b0b0b0, #909090);
+  border: 2px inset #808080;
+}
+
+::-webkit-scrollbar-corner {
+  background: #c0c0c0;
+}
+
+/* ===== Hourglass Cursor ===== */
+.cursor-wait,
+.cursor-wait * {
+  cursor: wait !important;
+}
+
+/* ===== Enhanced Window Shadows ===== */
+.window {
+  box-shadow:
+    6px 6px 0px rgba(0, 0, 0, 0.3),
+    8px 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.window.visible:not(.maximized) {
+  animation: windowOpen 0.15s ease-out;
+}
+
+@keyframes windowOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== Tooltips ===== */
+.win95-tooltip {
+  position: fixed;
+  background: #ffffcc;
+  border: 1px solid #000;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: 'MS Sans Serif', system-ui, sans-serif;
+  color: #000;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: tooltipFadeIn 0.15s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Context Menu ===== */
+.context-menu {
+  position: fixed;
+  background: #c0c0c0;
+  border: 2px outset #dfdfdf;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+  min-width: 160px;
+  z-index: 9000;
+  padding: 2px;
+  font-size: 11px;
+}
+
+.context-menu-item {
+  padding: 4px 24px 4px 24px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.context-menu-item:hover {
+  background: var(--titlebar-start);
+  color: #fff;
+}
+
+.context-menu-item.disabled {
+  color: #808080;
+  cursor: default;
+}
+
+.context-menu-item.disabled:hover {
+  background: transparent;
+  color: #808080;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background: linear-gradient(to right, #808080, #fff);
+  margin: 3px 2px;
+}
+
+.context-menu-icon {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  left: 4px;
+}
+
+/* ===== System Tray ===== */
+.tray-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  margin-right: 6px;
+  background: linear-gradient(to bottom, #606060, #808080);
+  border: 2px inset #808080;
+  border-radius: 2px;
+}
+
+.tray-icon {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  transition: transform 0.1s;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.3));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.tray-icon:hover {
+  transform: scale(1.1);
+}
+
+.tray-icon img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* ===== Progress Bar ===== */
+.progress-bar {
+  height: 20px;
+  background: #fff;
+  border: 2px inset #808080;
+  padding: 2px;
+  overflow: hidden;
+}
+
+.progress-bar-inner {
+  height: 100%;
+  background: repeating-linear-gradient(90deg,
+      var(--titlebar-start) 0px,
+      var(--titlebar-start) 8px,
+      transparent 8px,
+      transparent 10px);
+  transition: width 0.2s ease-out;
+}
+
+.progress-bar.indeterminate .progress-bar-inner {
+  width: 30% !important;
+  animation: progressIndeterminate 1.5s ease-in-out infinite;
+}
+
+@keyframes progressIndeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+/* ===== Window Resize Handles ===== */
+.resize-handle {
+  position: absolute;
+  z-index: 100;
+}
+
+.resize-handle-n {
+  top: -4px;
+  left: 4px;
+  right: 4px;
+  height: 8px;
+  cursor: n-resize;
+}
+
+.resize-handle-s {
+  bottom: -4px;
+  left: 4px;
+  right: 4px;
+  height: 8px;
+  cursor: s-resize;
+}
+
+.resize-handle-e {
+  right: -4px;
+  top: 4px;
+  bottom: 4px;
+  width: 8px;
+  cursor: e-resize;
+}
+
+.resize-handle-w {
+  left: -4px;
+  top: 4px;
+  bottom: 4px;
+  width: 8px;
+  cursor: w-resize;
+}
+
+.resize-handle-ne {
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: ne-resize;
+}
+
+.resize-handle-nw {
+  top: -4px;
+  left: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: nw-resize;
+}
+
+.resize-handle-se {
+  bottom: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: se-resize;
+}
+
+.resize-handle-sw {
+  bottom: -4px;
+  left: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: sw-resize;
+}
+
+/* ===== Error Dialog ===== */
+.error-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 8000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-dialog {
+  background: #c0c0c0;
+  border: 4px outset #dfdfdf;
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.5);
+  min-width: 320px;
+  max-width: 400px;
+}
+
+.error-dialog-titlebar {
+  height: 24px;
+  background: linear-gradient(to right, var(--titlebar-start), var(--titlebar-end));
+  color: #fff;
+  font-weight: bold;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.error-dialog-content {
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.error-dialog-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.error-dialog-message {
+  flex: 1;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.error-dialog-buttons {
+  padding: 8px 16px 16px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.error-dialog-btn {
+  min-width: 75px;
+  padding: 4px 12px;
+  background: var(--button-bg);
+  border: 2px outset #dfdfdf;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.error-dialog-btn:hover {
+  background: #d0d0d0;
+}
+
+.error-dialog-btn:active {
+  border: 2px inset #808080;
+}
+
+/* ===== File Explorer ===== */
+.file-explorer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.file-explorer-toolbar {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: #c0c0c0;
+  border-bottom: 2px inset #808080;
+}
+
+.file-explorer-toolbar-btn {
+  padding: 2px 8px;
+  background: var(--button-bg);
+  border: 2px outset #dfdfdf;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.file-explorer-toolbar-btn:hover {
+  background: #d0d0d0;
+}
+
+.file-explorer-toolbar-btn:active {
+  border: 2px inset #808080;
+}
+
+.file-explorer-toolbar-btn:disabled {
+  color: #808080;
+  cursor: default;
+}
+
+.file-explorer-address {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: #c0c0c0;
+  border-bottom: 2px inset #808080;
+  font-size: 11px;
+}
+
+.file-explorer-address-input {
+  flex: 1;
+  padding: 2px 6px;
+  border: 2px inset #808080;
+  font-size: 11px;
+  background: #fff;
+}
+
+.file-explorer-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.file-explorer-sidebar {
+  width: 180px;
+  background: #fff;
+  border-right: 2px inset #808080;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.file-explorer-content {
+  flex: 1;
+  background: #fff;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.file-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+}
+
+.file-item {
+  width: 72px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+}
+
+.file-item:hover {
+  background: rgba(0, 0, 128, 0.1);
+  border: 1px dashed #000080;
+}
+
+.file-item-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
+}
+
+.file-item-name {
+  font-size: 10px;
+  text-align: center;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.file-explorer-status {
+  padding: 4px 8px;
+  background: #c0c0c0;
+  border-top: 2px outset #dfdfdf;
+  font-size: 11px;
+  color: #000;
+}
+
+.tree-item {
+  padding: 2px 4px 2px 20px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  position: relative;
+}
+
+.tree-item:hover {
+  background: var(--titlebar-start);
+  color: #fff;
+}
+
+.tree-item.selected {
+  background: var(--titlebar-start);
+  color: #fff;
+}
+
+.tree-item-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.tree-item-toggle {
+  position: absolute;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.tree-children {
+  padding-left: 16px;
+}
+
+/* ===== Project Cards ===== */
+.project-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project-card {
+  background: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
+  border: 2px outset #dfdfdf;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.project-card-header {
+  background: linear-gradient(to right, var(--titlebar-start), var(--titlebar-end));
+  color: #fff;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project-card-body {
+  padding: 12px;
+}
+
+.project-card-description {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.project-card-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.tech-badge {
+  background: var(--button-bg);
+  border: 1px outset #dfdfdf;
+  padding: 2px 8px;
+  font-size: 10px;
+  color: #000;
+}
+
+.project-card-links {
+  display: flex;
+  gap: 8px;
+}
+
+.project-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: var(--button-bg);
+  border: 2px outset #dfdfdf;
+  color: #000;
+  text-decoration: none;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.project-link:hover {
+  background: #d0d0d0;
+}
+
+.project-link:active {
+  border: 2px inset #808080;
+}
+
+/* ===== BIOS Screen Enhancement ===== */
+.bios-screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.bios-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Inactive Window Titlebar ===== */
+.window:not(.active) .titlebar {
+  background: linear-gradient(to right, #808080, #a0a0a0);
+}
+
+/* ===== Login Screen ===== */
+.login-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #008080 0%, #004040 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.login-box {
+  background: #c0c0c0;
+  border: 2px outset #dfdfdf;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+  padding: 20px 40px;
+  min-width: 320px;
+  text-align: center;
+}
+
+.login-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px inset #808080;
+}
+
+.login-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+  color: #000080;
+}
+
+.login-logo {
+  width: 48px;
+  height: 48px;
+}
+
+.login-content {
+  padding: 16px 0;
+}
+
+.login-welcome {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+}
+
+.login-status {
+  font-size: 12px;
+  color: #000;
+  margin: 0 0 12px 0;
+}
+
+.login-progress {
+  height: 20px;
+  background: #fff;
+  border: 2px inset #808080;
+  padding: 2px;
+  overflow: hidden;
+}
+
+.login-progress-bar {
+  height: 100%;
+  background: repeating-linear-gradient(90deg,
+      #000080 0px,
+      #000080 8px,
+      #0000a0 8px,
+      #0000a0 10px);
+  transition: width 0.1s linear;
+}
+
+/* ===== Context Menu ===== */
+.context-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+}
+
+.context-menu {
+  position: fixed;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  min-width: 150px;
+  z-index: 9999;
+  padding: 2px 0;
+}
+
+.context-menu-item {
+  padding: 4px 20px;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.context-menu-item:hover:not(.disabled) {
+  background: #000080;
+  color: #fff;
+}
+
+.context-menu-item.disabled {
+  color: #808080;
+  cursor: default;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background: #808080;
+  border-bottom: 1px solid #fff;
+  margin: 4px 2px;
+}
+
+.context-menu-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Calendar Styles */
+.calendar-popup {
+  position: absolute;
+  bottom: 34px;
+  right: 2px;
+  width: 250px;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  padding: 2px;
+}
+
+.calendar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: 'Pixel', sans-serif;
+  user-select: none;
+  padding: 10px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.calendar-month-year {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.calendar-nav button {
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+  font-size: 12px;
+}
+
+.calendar-grid {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border: 2px inset #dfdfdf;
+}
+
+.calendar-grid th {
+  font-weight: normal;
+  padding: 4px;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+}
+
+.calendar-grid td {
+  text-align: center;
+  padding: 6px;
+  cursor: default;
+}
+
+.calendar-grid td.today {
+  background-color: #000080;
+  color: white;
+  outline: 1px dotted white;
+}
+
+.calendar-grid td:hover:not(.empty):not(.today) {
+  background-color: #e0e0e0;
+}
+
+.calendar-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #808080;
 }

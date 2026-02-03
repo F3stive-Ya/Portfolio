@@ -1,11 +1,11 @@
-function DesktopIcon({ id, label, iconSrc, onDoubleClick }) {
+function DesktopIcon({ id, label, iconSrc, onDoubleClick, isSelected }) {
     const handleDragStart = (e) => {
         e.preventDefault()
     }
 
     return (
         <div
-            className="icon"
+            className={`icon ${isSelected ? 'selected' : ''}`}
             data-window={id}
             draggable="false"
             onDragStart={handleDragStart}

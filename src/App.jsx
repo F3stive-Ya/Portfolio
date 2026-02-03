@@ -5,7 +5,11 @@ import Window from './components/Window'
 import StartMenu from './components/StartMenu'
 import Settings from './components/Settings'
 import BiosScreen, { SYSTEM_INFO } from './components/BiosScreen'
+import FileExplorer from './components/FileExplorer'
+import LoginScreen from './components/LoginScreen'
+import ErrorDialog from './components/ErrorDialog'
 import { useRecentPrograms } from './context/RecentProgramsContext'
+import { useSounds } from './hooks/useSounds'
 
 // My Computer content using SYSTEM_INFO
 const MyComputerContent = () => (
@@ -122,6 +126,13 @@ const WINDOW_CONFIGS = {
         ),
         bodyStyle: { padding: 0 }
     },
+    fileexplorer: {
+        title: 'File Explorer',
+        defaultStyle: { top: 80, left: 140, width: 600, height: 440 },
+        // Content rendered dynamically to receive openWindow prop
+        content: null,
+        bodyStyle: { padding: 0 }
+    },
     settings: {
         title: 'Settings',
         defaultStyle: { top: 130, left: 200, width: 400, height: 420 },
@@ -133,7 +144,7 @@ const WINDOW_CONFIGS = {
 // Icons configuration
 const ICONS = [
     { id: 'about', label: 'About Me', icon: 'icons/text.svg' },
-    { id: 'projects', label: 'Projects', icon: 'icons/folder.svg' },
+    { id: 'fileexplorer', label: 'File Explorer', icon: 'icons/directory_explorer-5.png' },
     { id: 'contact', label: 'Contact', icon: 'icons/contact.svg' },
     { id: 'mycomputer', label: 'My Computer', icon: 'icons/computer.svg' },
     { id: 'resume', label: 'Resume', icon: 'icons/text.svg' },
@@ -144,12 +155,46 @@ const ICONS = [
 const SYSTEM_STATE = {
     WAITING: 'waiting',    // Waiting for user to focus window
     BOOTING: 'booting',    // BIOS boot sequence
+    LOGGING: 'logging',    // Login screen with startup sound
     RUNNING: 'running',    // Desktop is active
     SHUTDOWN: 'shutdown'   // Shutdown sequence
 }
 
+// Mobile detection component
+const MobileMessage = () => (
+    <div className="mobile-message">
+        <div className="mobile-message-content">
+            <div className="mobile-icon">🖥️</div>
+            <h1>Desktop Only</h1>
+            <p>Please open this site on Desktop for the full experience.</p>
+        </div>
+    </div>
+)
+
 function App() {
     const { addRecentProgram } = useRecentPrograms()
+    const { playOpen, playClose, playMinimize, playClick, playError } = useSounds()
+
+    const [runErrorDialog, setRunErrorDialog] = useState(null)
+
+    // Mobile detection
+    const [isMobile, setIsMobile] = useState(() => {
+        if (typeof window === 'undefined') return false
+        return window.innerWidth <= 768 ||
+            ('ontouchstart' in window && window.innerWidth <= 1024)
+    })
+
+    // Listen for resize events to update mobile detection
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(
+                window.innerWidth <= 768 ||
+                ('ontouchstart' in window && window.innerWidth <= 1024)
+            )
+        }
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [])
 
     // System boot state
     const [systemState, setSystemState] = useState(() => {
@@ -189,6 +234,11 @@ function App() {
 
     // Drag state
     const dragRef = useRef(null)
+    const resizeRef = useRef(null)
+
+    // Minimum window sizes
+    const MIN_WIDTH = 200
+    const MIN_HEIGHT = 150
 
     // Handle window focus to start boot sequence
     useEffect(() => {
@@ -246,13 +296,16 @@ function App() {
         // Track recently used programs (not run or settings)
         addRecentProgram(winId)
 
+        // Play open sound
+        playOpen()
+
         setWindowStates(prev => ({
             ...prev,
             [winId]: { ...prev[winId], isOpen: true, isMinimized: false }
         }))
         setOpenWindows(prev => prev.includes(winId) ? prev : [...prev, winId])
         bringToFront(winId)
-    }, [bringToFront, addRecentProgram])
+    }, [bringToFront, addRecentProgram, playOpen])
 
     // Auto-open Resume after boot completes
     const hasOpenedResumeRef = useRef(false)
@@ -274,6 +327,9 @@ function App() {
 
     // Close window
     const closeWindow = useCallback((winId) => {
+        // Play close sound
+        playClose()
+
         setWindowStates(prev => ({
             ...prev,
             [winId]: { ...prev[winId], isOpen: false, isMaximized: false, isMinimized: false }
@@ -286,16 +342,17 @@ function App() {
             }
             return prev
         })
-    }, [openWindows])
+    }, [openWindows, playClose])
 
     // Minimize window
     const minimizeWindow = useCallback((winId) => {
+        playMinimize()
         setWindowStates(prev => ({
             ...prev,
             [winId]: { ...prev[winId], isMinimized: true }
         }))
         setActiveWindowId(prev => prev === winId ? null : prev)
-    }, [])
+    }, [playMinimize])
 
     // Toggle maximize
     const toggleMaximize = useCallback((winId) => {
@@ -347,7 +404,12 @@ function App() {
             closeWindow('run')
             setRunInput('')
         } else {
-            alert(`Cannot find '${cmd}'.`)
+            playError()
+            setRunErrorDialog({
+                title: 'Run',
+                message: `Cannot find file '${cmd}' (or one of its components). Make sure the path and filename are correct and that all required libraries are available.`,
+                type: 'error'
+            })
         }
     }
 
@@ -380,25 +442,90 @@ function App() {
         e.preventDefault()
     }, [windowStates, bringToFront])
 
+    // Handle window resize start
+    const handleResizeStart = useCallback((e, winId, direction) => {
+        const state = windowStates[winId]
+        if (!state || state.isMaximized) return
+
+        bringToFront(winId)
+        resizeRef.current = {
+            winId,
+            direction,
+            startX: e.clientX,
+            startY: e.clientY,
+            startWidth: state.position.width,
+            startHeight: state.position.height,
+            startLeft: state.position.left,
+            startTop: state.position.top
+        }
+        e.preventDefault()
+    }, [windowStates, bringToFront])
+
     useEffect(() => {
         const handleMouseMove = (e) => {
-            if (!dragRef.current) return
-            const { winId, startX, startY, startLeft, startTop } = dragRef.current
-            setWindowStates(prev => ({
-                ...prev,
-                [winId]: {
-                    ...prev[winId],
-                    position: {
-                        ...prev[winId].position,
-                        left: startLeft + (e.clientX - startX),
-                        top: startTop + (e.clientY - startY)
+            // Handle dragging
+            if (dragRef.current) {
+                const { winId, startX, startY, startLeft, startTop } = dragRef.current
+                setWindowStates(prev => ({
+                    ...prev,
+                    [winId]: {
+                        ...prev[winId],
+                        position: {
+                            ...prev[winId].position,
+                            left: startLeft + (e.clientX - startX),
+                            top: startTop + (e.clientY - startY)
+                        }
                     }
-                }
-            }))
+                }))
+            }
+
+            // Handle resizing
+            if (resizeRef.current) {
+                const { winId, direction, startX, startY, startWidth, startHeight, startLeft, startTop } = resizeRef.current
+                const deltaX = e.clientX - startX
+                const deltaY = e.clientY - startY
+
+                setWindowStates(prev => {
+                    const newPosition = { ...prev[winId].position }
+
+                    // Handle horizontal resize
+                    if (direction.includes('e')) {
+                        newPosition.width = Math.max(MIN_WIDTH, startWidth + deltaX)
+                    }
+                    if (direction.includes('w')) {
+                        const newWidth = Math.max(MIN_WIDTH, startWidth - deltaX)
+                        if (newWidth > MIN_WIDTH) {
+                            newPosition.width = newWidth
+                            newPosition.left = startLeft + deltaX
+                        }
+                    }
+
+                    // Handle vertical resize
+                    if (direction.includes('s')) {
+                        newPosition.height = Math.max(MIN_HEIGHT, startHeight + deltaY)
+                    }
+                    if (direction.includes('n')) {
+                        const newHeight = Math.max(MIN_HEIGHT, startHeight - deltaY)
+                        if (newHeight > MIN_HEIGHT) {
+                            newPosition.height = newHeight
+                            newPosition.top = startTop + deltaY
+                        }
+                    }
+
+                    return {
+                        ...prev,
+                        [winId]: {
+                            ...prev[winId],
+                            position: newPosition
+                        }
+                    }
+                })
+            }
         }
 
         const handleMouseUp = () => {
             dragRef.current = null
+            resizeRef.current = null
         }
 
         document.addEventListener('mousemove', handleMouseMove)
@@ -417,16 +544,84 @@ function App() {
         return () => document.removeEventListener('click', handleClick)
     }, [])
 
-    // ESC to close run window
+    // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.key === 'Escape' && windowStates.run?.isOpen && !windowStates.run?.isMinimized) {
-                closeWindow('run')
+            // Don't trigger shortcuts when typing in input fields
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                // Only allow Escape in input fields
+                if (e.key === 'Escape') {
+                    if (windowStates.run?.isOpen && !windowStates.run?.isMinimized) {
+                        closeWindow('run')
+                    }
+                }
+                return
+            }
+
+            // Ctrl + R: Open Run dialog
+            if (e.ctrlKey && e.key.toLowerCase() === 'r') {
+                e.preventDefault()
+                openWindow('run')
+                return
+            }
+
+            // Alt + F4: Close active window
+            if (e.altKey && e.key === 'F4') {
+                e.preventDefault()
+                if (activeWindowId) {
+                    closeWindow(activeWindowId)
+                }
+                return
+            }
+
+            // Escape: Close run window, start menu, or deselect active window
+            if (e.key === 'Escape') {
+                if (startMenuOpen) {
+                    closeStartMenu()
+                } else if (windowStates.run?.isOpen && !windowStates.run?.isMinimized) {
+                    closeWindow('run')
+                } else if (activeWindowId) {
+                    minimizeWindow(activeWindowId)
+                }
+                return
+            }
+
+            // Ctrl + M: Minimize active window
+            if (e.ctrlKey && e.key.toLowerCase() === 'm') {
+                e.preventDefault()
+                if (activeWindowId) {
+                    minimizeWindow(activeWindowId)
+                }
+                return
+            }
+
+            // Ctrl + 1-6: Quick open windows
+            if (e.ctrlKey && e.key >= '1' && e.key <= '6') {
+                e.preventDefault()
+                const windowMap = {
+                    '1': 'about',
+                    '2': 'projects',
+                    '3': 'contact',
+                    '4': 'mycomputer',
+                    '5': 'resume',
+                    '6': 'settings'
+                }
+                const windowId = windowMap[e.key]
+                if (windowId) {
+                    openWindow(windowId)
+                }
+                return
             }
         }
+
         document.addEventListener('keydown', handleKeyDown)
         return () => document.removeEventListener('keydown', handleKeyDown)
-    }, [windowStates.run, closeWindow])
+    }, [windowStates.run, activeWindowId, startMenuOpen, closeWindow, openWindow, minimizeWindow, closeStartMenu])
+
+    // Show mobile message on mobile devices
+    if (isMobile) {
+        return <MobileMessage />
+    }
 
     // Show BIOS screen during boot or shutdown
     if (systemState === SYSTEM_STATE.WAITING) {
@@ -441,7 +636,11 @@ function App() {
     }
 
     if (systemState === SYSTEM_STATE.BOOTING) {
-        return <BiosScreen mode="boot" onComplete={handleBootComplete} />
+        return <BiosScreen mode="boot" onComplete={() => setSystemState(SYSTEM_STATE.LOGGING)} />
+    }
+
+    if (systemState === SYSTEM_STATE.LOGGING) {
+        return <LoginScreen onComplete={handleBootComplete} />
     }
 
     if (systemState === SYSTEM_STATE.SHUTDOWN) {
@@ -453,6 +652,11 @@ function App() {
             <Desktop
                 icons={ICONS}
                 onIconDoubleClick={openWindow}
+                onContextMenuAction={(action) => {
+                    if (action === 'properties') {
+                        openWindow('settings')
+                    }
+                }}
             />
 
             {/* Regular windows */}
@@ -473,9 +677,14 @@ function App() {
                             bringToFront(id)
                         }
                     }}
+                    onResizeStart={(e, direction) => handleResizeStart(e, id, direction)}
                     bodyStyle={config.bodyStyle}
                 >
-                    {config.content}
+                    {id === 'fileexplorer' ? (
+                        <FileExplorer onOpenWindow={openWindow} />
+                    ) : (
+                        config.content
+                    )}
                 </Window>
             ))}
 
@@ -495,6 +704,7 @@ function App() {
                         bringToFront('run')
                     }
                 }}
+                onResizeStart={(e, direction) => handleResizeStart(e, 'run', direction)}
                 className="run-window"
                 hideMaximize
             >
@@ -534,6 +744,16 @@ function App() {
                 isOpen={startMenuOpen}
                 onItemClick={handleStartItemClick}
             />
+
+            {/* Run Error Dialog */}
+            {runErrorDialog && (
+                <ErrorDialog
+                    title={runErrorDialog.title}
+                    message={runErrorDialog.message}
+                    type={runErrorDialog.type}
+                    onClose={() => setRunErrorDialog(null)}
+                />
+            )}
         </>
     )
 }

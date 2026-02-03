@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import LetterGlitch from './LetterGlitch'
 
 // System hardware info (shared with My Computer window)
 export const SYSTEM_INFO = {
@@ -89,6 +90,14 @@ function BiosScreen({ mode, onComplete }) {
 
     return (
         <div className="bios-screen">
+            <LetterGlitch
+                glitchColors={['#00ff00', '#00cc00', '#006600']}
+                glitchSpeed={40}
+                outerVignette={true}
+                centerVignette={false}
+                smooth={true}
+                opacity={0.15}
+            />
             <div className="bios-content">
                 {visibleLines.map((line, index) => (
                     <div key={index} className="bios-line">

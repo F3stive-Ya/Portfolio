@@ -20,6 +20,11 @@ export function ThemeProvider({ children }) {
         return saved ? JSON.parse(saved) : defaultTheme
     })
 
+    const [soundEnabled, setSoundEnabled] = useState(() => {
+        const saved = localStorage.getItem('win95-sound')
+        return saved ? JSON.parse(saved) : false
+    })
+
     useEffect(() => {
         localStorage.setItem('win95-theme', JSON.stringify(theme))
 
@@ -36,6 +41,10 @@ export function ThemeProvider({ children }) {
         root.style.setProperty('--accent-color', theme.accentColor)
     }, [theme])
 
+    useEffect(() => {
+        localStorage.setItem('win95-sound', JSON.stringify(soundEnabled))
+    }, [soundEnabled])
+
     const updateTheme = (key, value) => {
         setTheme(prev => ({ ...prev, [key]: value }))
     }
@@ -44,8 +53,12 @@ export function ThemeProvider({ children }) {
         setTheme(defaultTheme)
     }
 
+    const toggleSound = () => {
+        setSoundEnabled(prev => !prev)
+    }
+
     return (
-        <ThemeContext.Provider value={{ theme, updateTheme, resetTheme, defaultTheme }}>
+        <ThemeContext.Provider value={{ theme, updateTheme, resetTheme, defaultTheme, soundEnabled, toggleSound }}>
             {children}
         </ThemeContext.Provider>
     )

@@ -9,6 +9,7 @@ function Window({
     onTitlebarMouseDown,
     onTitlebarDoubleClick,
     onWindowMouseDown,
+    onResizeStart,
     children,
     bodyStyle = {},
     className = '',
@@ -33,6 +34,7 @@ function Window({
         'window',
         isVisible ? 'visible' : '',
         isMaximized ? 'maximized' : '',
+        isActive ? 'active' : '',
         className
     ].filter(Boolean).join(' ')
 
@@ -54,6 +56,15 @@ function Window({
         onTitlebarDoubleClick()
     }
 
+    // Handle resize start
+    const handleResizeMouseDown = (e, direction) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (onResizeStart) {
+            onResizeStart(e, direction)
+        }
+    }
+
     return (
         <div
             id={`window-${id}`}
@@ -61,6 +72,19 @@ function Window({
             style={windowStyle}
             onMouseDown={onWindowMouseDown}
         >
+            {/* Resize handles (only when not maximized) */}
+            {!isMaximized && onResizeStart && (
+                <>
+                    <div className="resize-handle resize-handle-n" onMouseDown={(e) => handleResizeMouseDown(e, 'n')} />
+                    <div className="resize-handle resize-handle-s" onMouseDown={(e) => handleResizeMouseDown(e, 's')} />
+                    <div className="resize-handle resize-handle-e" onMouseDown={(e) => handleResizeMouseDown(e, 'e')} />
+                    <div className="resize-handle resize-handle-w" onMouseDown={(e) => handleResizeMouseDown(e, 'w')} />
+                    <div className="resize-handle resize-handle-ne" onMouseDown={(e) => handleResizeMouseDown(e, 'ne')} />
+                    <div className="resize-handle resize-handle-nw" onMouseDown={(e) => handleResizeMouseDown(e, 'nw')} />
+                    <div className="resize-handle resize-handle-se" onMouseDown={(e) => handleResizeMouseDown(e, 'se')} />
+                    <div className="resize-handle resize-handle-sw" onMouseDown={(e) => handleResizeMouseDown(e, 'sw')} />
+                </>
+            )}
             <div
                 className="titlebar"
                 onMouseDown={handleTitlebarMouseDown}
