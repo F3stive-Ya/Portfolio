@@ -73,6 +73,31 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
         localStorage.setItem('desktop-icon-positions', JSON.stringify(iconPositions))
     }, [iconPositions])
 
+    // Handle window resize - reposition right-aligned icons
+    useEffect(() => {
+        const handleResize = () => {
+            setIconPositions(prev => {
+                const newPositions = { ...prev }
+                let rightIndex = 0
+                icons.forEach(icon => {
+                    if (TOP_RIGHT_ICONS.includes(icon.id)) {
+                        newPositions[icon.id] = {
+                            x: window.innerWidth - 100,
+                            y: 20 + rightIndex * 90
+                        }
+                        rightIndex++
+                    }
+                })
+                return newPositions
+            })
+        }
+
+        window.addEventListener('resize', handleResize)
+        // Also trigger on mount to ensure correct positioning
+        handleResize()
+        return () => window.removeEventListener('resize', handleResize)
+    }, [icons])
+
     // Dragging state
     const [draggingIcon, setDraggingIcon] = useState(null)
     const dragStartPos = useRef({ x: 0, y: 0 })

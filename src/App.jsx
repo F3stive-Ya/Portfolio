@@ -8,6 +8,12 @@ import BiosScreen, { SYSTEM_INFO } from './components/BiosScreen'
 import FileExplorer from './components/FileExplorer'
 import LoginScreen from './components/LoginScreen'
 import ErrorDialog from './components/ErrorDialog'
+import Terminal from './components/Terminal'
+import Notepad from './components/Notepad'
+import OutlookExpress from './components/OutlookExpress'
+import Clippy from './components/Clippy'
+import BSOD from './components/BSOD'
+import Paint from './components/Paint'
 import { useRecentPrograms } from './context/RecentProgramsContext'
 import { useSounds } from './hooks/useSounds'
 
@@ -138,17 +144,46 @@ const WINDOW_CONFIGS = {
         defaultStyle: { top: 130, left: 200, width: 400, height: 420 },
         content: <Settings />,
         bodyStyle: { padding: '12px' }
+    },
+    terminal: {
+        title: 'Command Prompt',
+        defaultStyle: { top: 100, left: 150, width: 680, height: 420 },
+        // Content rendered dynamically to receive props
+        content: null,
+        bodyStyle: { padding: 0 }
+    },
+    notepad: {
+        title: 'Notepad - Untitled',
+        defaultStyle: { top: 120, left: 180, width: 500, height: 400 },
+        content: <Notepad />,
+        bodyStyle: { padding: 0 }
+    },
+    outlook: {
+        title: 'Outlook Express',
+        defaultStyle: { top: 90, left: 160, width: 560, height: 440 },
+        content: <OutlookExpress />,
+        bodyStyle: { padding: 0 }
+    },
+    paint: {
+        title: 'Paint',
+        defaultStyle: { top: 60, left: 100, width: 720, height: 540 },
+        content: <Paint />,
+        bodyStyle: { padding: 0 }
     }
 }
 
-// Icons configuration
-const ICONS = [
-    { id: 'about', label: 'About Me', icon: 'icons/text.svg' },
+// Icons configuration - also used by FileExplorer
+export const ICONS = [
+    { id: 'about', label: 'About Me', icon: 'icons/notepad_file-0.png' },
     { id: 'fileexplorer', label: 'File Explorer', icon: 'icons/directory_explorer-5.png' },
-    { id: 'contact', label: 'Contact', icon: 'icons/contact.svg' },
-    { id: 'mycomputer', label: 'My Computer', icon: 'icons/computer.svg' },
-    { id: 'resume', label: 'Resume', icon: 'icons/text.svg' },
-    { id: 'settings', label: 'Settings', icon: 'icons/settings.svg' }
+    { id: 'terminal', label: 'Command Prompt', icon: 'icons/console_prompt-0.png' },
+    { id: 'notepad', label: 'Notepad', icon: 'icons/notepad-0.png' },
+    { id: 'outlook', label: 'Outlook Express', icon: 'icons/outlook_express-0.png' },
+    { id: 'paint', label: 'Paint', icon: 'icons/paint_file-0.png' },
+    { id: 'contact', label: 'Contact', icon: 'icons/mailbox_world-0.png' },
+    { id: 'mycomputer', label: 'My Computer', icon: 'icons/computer_explorer_cool-0.png' },
+    { id: 'resume', label: 'Resume', icon: 'icons/write_file-0.png' },
+    { id: 'settings', label: 'Settings', icon: 'icons/settings_gear-0.png' }
 ]
 
 // System states
@@ -231,6 +266,7 @@ function App() {
     const [startMenuOpen, setStartMenuOpen] = useState(false)
     const [zCounter, setZCounter] = useState(20)
     const [runInput, setRunInput] = useState('')
+    const [showBSOD, setShowBSOD] = useState(false)
 
     // Drag state
     const dragRef = useRef(null)
@@ -682,6 +718,8 @@ function App() {
                 >
                     {id === 'fileexplorer' ? (
                         <FileExplorer onOpenWindow={openWindow} />
+                    ) : id === 'terminal' ? (
+                        <Terminal openWindow={openWindow} triggerBSOD={() => setShowBSOD(true)} />
                     ) : (
                         config.content
                     )}
@@ -753,6 +791,19 @@ function App() {
                     type={runErrorDialog.type}
                     onClose={() => setRunErrorDialog(null)}
                 />
+            )}
+
+            {/* Clippy Assistant */}
+            {systemState === SYSTEM_STATE.RUNNING && (
+                <Clippy
+                    onAction={openWindow}
+                    onDismiss={() => { }}
+                />
+            )}
+
+            {/* BSOD Easter Egg */}
+            {showBSOD && (
+                <BSOD onRecover={() => setShowBSOD(false)} />
             )}
         </>
     )

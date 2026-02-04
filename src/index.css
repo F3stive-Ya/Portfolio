@@ -145,9 +145,8 @@ body {
   line-height: 1.05;
   color: #fff;
   text-shadow: 1px 1px 1px #000, -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000;
-  overflow: hidden;
-  text-overflow: clip;
   white-space: nowrap;
+  overflow: visible;
 }
 
 /* ===== Taskbar ===== */
@@ -1217,10 +1216,30 @@ a {
 
 .file-explorer-sidebar {
   width: 180px;
+  min-width: 100px;
+  max-width: 400px;
   background: #fff;
   border-right: 2px inset #808080;
   overflow-y: auto;
   padding: 4px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.file-explorer-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  background: transparent;
+  z-index: 10;
+}
+
+.file-explorer-resize-handle:hover,
+.file-explorer-resize-handle:active {
+  background: rgba(0, 0, 128, 0.2);
 }
 
 .file-explorer-content {
@@ -1612,4 +1631,755 @@ a {
   margin-top: auto;
   padding-top: 10px;
   border-top: 1px solid #808080;
+}
+
+/* ===== Terminal/XTerm Styles ===== */
+.xterm-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.xterm-container .xterm {
+  height: 100%;
+  padding: 4px;
+}
+
+.xterm-container .xterm-viewport {
+  overflow-y: auto !important;
+}
+
+.terminal-container {
+  background: #0c0c0c;
+  color: #c0c0c0;
+  font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  height: 100%;
+  overflow-y: auto;
+  padding: 8px;
+  cursor: text;
+}
+
+.terminal-output {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.terminal-line {
+  min-height: 1.4em;
+}
+
+.terminal-line.input {
+  color: #fff;
+}
+
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+}
+
+.terminal-prompt {
+  color: #c0c0c0;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  caret-color: #c0c0c0;
+}
+
+/* ===== Notepad Styles ===== */
+.notepad-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+
+.notepad-menubar {
+  display: flex;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+  padding: 2px 4px;
+  gap: 2px;
+}
+
+.notepad-menu-item {
+  position: relative;
+}
+
+.notepad-menu-label {
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.notepad-menu-label:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.notepad-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  min-width: 120px;
+  z-index: 100;
+}
+
+.notepad-menu-item:hover .notepad-dropdown {
+  display: block;
+}
+
+.notepad-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 4px 12px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.notepad-dropdown button:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.notepad-textarea {
+  flex: 1;
+  border: none;
+  resize: none;
+  padding: 8px;
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 12px;
+  outline: none;
+  background: #fff;
+}
+
+.notepad-statusbar {
+  display: flex;
+  justify-content: space-between;
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+  padding: 2px 8px;
+  font-size: 10px;
+  color: #333;
+}
+
+/* ===== Outlook Express Styles ===== */
+.outlook-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+
+.outlook-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+  background: linear-gradient(to bottom, #e8e8e8, #c0c0c0);
+  border-bottom: 1px solid #808080;
+}
+
+.outlook-toolbar-btn {
+  padding: 4px 12px;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.outlook-toolbar-btn:hover {
+  background: #d0d0d0;
+}
+
+.outlook-toolbar-btn.active {
+  background: #a0a0a0;
+  border: 2px inset #808080;
+}
+
+.outlook-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 0;
+}
+
+.outlook-header {
+  background: #f0f0f0;
+  border-bottom: 1px solid #c0c0c0;
+  padding: 8px;
+}
+
+.outlook-field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.outlook-field label {
+  min-width: 60px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.outlook-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 2px inset #808080;
+  font-size: 11px;
+}
+
+.outlook-input.disabled {
+  background: #e0e0e0;
+  color: #666;
+}
+
+.outlook-body {
+  flex: 1;
+  border: none;
+  border-top: 2px inset #808080;
+  resize: none;
+  padding: 8px;
+  font-size: 12px;
+  font-family: 'MS Sans Serif', sans-serif;
+  outline: none;
+}
+
+.outlook-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+}
+
+.outlook-send-btn {
+  padding: 6px 16px;
+  background: linear-gradient(to bottom, #4a90d9, #2060a0);
+  color: #fff;
+  border: 2px outset #6ab0f0;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.outlook-send-btn:hover {
+  background: linear-gradient(to bottom, #5aa0e9, #3070b0);
+}
+
+.outlook-send-btn:active {
+  border: 2px inset #4080c0;
+}
+
+.outlook-sent-msg {
+  color: #008000;
+  font-size: 11px;
+}
+
+.outlook-sent-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.outlook-empty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.outlook-sent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.outlook-sent-item {
+  background: #f8f8f8;
+  border: 1px solid #c0c0c0;
+  padding: 8px;
+  font-size: 11px;
+}
+
+.outlook-sent-header {
+  margin-bottom: 4px;
+}
+
+.outlook-sent-preview {
+  color: #666;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dotted #c0c0c0;
+}
+
+.outlook-clear-btn {
+  margin-top: 12px;
+  padding: 4px 12px;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+/* ===== Clippy Styles ===== */
+.clippy-container {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  animation: clippySlideIn 0.3s ease-out;
+}
+
+@keyframes clippySlideIn {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.clippy-bubble {
+  background: #ffffcc;
+  border: 2px solid #000;
+  border-radius: 12px;
+  padding: 16px;
+  max-width: 280px;
+  margin-bottom: 8px;
+  position: relative;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.clippy-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  right: 30px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #ffffcc;
+}
+
+.clippy-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -13px;
+  right: 28px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid #000;
+}
+
+.clippy-close {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #666;
+  line-height: 1;
+}
+
+.clippy-close:hover {
+  color: #000;
+}
+
+.clippy-text {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0 0 12px 0;
+  color: #000;
+}
+
+.clippy-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.clippy-btn {
+  padding: 4px 12px;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.clippy-btn:hover {
+  background: #d0d0d0;
+}
+
+.clippy-btn-primary {
+  background: linear-gradient(to bottom, #4a90d9, #2060a0);
+  color: #fff;
+  border: 2px outset #6ab0f0;
+}
+
+.clippy-btn-primary:hover {
+  background: linear-gradient(to bottom, #5aa0e9, #3070b0);
+}
+
+.clippy-hide-forever {
+  background: none;
+  border: none;
+  font-size: 10px;
+  color: #666;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.clippy-hide-forever:hover {
+  color: #000;
+}
+
+.clippy-character {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clippy-img {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  animation: clippyBounce 2s ease-in-out infinite;
+}
+
+@keyframes clippyBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ===== BSOD Styles ===== */
+.bsod-screen {
+  position: fixed;
+  inset: 0;
+  background: #0000aa;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.bsod-content {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 16px;
+  color: #fff;
+  text-align: left;
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+.bsod-title {
+  display: inline-block;
+  background: #a8a8a8;
+  color: #0000aa;
+  padding: 2px 8px;
+  font-weight: bold;
+}
+
+.bsod-centered {
+  text-align: center;
+  animation: bsodBlink 1s infinite;
+}
+
+@keyframes bsodBlink {
+
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.bsod-easter-egg {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* ===== Hourglass Cursor ===== */
+.hourglass-cursor,
+.hourglass-cursor * {
+  cursor: wait !important;
+}
+
+/* ===== Paint Application Styles ===== */
+.paint-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #c0c0c0;
+  font-size: 11px;
+}
+
+.paint-menubar {
+  display: flex;
+  gap: 2px;
+  padding: 2px 4px;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+}
+
+.paint-menu-item {
+  position: relative;
+}
+
+.paint-menu-label {
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.paint-menu-label:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.paint-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #c0c0c0;
+  border: 2px outset #dfdfdf;
+  min-width: 120px;
+  z-index: 100;
+}
+
+.paint-menu-item:hover .paint-dropdown {
+  display: block;
+}
+
+.paint-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 4px 16px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.paint-dropdown button:hover:not(:disabled) {
+  background: #000080;
+  color: #fff;
+}
+
+.paint-dropdown button:disabled {
+  color: #808080;
+}
+
+.paint-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.paint-toolbar {
+  width: 52px;
+  background: #c0c0c0;
+  border-right: 1px solid #808080;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.paint-tool-btn {
+  width: 22px;
+  height: 22px;
+  border: 2px outset #dfdfdf;
+  background: #c0c0c0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  padding: 0;
+}
+
+.paint-tool-btn:hover {
+  background: #d4d0c8;
+}
+
+.paint-tool-btn.active {
+  border: 2px inset #808080;
+  background: #d4d0c8;
+}
+
+.paint-tool-separator {
+  height: 1px;
+  background: #808080;
+  margin: 4px 0;
+}
+
+.paint-size-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.paint-size-btn {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #808080;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paint-size-btn.active {
+  border: 2px inset #000080;
+  background: #e0e0ff;
+}
+
+.paint-canvas-area {
+  flex: 1;
+  background: #808080;
+  overflow: auto;
+  padding: 8px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.paint-canvas-wrapper {
+  position: relative;
+  border: 1px inset #404040;
+  box-shadow: inset 1px 1px 0 #000;
+}
+
+.paint-canvas {
+  display: block;
+  background: #fff;
+  cursor: crosshair;
+}
+
+.paint-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.paint-palette {
+  width: 52px;
+  background: #c0c0c0;
+  border-left: 1px solid #808080;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.paint-current-colors {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  margin: 4px auto;
+}
+
+.paint-color-display {
+  position: absolute;
+  border: 1px solid #000;
+}
+
+.paint-color-display.primary {
+  width: 24px;
+  height: 24px;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.paint-color-display.secondary {
+  width: 24px;
+  height: 24px;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.paint-colors {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+}
+
+.paint-color-btn {
+  width: 20px;
+  height: 12px;
+  border: 1px solid #000;
+  cursor: pointer;
+  padding: 0;
+}
+
+.paint-color-btn:hover {
+  border: 2px solid #fff;
+}
+
+.paint-color-btn.active {
+  border: 2px solid #000;
+  outline: 1px solid #fff;
+}
+
+.paint-statusbar {
+  display: flex;
+  gap: 16px;
+  padding: 2px 8px;
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+  font-size: 11px;
+  color: #000;
 }

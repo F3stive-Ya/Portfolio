@@ -1,31 +1,39 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { ICONS } from '../App'
+
+// Generate Desktop children from ICONS array
+const generateDesktopChildren = () => {
+    const children = {}
+    ICONS.forEach(icon => {
+        children[icon.label] = {
+            type: icon.id === 'fileexplorer' || icon.id === 'mycomputer' || icon.id === 'settings' ? 'shortcut' : 'file',
+            name: icon.label,
+            icon: icon.icon,
+            windowId: icon.id
+        }
+    })
+    return children
+}
 
 // File system structure mimicking Windows 95
 const FILE_SYSTEM = {
     'C:': {
         type: 'drive',
         name: 'Local Disk (C:)',
-        icon: 'icons/computer.svg',
+        icon: 'icons/hard_disk_drive-0.png',
         children: {
             'Desktop': {
                 type: 'folder',
                 name: 'Desktop',
                 icon: 'icons/directory_closed_cool-0.png',
-                children: {
-                    'About Me.txt': { type: 'file', name: 'About Me', icon: 'icons/text.svg', windowId: 'about' },
-                    'File Explorer': { type: 'shortcut', name: 'File Explorer', icon: 'icons/directory_explorer-5.png', windowId: 'fileexplorer' },
-                    'Contact': { type: 'file', name: 'Contact', icon: 'icons/contact.svg', windowId: 'contact' },
-                    'My Computer': { type: 'shortcut', name: 'My Computer', icon: 'icons/computer.svg', windowId: 'mycomputer' },
-                    'Resume.pdf': { type: 'file', name: 'Resume', icon: 'icons/text.svg', windowId: 'resume' },
-                    'Settings': { type: 'shortcut', name: 'Settings', icon: 'icons/settings.svg', windowId: 'settings' }
-                }
+                children: generateDesktopChildren()
             },
             'Documents': {
                 type: 'folder',
                 name: 'My Documents',
                 icon: 'icons/directory_closed_cool-0.png',
                 children: {
-                    'Resume.pdf': { type: 'file', name: 'Resume', icon: 'icons/text.svg', windowId: 'resume' }
+                    'Resume.pdf': { type: 'file', name: 'Resume', icon: 'icons/write_file-0.png', windowId: 'resume' }
                 }
             },
             'Projects': {
@@ -208,6 +216,42 @@ function FileExplorer({ onOpenWindow }) {
     const [history, setHistory] = useState(['C:\\Desktop'])
     const [historyIndex, setHistoryIndex] = useState(0)
     const [addressInput, setAddressInput] = useState('C:\\Desktop')
+    const [sidebarWidth, setSidebarWidth] = useState(180)
+
+    const sidebarRef = useRef(null)
+    const isResizing = useRef(false)
+
+    // Sidebar resize handler
+    const handleResizeMouseDown = useCallback((e) => {
+        e.preventDefault()
+        isResizing.current = true
+        document.body.style.cursor = 'ew-resize'
+        document.body.style.userSelect = 'none'
+    }, [])
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (!isResizing.current || !sidebarRef.current) return
+            const sidebarRect = sidebarRef.current.getBoundingClientRect()
+            const newWidth = e.clientX - sidebarRect.left
+            if (newWidth >= 100 && newWidth <= 400) {
+                setSidebarWidth(newWidth)
+            }
+        }
+
+        const handleMouseUp = () => {
+            isResizing.current = false
+            document.body.style.cursor = ''
+            document.body.style.userSelect = ''
+        }
+
+        document.addEventListener('mousemove', handleMouseMove)
+        document.addEventListener('mouseup', handleMouseUp)
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove)
+            document.removeEventListener('mouseup', handleMouseUp)
+        }
+    }, [])
 
     const toggleExpand = (path) => {
         setExpandedPaths(prev =>
@@ -366,7 +410,11 @@ function FileExplorer({ onOpenWindow }) {
                 </button>
             </div>
             <div className="file-explorer-main">
-                <div className="file-explorer-sidebar">
+                <div
+                    className="file-explorer-sidebar"
+                    ref={sidebarRef}
+                    style={{ width: sidebarWidth }}
+                >
                     {Object.entries(FILE_SYSTEM).map(([key, item]) => (
                         <TreeItem
                             key={key}
@@ -379,6 +427,10 @@ function FileExplorer({ onOpenWindow }) {
                             onDoubleClick={handleTreeDoubleClick}
                         />
                     ))}
+                    <div
+                        className="file-explorer-resize-handle"
+                        onMouseDown={handleResizeMouseDown}
+                    />
                 </div>
                 <div className="file-explorer-content">
                     {selectedProject ? (
