@@ -373,6 +373,11 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                 height: '100%',
                 backgroundColor: '#0c0c0c'
             }}
+            onClick={() => {
+                if (xtermRef.current) {
+                    xtermRef.current.focus()
+                }
+            }}
         />
     )
 }

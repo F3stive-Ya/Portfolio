@@ -14,6 +14,7 @@ import OutlookExpress from './components/OutlookExpress'
 import Clippy from './components/Clippy'
 import BSOD from './components/BSOD'
 import Paint from './components/Paint'
+import ProjectViewer from './components/ProjectViewer'
 import { useRecentPrograms } from './context/RecentProgramsContext'
 import { useSounds } from './hooks/useSounds'
 
@@ -169,11 +170,42 @@ const WINDOW_CONFIGS = {
         defaultStyle: { top: 60, left: 100, width: 720, height: 540 },
         content: <Paint />,
         bodyStyle: { padding: 0 }
+    },
+    // Project windows - dynamically created based on project ID
+    project_dicegame: {
+        title: 'Dice Game - Project',
+        defaultStyle: { top: 80, left: 120, width: 480, height: 360 },
+        content: null, // Rendered dynamically
+        bodyStyle: { padding: 0 }
+    },
+    project_carracer: {
+        title: 'Car Racer - Project',
+        defaultStyle: { top: 90, left: 140, width: 480, height: 360 },
+        content: null,
+        bodyStyle: { padding: 0 }
+    },
+    project_passwordmaker: {
+        title: 'Password Maker - Project',
+        defaultStyle: { top: 100, left: 160, width: 480, height: 360 },
+        content: null,
+        bodyStyle: { padding: 0 }
+    },
+    project_commonfactors: {
+        title: 'Common Factors - Project',
+        defaultStyle: { top: 110, left: 180, width: 480, height: 360 },
+        content: null,
+        bodyStyle: { padding: 0 }
+    },
+    project_calculator: {
+        title: 'Assembly Calculator - Project',
+        defaultStyle: { top: 120, left: 200, width: 480, height: 360 },
+        content: null,
+        bodyStyle: { padding: 0 }
     }
 }
 
-// Icons configuration - imported from config to avoid circular dependencies
-import { ICONS } from './config/icons'
+// Icons and Projects configuration - imported from config to avoid circular dependencies
+import { ICONS, PROJECTS } from './config/icons'
 
 // System states
 const SYSTEM_STATE = {
@@ -675,7 +707,7 @@ function App() {
     return (
         <>
             <Desktop
-                icons={ICONS}
+                icons={ICONS.filter(icon => icon.showOnDesktop !== false)}
                 onIconDoubleClick={openWindow}
                 onContextMenuAction={(action) => {
                     if (action === 'properties') {
@@ -709,6 +741,8 @@ function App() {
                         <FileExplorer onOpenWindow={openWindow} />
                     ) : id === 'terminal' ? (
                         <Terminal openWindow={openWindow} triggerBSOD={() => setShowBSOD(true)} />
+                    ) : id.startsWith('project_') ? (
+                        <ProjectViewer projectId={id.replace('project_', '')} onOpenWindow={openWindow} />
                     ) : (
                         config.content
                     )}
