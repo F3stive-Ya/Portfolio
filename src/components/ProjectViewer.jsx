@@ -1,13 +1,50 @@
-import { PROJECTS } from '../config/icons'
+// Project data (matches IDs from FileExplorer)
+const PROJECTS_DATA = {
+    'dicegame': {
+        name: 'Dice Game',
+        description: 'Python program that simulates two dice being rolled. User can roll the dice as many times as they want and quit the game at any time.',
+        tech: ['Python'],
+        github: 'https://github.com/F3stive-Ya/DiceGame',
+        icon: 'icons/dice-0.png'
+    },
+    'assemblycalculator': {
+        name: 'Assembly Calculator',
+        description: 'Assembly program that simulates a calculator. User can add, subtract, multiply, and divide two numbers.',
+        tech: ['Assembly', 'x86'],
+        github: 'https://github.com/F3stive-Ya/AssemblyCalculator',
+        icon: 'icons/calculator_cool-0.png'
+    },
+    'carracer': {
+        name: 'Car Racer',
+        description: 'A Python program that simulates a car race. Randomly generated cars race against each other with winner presented to user.',
+        tech: ['Python'],
+        github: 'https://github.com/F3stive-Ya/CarRacer',
+        icon: 'icons/racing_car-0.png'
+    },
+    'passwordmaker': {
+        name: 'Password Maker',
+        description: 'A Python program that generates random passwords based on input word. Adds randomly generated characters, integers, and special-characters.',
+        tech: ['Python', 'Security'],
+        github: 'https://github.com/F3stive-Ya/PasswordMaker',
+        icon: 'icons/key_win-0.png'
+    },
+    'commonfactors': {
+        name: 'Common Factors Finder',
+        description: 'A Python program that finds the common factors of two numbers.',
+        tech: ['Python', 'Math'],
+        github: 'https://github.com/F3stive-Ya/CommonFactors',
+        icon: 'icons/calculator-0.png'
+    }
+}
 
-function ProjectViewer({ projectId, onOpenWindow }) {
-    const project = PROJECTS.find(p => p.id === projectId)
+function ProjectViewer({ projectId }) {
+    const project = PROJECTS_DATA[projectId]
 
     if (!project) {
         return (
             <div className="project-viewer">
                 <div className="project-error">
-                    <p>Project not found.</p>
+                    <p>Project "{projectId}" not found.</p>
                 </div>
             </div>
         )
@@ -24,7 +61,7 @@ function ProjectViewer({ projectId, onOpenWindow }) {
                 />
                 <div className="project-title-info">
                     <h2 className="project-name">{project.name}</h2>
-                    <span className="project-type">{project.type}</span>
+                    <span className="project-type">{project.tech.join(' • ')}</span>
                 </div>
             </div>
 
@@ -48,16 +85,15 @@ function ProjectViewer({ projectId, onOpenWindow }) {
                         className="project-btn primary"
                         onClick={() => window.open(project.github, '_blank')}
                     >
-                        <img src="icons/github.png" alt="" className="btn-icon" onError={(e) => { e.target.style.display = 'none' }} />
                         View on GitHub
                     </button>
                 </div>
             </div>
 
             <div className="project-statusbar">
-                <span>Type: {project.type}</span>
-                <span>|</span>
                 <span>{project.tech.length} technologies</span>
+                <span>|</span>
+                <span>GitHub repository available</span>
             </div>
         </div>
     )

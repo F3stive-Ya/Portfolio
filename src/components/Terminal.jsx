@@ -1,387 +1,353 @@
-import { useEffect, useRef, useCallback } from 'react'
-import { Terminal as XTerm } from 'xterm'
-import { FitAddon } from '@xterm/addon-fit'
-import 'xterm/css/xterm.css'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 const Terminal = ({ openWindow, triggerBSOD }) => {
-    const terminalRef = useRef(null)
-    const xtermRef = useRef(null)
-    const fitAddonRef = useRef(null)
-    const currentLineRef = useRef('')
-    const commandHistoryRef = useRef([])
-    const historyIndexRef = useRef(-1)
-    const currentDirRef = useRef('C:\\PORTFOLIO')
+    const [history, setHistory] = useState([])
+    const [commandHistory, setCommandHistory] = useState([])
+    const [historyIndex, setHistoryIndex] = useState(-1)
+    const [currentInput, setCurrentInput] = useState('')
+    const [currentDir, setCurrentDir] = useState('C:\\PORTFOLIO')
+    const inputRef = useRef(null)
+    const containerRef = useRef(null)
 
     // File system simulation
     const fileSystem = {
         'C:\\': ['PORTFOLIO', 'WINDOWS', 'PROGRAM FILES'],
         'C:\\PORTFOLIO': ['about.txt', 'projects', 'contact.txt', 'resume.pdf', 'readme.md'],
-        'C:\\PORTFOLIO\\projects': ['dicegame.exe', 'calculator.asm', 'carracer.py', 'passwordmaker.py', 'commonfactors.py'],
+        'C:\\PORTFOLIO\\PROJECTS': ['dicegame.exe', 'calculator.asm', 'carracer.py', 'passwordmaker.py', 'commonfactors.py'],
         'C:\\WINDOWS': ['system32', 'notepad.exe', 'explorer.exe'],
         'C:\\PROGRAM FILES': ['Internet Explorer', 'Outlook Express']
     }
 
-    // Command execution
-    const executeCommand = useCallback((cmd) => {
-        const xterm = xtermRef.current
-        if (!xterm) return
+    // Welcome message on mount
+    useEffect(() => {
+        setHistory([
+            { type: 'system', text: '╔════════════════════════════════════════════════════════════╗' },
+            { type: 'system', text: '║  Microsoft Windows 95 [Version 4.00.1111]                   ║' },
+            { type: 'system', text: '║  (C) Copyright 1985-1996 Microsoft Corp.                    ║' },
+            { type: 'system', text: '╠════════════════════════════════════════════════════════════╣' },
+            { type: 'system', text: '║  Welcome to Shane\'s Portfolio Terminal!                    ║' },
+            { type: 'system', text: '║  Type "help" for a list of commands.                        ║' },
+            { type: 'system', text: '╚════════════════════════════════════════════════════════════╝' },
+            { type: 'output', text: '' }
+        ])
+    }, [])
 
+    // Auto-scroll and focus
+    useEffect(() => {
+        if (containerRef.current) {
+            containerRef.current.scrollTop = containerRef.current.scrollHeight
+        }
+    }, [history])
+
+    // Focus input when clicking anywhere in terminal
+    const handleContainerClick = () => {
+        if (inputRef.current) {
+            inputRef.current.focus()
+        }
+    }
+
+    // Execute command
+    const executeCommand = useCallback((cmd) => {
         const trimmed = cmd.trim()
-        if (!trimmed) {
-            xterm.writeln('')
-            return
+        const output = []
+
+        if (trimmed) {
+            setCommandHistory(prev => [...prev, trimmed])
+            setHistoryIndex(-1)
         }
 
-        // Add to history
-        commandHistoryRef.current.push(trimmed)
-        historyIndexRef.current = -1
+        output.push({ type: 'command', text: `${currentDir}> ${trimmed}` })
+
+        if (!trimmed) {
+            setHistory(prev => [...prev, ...output])
+            return
+        }
 
         const parts = trimmed.split(' ')
         const command = parts[0].toLowerCase()
         const args = parts.slice(1).join(' ')
 
-        xterm.writeln('')
+        switch (command) {
+            case 'help':
+                output.push({ type: 'output', text: 'Available commands:' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: '  help          - Show this help message' })
+                output.push({ type: 'output', text: '  about         - Open About Me window' })
+                output.push({ type: 'output', text: '  projects      - Open Projects window' })
+                output.push({ type: 'output', text: '  contact       - Open Contact window' })
+                output.push({ type: 'output', text: '  resume        - Open Resume window' })
+                output.push({ type: 'output', text: '  notepad       - Open Notepad' })
+                output.push({ type: 'output', text: '  paint         - Open Paint' })
+                output.push({ type: 'output', text: '  outlook       - Open Outlook Express' })
+                output.push({ type: 'output', text: '  settings      - Open Settings' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: '  dir           - List files in current directory' })
+                output.push({ type: 'output', text: '  cd <path>     - Change directory' })
+                output.push({ type: 'output', text: '  cls           - Clear screen' })
+                output.push({ type: 'output', text: '  echo <text>   - Print text' })
+                output.push({ type: 'output', text: '  ver           - Show version' })
+                output.push({ type: 'output', text: '  date          - Show current date' })
+                output.push({ type: 'output', text: '  time          - Show current time' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: '  Easter eggs: Try some other commands... ;)' })
+                break
 
-        const commands = {
-            help: () => {
-                xterm.writeln('\x1b[1;36mAvailable commands:\x1b[0m')
-                xterm.writeln('')
-                xterm.writeln('  \x1b[1;33mhelp\x1b[0m          - Show this help message')
-                xterm.writeln('  \x1b[1;33mabout\x1b[0m         - Open About Me window')
-                xterm.writeln('  \x1b[1;33mprojects\x1b[0m      - Open Projects window')
-                xterm.writeln('  \x1b[1;33mcontact\x1b[0m       - Open Contact window')
-                xterm.writeln('  \x1b[1;33mresume\x1b[0m        - Open Resume window')
-                xterm.writeln('  \x1b[1;33mnotepad\x1b[0m       - Open Notepad')
-                xterm.writeln('  \x1b[1;33moutlook\x1b[0m       - Open Outlook Express')
-                xterm.writeln('  \x1b[1;33msettings\x1b[0m      - Open Settings')
-                xterm.writeln('')
-                xterm.writeln('  \x1b[1;33mdir\x1b[0m           - List files in current directory')
-                xterm.writeln('  \x1b[1;33mcd <path>\x1b[0m     - Change directory')
-                xterm.writeln('  \x1b[1;33mcls\x1b[0m           - Clear screen')
-                xterm.writeln('  \x1b[1;33mecho <text>\x1b[0m   - Print text')
-                xterm.writeln('  \x1b[1;33mver\x1b[0m           - Show version')
-                xterm.writeln('  \x1b[1;33mdate\x1b[0m          - Show current date')
-                xterm.writeln('  \x1b[1;33mtime\x1b[0m          - Show current time')
-                xterm.writeln('  \x1b[1;33mexit\x1b[0m          - Close terminal')
-                xterm.writeln('')
-                xterm.writeln('  \x1b[1;35mEaster eggs:\x1b[0m Try some other commands... ;)')
-            },
-            about: () => { openWindow('about'); xterm.writeln('\x1b[32mOpening About Me...\x1b[0m') },
-            projects: () => { openWindow('projects'); xterm.writeln('\x1b[32mOpening Projects...\x1b[0m') },
-            contact: () => { openWindow('contact'); xterm.writeln('\x1b[32mOpening Contact...\x1b[0m') },
-            resume: () => { openWindow('resume'); xterm.writeln('\x1b[32mOpening Resume...\x1b[0m') },
-            notepad: () => { openWindow('notepad'); xterm.writeln('\x1b[32mOpening Notepad...\x1b[0m') },
-            outlook: () => { openWindow('outlook'); xterm.writeln('\x1b[32mOpening Outlook Express...\x1b[0m') },
-            settings: () => { openWindow('settings'); xterm.writeln('\x1b[32mOpening Settings...\x1b[0m') },
-            cls: () => { xterm.clear() },
-            clear: () => { xterm.clear() },
-            dir: () => {
-                const files = fileSystem[currentDirRef.current.toUpperCase()] || []
-                xterm.writeln(` Volume in drive C is \x1b[1;33mPORTFOLIO\x1b[0m`)
-                xterm.writeln(` Volume Serial Number is \x1b[36m1337-C0DE\x1b[0m`)
-                xterm.writeln('')
-                xterm.writeln(` Directory of \x1b[1;37m${currentDirRef.current}\x1b[0m`)
-                xterm.writeln('')
+            case 'about':
+                openWindow('about')
+                output.push({ type: 'success', text: 'Opening About Me...' })
+                break
+            case 'projects':
+                openWindow('fileexplorer')
+                output.push({ type: 'success', text: 'Opening Projects...' })
+                break
+            case 'contact':
+                openWindow('contact')
+                output.push({ type: 'success', text: 'Opening Contact...' })
+                break
+            case 'resume':
+                openWindow('resume')
+                output.push({ type: 'success', text: 'Opening Resume...' })
+                break
+            case 'notepad':
+                openWindow('notepad')
+                output.push({ type: 'success', text: 'Opening Notepad...' })
+                break
+            case 'paint':
+                openWindow('paint')
+                output.push({ type: 'success', text: 'Opening Paint...' })
+                break
+            case 'outlook':
+                openWindow('outlook')
+                output.push({ type: 'success', text: 'Opening Outlook Express...' })
+                break
+            case 'settings':
+                openWindow('settings')
+                output.push({ type: 'success', text: 'Opening Settings...' })
+                break
+
+            case 'cls':
+            case 'clear':
+                setHistory([])
+                return
+
+            case 'dir':
+                const files = fileSystem[currentDir.toUpperCase()] || []
+                output.push({ type: 'output', text: ` Volume in drive C is PORTFOLIO` })
+                output.push({ type: 'output', text: ` Volume Serial Number is 1337-C0DE` })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: ` Directory of ${currentDir}` })
+                output.push({ type: 'output', text: '' })
                 files.forEach(file => {
                     const isDir = !file.includes('.')
                     const date = '02-04-26  12:00p'
                     if (isDir) {
-                        xterm.writeln(`${date}    \x1b[1;34m<DIR>\x1b[0m          \x1b[1;34m${file}\x1b[0m`)
+                        output.push({ type: 'dir', text: `${date}    <DIR>          ${file}` })
                     } else {
                         const size = Math.floor(Math.random() * 10000).toString().padStart(10, ' ')
-                        xterm.writeln(`${date}${size} ${file}`)
+                        output.push({ type: 'file', text: `${date}${size} ${file}` })
                     }
                 })
-                xterm.writeln('')
-                xterm.writeln(`               ${files.length} File(s)          42,069 bytes`)
-            },
-            cd: () => {
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: `               ${files.length} File(s)          42,069 bytes` })
+                break
+
+            case 'cd':
                 if (!args || args === '\\' || args === '/') {
-                    currentDirRef.current = 'C:\\'
-                    return
-                }
-                if (args === '..') {
-                    const parts = currentDirRef.current.split('\\').filter(p => p)
+                    setCurrentDir('C:\\')
+                } else if (args === '..') {
+                    const parts = currentDir.split('\\').filter(p => p)
                     if (parts.length > 1) {
                         parts.pop()
-                        currentDirRef.current = parts.join('\\')
+                        setCurrentDir(parts.join('\\'))
                     }
-                    return
-                }
-                const newPath = args.startsWith('C:\\') ? args.toUpperCase() : `${currentDirRef.current}\\${args}`.toUpperCase()
-                if (fileSystem[newPath]) {
-                    currentDirRef.current = newPath
                 } else {
-                    xterm.writeln(`\x1b[31mThe system cannot find the path specified.\x1b[0m`)
+                    const newPath = args.startsWith('C:\\') ? args.toUpperCase() : `${currentDir}\\${args}`.toUpperCase()
+                    if (fileSystem[newPath]) {
+                        setCurrentDir(newPath)
+                    } else {
+                        output.push({ type: 'error', text: 'The system cannot find the path specified.' })
+                    }
                 }
-            },
-            echo: () => { xterm.writeln(args || '') },
-            ver: () => {
-                xterm.writeln('')
-                xterm.writeln('\x1b[1;37mWindows 95 [Version 4.00.1111]\x1b[0m')
-            },
-            date: () => {
-                const now = new Date()
-                xterm.writeln(`The current date is: \x1b[1;33m${now.toLocaleDateString()}\x1b[0m`)
-            },
-            time: () => {
-                const now = new Date()
-                xterm.writeln(`The current time is: \x1b[1;33m${now.toLocaleTimeString()}\x1b[0m`)
-            },
-            exit: () => { openWindow('terminal') },
-            // Easter eggs
-            crash: () => { if (triggerBSOD) triggerBSOD() },
-            bsod: () => { if (triggerBSOD) triggerBSOD() },
-            sudo: () => { xterm.writeln(`\x1b[31mNice try, but this isn't Linux! 🐧\x1b[0m`) },
-            rm: () => { xterm.writeln(`\x1b[31mThis isn't Linux! Try 'del' instead... just kidding.\x1b[0m`) },
-            hack: () => {
-                xterm.writeln('\x1b[32mINITIATING HACK SEQUENCE...\x1b[0m')
-                xterm.writeln('\x1b[33m> Bypassing firewall... \x1b[31mFAILED\x1b[0m')
-                xterm.writeln('\x1b[33m> Accessing mainframe... \x1b[31mDENIED\x1b[0m')
-                xterm.writeln('\x1b[33m> Deploying virus... \x1b[31mBLOCKED\x1b[0m')
-                xterm.writeln('')
-                xterm.writeln('\x1b[35mJust kidding! This is a portfolio, not Mr. Robot.\x1b[0m')
-            },
-            matrix: () => {
-                xterm.writeln('\x1b[32mWake up, Neo...\x1b[0m')
-                xterm.writeln('\x1b[32mThe Matrix has you...\x1b[0m')
-                xterm.writeln('\x1b[32mFollow the white rabbit.\x1b[0m')
-                xterm.writeln('')
-                xterm.writeln('\x1b[1;32mKnock, knock.\x1b[0m')
-            },
-            doom: () => { xterm.writeln(`\x1b[33mYou don't have DOOM installed. Maybe try 'install doom'?\x1b[0m`) },
-            install: () => {
-                if (args && args.toLowerCase() === 'doom') {
-                    xterm.writeln('\x1b[36mDownloading DOOM...\x1b[0m')
-                    xterm.writeln('\x1b[32m████████████████████ 100%\x1b[0m')
-                    xterm.writeln('')
-                    xterm.writeln('\x1b[31mError: Insufficient disk space.\x1b[0m')
-                    xterm.writeln('\x1b[33mRequired: 10MB, Available: 640KB\x1b[0m')
-                    xterm.writeln('')
-                    xterm.writeln('\x1b[35m"640K ought to be enough for anybody." - Bill Gates, 1981\x1b[0m')
-                } else {
-                    xterm.writeln('Usage: install <program>')
-                }
-            },
-            hello: () => { xterm.writeln('\x1b[36mHello there! 👋\x1b[0m') },
-            hi: () => { xterm.writeln('\x1b[36mHello there! 👋\x1b[0m') },
-            whoami: () => { xterm.writeln(`\x1b[1;33mYou are a visitor on Shane's Portfolio!\x1b[0m`) },
-            neofetch: () => {
-                xterm.writeln('')
-                xterm.writeln('\x1b[36m        ████████████        \x1b[0m   \x1b[1;36mvisitor\x1b[0m@\x1b[1;36mportfolio\x1b[0m')
-                xterm.writeln('\x1b[36m      ██            ██      \x1b[0m   ─────────────────')
-                xterm.writeln('\x1b[36m    ██    ██████    ██      \x1b[0m   \x1b[1;33mOS:\x1b[0m Windows 95')
-                xterm.writeln('\x1b[36m    ██  ██      ██  ██      \x1b[0m   \x1b[1;33mHost:\x1b[0m Shane\'s Portfolio')
-                xterm.writeln('\x1b[36m    ██  ██████████  ██      \x1b[0m   \x1b[1;33mKernel:\x1b[0m React 18')
-                xterm.writeln('\x1b[36m    ██              ██      \x1b[0m   \x1b[1;33mShell:\x1b[0m xterm.js')
-                xterm.writeln('\x1b[36m      ██          ██        \x1b[0m   \x1b[1;33mTheme:\x1b[0m Win95 Classic')
-                xterm.writeln('\x1b[36m        ████████████        \x1b[0m   \x1b[1;33mTerminal:\x1b[0m MS-DOS Prompt')
-                xterm.writeln('')
-            },
-            github: () => {
-                window.open('https://github.com/F3stive-Ya', '_blank')
-                xterm.writeln('\x1b[32mOpening GitHub profile...\x1b[0m')
-            },
-            linkedin: () => {
-                window.open('https://www.linkedin.com/in/shaneborges/', '_blank')
-                xterm.writeln('\x1b[32mOpening LinkedIn profile...\x1b[0m')
-            },
-            tree: () => {
-                xterm.writeln('\x1b[1;33mC:\\PORTFOLIO\x1b[0m')
-                xterm.writeln('├── \x1b[37mabout.txt\x1b[0m')
-                xterm.writeln('├── \x1b[1;34mprojects\x1b[0m')
-                xterm.writeln('│   ├── dicegame.exe')
-                xterm.writeln('│   ├── calculator.asm')
-                xterm.writeln('│   ├── carracer.py')
-                xterm.writeln('│   ├── passwordmaker.py')
-                xterm.writeln('│   └── commonfactors.py')
-                xterm.writeln('├── \x1b[37mcontact.txt\x1b[0m')
-                xterm.writeln('└── \x1b[37mresume.pdf\x1b[0m')
-            },
-            cowsay: () => {
+                break
+
+            case 'echo':
+                output.push({ type: 'output', text: args || '' })
+                break
+
+            case 'ver':
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: 'Windows 95 [Version 4.00.1111]' })
+                break
+
+            case 'date':
+                output.push({ type: 'output', text: `The current date is: ${new Date().toLocaleDateString()}` })
+                break
+
+            case 'time':
+                output.push({ type: 'output', text: `The current time is: ${new Date().toLocaleTimeString()}` })
+                break
+
+            case 'crash':
+            case 'bsod':
+                if (triggerBSOD) triggerBSOD()
+                break
+
+            case 'sudo':
+                output.push({ type: 'error', text: "Nice try, but this isn't Linux! 🐧" })
+                break
+
+            case 'hack':
+                output.push({ type: 'success', text: 'INITIATING HACK SEQUENCE...' })
+                output.push({ type: 'warning', text: '> Bypassing firewall... FAILED' })
+                output.push({ type: 'warning', text: '> Accessing mainframe... DENIED' })
+                output.push({ type: 'warning', text: '> Deploying virus... BLOCKED' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: 'Just kidding! This is a portfolio, not Mr. Robot.' })
+                break
+
+            case 'matrix':
+                output.push({ type: 'success', text: 'Wake up, Neo...' })
+                output.push({ type: 'success', text: 'The Matrix has you...' })
+                output.push({ type: 'success', text: 'Follow the white rabbit.' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'success', text: 'Knock, knock.' })
+                break
+
+            case 'neofetch':
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'system', text: '        ████████████           visitor@portfolio' })
+                output.push({ type: 'system', text: '      ██            ██         ─────────────────' })
+                output.push({ type: 'system', text: '    ██    ██████    ██         OS: Windows 95' })
+                output.push({ type: 'system', text: '    ██  ██      ██  ██         Host: Shane\'s Portfolio' })
+                output.push({ type: 'system', text: '    ██  ██████████  ██         Kernel: React 18' })
+                output.push({ type: 'system', text: '    ██              ██         Shell: cmd.exe' })
+                output.push({ type: 'system', text: '      ██          ██           Theme: Win95 Classic' })
+                output.push({ type: 'system', text: '        ████████████           Terminal: MS-DOS Prompt' })
+                output.push({ type: 'output', text: '' })
+                break
+
+            case 'cowsay':
                 const msg = args || 'Hello!'
                 const border = '─'.repeat(msg.length + 2)
-                xterm.writeln(` ┌${border}┐`)
-                xterm.writeln(` │ ${msg} │`)
-                xterm.writeln(` └${border}┘`)
-                xterm.writeln('        \\   ^__^')
-                xterm.writeln('         \\  (oo)\\_______')
-                xterm.writeln('            (__)\\       )\\/\\')
-                xterm.writeln('                ||----w |')
-                xterm.writeln('                ||     ||')
+                output.push({ type: 'output', text: ` ┌${border}┐` })
+                output.push({ type: 'output', text: ` │ ${msg} │` })
+                output.push({ type: 'output', text: ` └${border}┘` })
+                output.push({ type: 'output', text: '        \\   ^__^' })
+                output.push({ type: 'output', text: '         \\  (oo)\\_______' })
+                output.push({ type: 'output', text: '            (__)\\       )\\/\\' })
+                output.push({ type: 'output', text: '                ||----w |' })
+                output.push({ type: 'output', text: '                ||     ||' })
+                break
+
+            case 'github':
+                window.open('https://github.com/F3stive-Ya', '_blank')
+                output.push({ type: 'success', text: 'Opening GitHub profile...' })
+                break
+
+            case 'linkedin':
+                window.open('https://www.linkedin.com/in/shaneborges/', '_blank')
+                output.push({ type: 'success', text: 'Opening LinkedIn profile...' })
+                break
+
+            case 'hello':
+            case 'hi':
+                output.push({ type: 'system', text: 'Hello there! 👋' })
+                break
+
+            case 'whoami':
+                output.push({ type: 'output', text: "You are a visitor on Shane's Portfolio!" })
+                break
+
+            case 'tree':
+                output.push({ type: 'warning', text: 'C:\\PORTFOLIO' })
+                output.push({ type: 'output', text: '├── about.txt' })
+                output.push({ type: 'dir', text: '├── projects' })
+                output.push({ type: 'output', text: '│   ├── dicegame.exe' })
+                output.push({ type: 'output', text: '│   ├── calculator.asm' })
+                output.push({ type: 'output', text: '│   ├── carracer.py' })
+                output.push({ type: 'output', text: '│   ├── passwordmaker.py' })
+                output.push({ type: 'output', text: '│   └── commonfactors.py' })
+                output.push({ type: 'output', text: '├── contact.txt' })
+                output.push({ type: 'output', text: '└── resume.pdf' })
+                break
+
+            default:
+                output.push({ type: 'error', text: `'${command}' is not recognized as an internal or external command,` })
+                output.push({ type: 'error', text: 'operable program or batch file.' })
+        }
+
+        setHistory(prev => [...prev, ...output])
+    }, [currentDir, openWindow, triggerBSOD])
+
+    // Handle key events
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            executeCommand(currentInput)
+            setCurrentInput('')
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            if (commandHistory.length > 0) {
+                const newIndex = historyIndex === -1
+                    ? commandHistory.length - 1
+                    : Math.max(0, historyIndex - 1)
+                setHistoryIndex(newIndex)
+                setCurrentInput(commandHistory[newIndex])
             }
-        }
-
-        if (commands[command]) {
-            commands[command]()
-        } else {
-            xterm.writeln(`\x1b[31m'${command}' is not recognized as an internal or external command,\x1b[0m`)
-            xterm.writeln(`\x1b[31moperable program or batch file.\x1b[0m`)
-        }
-    }, [openWindow, triggerBSOD])
-
-    // Write prompt
-    const writePrompt = useCallback(() => {
-        const xterm = xtermRef.current
-        if (xterm) {
-            xterm.write(`\r\n\x1b[1;33m${currentDirRef.current}>\x1b[0m `)
-        }
-    }, [])
-
-    // Initialize terminal
-    useEffect(() => {
-        if (!terminalRef.current || xtermRef.current) return
-
-        const xterm = new XTerm({
-            theme: {
-                background: '#0c0c0c',
-                foreground: '#cccccc',
-                cursor: '#cccccc',
-                cursorAccent: '#0c0c0c',
-                selectionBackground: '#264f78',
-                black: '#0c0c0c',
-                red: '#c50f1f',
-                green: '#13a10e',
-                yellow: '#c19c00',
-                blue: '#0037da',
-                magenta: '#881798',
-                cyan: '#3a96dd',
-                white: '#cccccc',
-                brightBlack: '#767676',
-                brightRed: '#e74856',
-                brightGreen: '#16c60c',
-                brightYellow: '#f9f1a5',
-                brightBlue: '#3b78ff',
-                brightMagenta: '#b4009e',
-                brightCyan: '#61d6d6',
-                brightWhite: '#f2f2f2'
-            },
-            fontFamily: '"Cascadia Code", "Consolas", "Courier New", monospace',
-            fontSize: 14,
-            cursorBlink: true,
-            cursorStyle: 'block',
-            scrollback: 1000,
-        })
-
-        const fitAddon = new FitAddon()
-        xterm.loadAddon(fitAddon)
-
-        xterm.open(terminalRef.current)
-        fitAddon.fit()
-
-        // Focus the terminal so user can type immediately
-        setTimeout(() => xterm.focus(), 100)
-
-        xtermRef.current = xterm
-        fitAddonRef.current = fitAddon
-
-        // Welcome message
-        xterm.writeln('\x1b[1;36m╔════════════════════════════════════════════════════════════╗\x1b[0m')
-        xterm.writeln('\x1b[1;36m║\x1b[0m  \x1b[1;37mMicrosoft Windows 95 [Version 4.00.1111]\x1b[0m                   \x1b[1;36m║\x1b[0m')
-        xterm.writeln('\x1b[1;36m║\x1b[0m  \x1b[90m(C) Copyright 1985-1996 Microsoft Corp.\x1b[0m                    \x1b[1;36m║\x1b[0m')
-        xterm.writeln('\x1b[1;36m╠════════════════════════════════════════════════════════════╣\x1b[0m')
-        xterm.writeln('\x1b[1;36m║\x1b[0m  \x1b[1;33mWelcome to Shane\'s Portfolio Terminal!\x1b[0m                    \x1b[1;36m║\x1b[0m')
-        xterm.writeln('\x1b[1;36m║\x1b[0m  Type \x1b[1;32m"help"\x1b[0m for a list of commands.                        \x1b[1;36m║\x1b[0m')
-        xterm.writeln('\x1b[1;36m║\x1b[0m  Try \x1b[1;35m"neofetch"\x1b[0m or \x1b[1;35m"cowsay hello"\x1b[0m for fun!                  \x1b[1;36m║\x1b[0m')
-        xterm.writeln('\x1b[1;36m╚════════════════════════════════════════════════════════════╝\x1b[0m')
-
-        writePrompt()
-
-        // Handle input
-        xterm.onKey(({ key, domEvent }) => {
-            const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey
-
-            if (domEvent.key === 'Enter') {
-                executeCommand(currentLineRef.current)
-                currentLineRef.current = ''
-                writePrompt()
-            } else if (domEvent.key === 'Backspace') {
-                if (currentLineRef.current.length > 0) {
-                    currentLineRef.current = currentLineRef.current.slice(0, -1)
-                    xterm.write('\b \b')
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            if (historyIndex !== -1) {
+                const newIndex = historyIndex + 1
+                if (newIndex >= commandHistory.length) {
+                    setHistoryIndex(-1)
+                    setCurrentInput('')
+                } else {
+                    setHistoryIndex(newIndex)
+                    setCurrentInput(commandHistory[newIndex])
                 }
-            } else if (domEvent.key === 'ArrowUp') {
-                if (commandHistoryRef.current.length > 0) {
-                    if (historyIndexRef.current === -1) {
-                        historyIndexRef.current = commandHistoryRef.current.length - 1
-                    } else if (historyIndexRef.current > 0) {
-                        historyIndexRef.current--
-                    }
-                    // Clear current line
-                    while (currentLineRef.current.length > 0) {
-                        xterm.write('\b \b')
-                        currentLineRef.current = currentLineRef.current.slice(0, -1)
-                    }
-                    // Write history item
-                    const historyItem = commandHistoryRef.current[historyIndexRef.current]
-                    currentLineRef.current = historyItem
-                    xterm.write(historyItem)
-                }
-            } else if (domEvent.key === 'ArrowDown') {
-                if (historyIndexRef.current !== -1) {
-                    // Clear current line
-                    while (currentLineRef.current.length > 0) {
-                        xterm.write('\b \b')
-                        currentLineRef.current = currentLineRef.current.slice(0, -1)
-                    }
-                    historyIndexRef.current++
-                    if (historyIndexRef.current >= commandHistoryRef.current.length) {
-                        historyIndexRef.current = -1
-                    } else {
-                        const historyItem = commandHistoryRef.current[historyIndexRef.current]
-                        currentLineRef.current = historyItem
-                        xterm.write(historyItem)
-                    }
-                }
-            } else if (printable) {
-                currentLineRef.current += key
-                xterm.write(key)
-            }
-        })
-
-        // Handle resize
-        const handleResize = () => {
-            if (fitAddonRef.current) {
-                fitAddonRef.current.fit()
             }
         }
-        window.addEventListener('resize', handleResize)
+    }
 
-        return () => {
-            window.removeEventListener('resize', handleResize)
-            xterm.dispose()
-            xtermRef.current = null
+    // Get color class for output type
+    const getColorClass = (type) => {
+        switch (type) {
+            case 'error': return 'terminal-error'
+            case 'success': return 'terminal-success'
+            case 'warning': return 'terminal-warning'
+            case 'system': return 'terminal-system'
+            case 'dir': return 'terminal-dir'
+            case 'command': return 'terminal-command'
+            default: return ''
         }
-    }, [executeCommand, writePrompt])
-
-    // Fit on container resize
-    useEffect(() => {
-        const observer = new ResizeObserver(() => {
-            if (fitAddonRef.current) {
-                fitAddonRef.current.fit()
-            }
-        })
-        if (terminalRef.current) {
-            observer.observe(terminalRef.current)
-        }
-        return () => observer.disconnect()
-    }, [])
+    }
 
     return (
         <div
-            ref={terminalRef}
-            className="xterm-container"
-            style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: '#0c0c0c'
-            }}
-            onClick={() => {
-                if (xtermRef.current) {
-                    xtermRef.current.focus()
-                }
-            }}
-        />
+            className="terminal-container"
+            onClick={handleContainerClick}
+            ref={containerRef}
+        >
+            <div className="terminal-output">
+                {history.map((line, i) => (
+                    <div key={i} className={`terminal-line ${getColorClass(line.type)}`}>
+                        {line.text}
+                    </div>
+                ))}
+            </div>
+            <div className="terminal-input-line">
+                <span className="terminal-prompt">{currentDir}&gt; </span>
+                <input
+                    ref={inputRef}
+                    type="text"
+                    className="terminal-input"
+                    value={currentInput}
+                    onChange={(e) => setCurrentInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    autoFocus
+                    spellCheck={false}
+                />
+            </div>
+        </div>
     )
 }
 

@@ -1697,6 +1697,30 @@ a {
   caret-color: #c0c0c0;
 }
 
+.terminal-error {
+  color: #ff6b6b;
+}
+
+.terminal-success {
+  color: #51cf66;
+}
+
+.terminal-warning {
+  color: #ffd43b;
+}
+
+.terminal-system {
+  color: #74c0fc;
+}
+
+.terminal-dir {
+  color: #4dabf7;
+}
+
+.terminal-command {
+  color: #ffd43b;
+}
+
 /* ===== Notepad Styles ===== */
 .notepad-container {
   display: flex;

@@ -305,6 +305,9 @@ function FileExplorer({ onOpenWindow }) {
     const handleTreeDoubleClick = (path, item) => {
         if (item.type === 'folder' || item.type === 'drive') {
             navigateTo(path, item)
+        } else if (item.type === 'project' && item.id && onOpenWindow) {
+            // Open project in project viewer window
+            onOpenWindow(`project_${item.id.replace(/-/g, '')}`)
         } else if (item.windowId && onOpenWindow) {
             onOpenWindow(item.windowId)
         }
