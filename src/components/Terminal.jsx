@@ -269,6 +269,9 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
         xterm.open(terminalRef.current)
         fitAddon.fit()
 
+        // Focus the terminal so user can type immediately
+        setTimeout(() => xterm.focus(), 100)
+
         xtermRef.current = xterm
         fitAddonRef.current = fitAddon
 

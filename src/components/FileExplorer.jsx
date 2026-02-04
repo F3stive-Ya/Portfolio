@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { ICONS } from '../config/icons'
 
-// Generate Desktop children from ICONS array
+// Generate Desktop children from ICONS array (only those shown on desktop)
 const generateDesktopChildren = () => {
     const children = {}
-    ICONS.forEach(icon => {
+    ICONS.filter(icon => icon.showOnDesktop !== false).forEach(icon => {
         children[icon.label] = {
             type: icon.id === 'fileexplorer' || icon.id === 'mycomputer' || icon.id === 'settings' ? 'shortcut' : 'file',
             name: icon.label,

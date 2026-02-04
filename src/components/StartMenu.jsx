@@ -59,9 +59,16 @@ function StartMenu({ isOpen, onItemClick }) {
                 )}
 
                 {/* Fixed items */}
-                <div className="start-item" data-open="settings">Settings</div>
-                <div className="start-item" data-action="run">Run...</div>
-                <div className="start-item" data-action="shutdown">Shut Down...</div>
+                <div className="start-section-label">Programs</div>
+                <div className="start-item" data-open="fileexplorer">📁 File Explorer</div>
+                <div className="start-item" data-open="terminal">💻 Command Prompt</div>
+                <div className="start-item" data-open="notepad">📝 Notepad</div>
+                <div className="start-item" data-open="paint">🎨 Paint</div>
+                <div className="start-item" data-open="outlook">📧 Outlook Express</div>
+                <div className="start-sep"></div>
+                <div className="start-item" data-open="settings">⚙️ Settings</div>
+                <div className="start-item" data-action="run">▶️ Run...</div>
+                <div className="start-item" data-action="shutdown">🔴 Shut Down...</div>
             </div>
         </div>
     )

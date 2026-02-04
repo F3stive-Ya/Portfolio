@@ -55,11 +55,23 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
     // Icon positions with localStorage persistence
     const [iconPositions, setIconPositions] = useState(() => {
         const saved = localStorage.getItem('desktop-icon-positions')
+        const currentIconIds = icons.map(i => i.id)
+
         if (saved) {
             try {
-                return JSON.parse(saved)
+                const parsed = JSON.parse(saved)
+                // Check if saved positions match current icons
+                const savedIds = Object.keys(parsed)
+                const allMatch = currentIconIds.every(id => savedIds.includes(id)) &&
+                    savedIds.length === currentIconIds.length
+
+                if (allMatch) {
+                    return parsed
+                }
+                // Icons changed - recalculate positions
+                localStorage.removeItem('desktop-icon-positions')
             } catch {
-                return getDefaultPositions(icons)
+                // Invalid JSON, recalculate
             }
         }
         return getDefaultPositions(icons)
