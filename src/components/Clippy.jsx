@@ -20,7 +20,7 @@ const Clippy = ({ onAction, onDismiss }) => {
 
     // Check if Clippy should be permanently hidden
     useEffect(() => {
-        const isHidden = localStorage.getItem('win95-clippy-hidden')
+        const isHidden = sessionStorage.getItem('win95-clippy-hidden')
         if (isHidden) {
             return
         }
@@ -40,7 +40,7 @@ const Clippy = ({ onAction, onDismiss }) => {
 
         const tipTimer = setInterval(() => {
             setCurrentTip(prev => (prev + 1) % TIPS.length)
-        }, 8000)
+        }, 15000)
 
         return () => clearInterval(tipTimer)
     }, [isVisible])
@@ -54,7 +54,7 @@ const Clippy = ({ onAction, onDismiss }) => {
     }
 
     const handleHideForever = () => {
-        localStorage.setItem('win95-clippy-hidden', 'true')
+        sessionStorage.setItem('win95-clippy-hidden', 'true')
         handleDismiss()
     }
 
