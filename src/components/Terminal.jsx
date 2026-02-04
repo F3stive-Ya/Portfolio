@@ -189,11 +189,33 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
 
             case 'crash':
             case 'bsod':
-                if (triggerBSOD) triggerBSOD()
-                break
+                output.push({ type: 'error', text: '*** STOP: 0x0000007E (0xC0000005, 0x00000000, 0x00000000, 0x00000000)' })
+                output.push({ type: 'error', text: 'SYSTEM_THREAD_EXCEPTION_NOT_HANDLED' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'warning', text: 'A problem has been detected and Windows has been shut down to prevent' })
+                output.push({ type: 'warning', text: 'damage to your computer...' })
+                setHistory(prev => [...prev, ...output])
+                setTimeout(() => {
+                    if (triggerBSOD) triggerBSOD()
+                }, 1500)
+                return
 
             case 'sudo':
                 output.push({ type: 'error', text: "Nice try, but this isn't Linux! 🐧" })
+                break
+
+            case 'rm':
+                if (args.includes('-rf')) {
+                    output.push({ type: 'error', text: "This isn't Linux! But nice try destroying everything 💀" })
+                } else {
+                    output.push({ type: 'error', text: "Command not found. Try 'del' instead... just kidding." })
+                }
+                break
+
+            case 'exit':
+            case 'quit':
+                output.push({ type: 'warning', text: 'Nice try, but you cannot escape! 😈' })
+                output.push({ type: 'output', text: 'Just kidding. Close the window instead.' })
                 break
 
             case 'hack':
@@ -227,7 +249,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                 break
 
             case 'cowsay':
-                const msg = args || 'Hello!'
+                const msg = args || 'Moo!'
                 const border = '─'.repeat(msg.length + 2)
                 output.push({ type: 'output', text: ` ┌${border}┐` })
                 output.push({ type: 'output', text: ` │ ${msg} │` })
@@ -251,11 +273,14 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
 
             case 'hello':
             case 'hi':
-                output.push({ type: 'system', text: 'Hello there! 👋' })
+            case 'hey':
+                const greetings = ['Hello there! 👋', 'Hey! How are you?', 'Hi friend! 🙂', 'Greetings, traveler!', 'Howdy! 🤠']
+                output.push({ type: 'system', text: greetings[Math.floor(Math.random() * greetings.length)] })
                 break
 
             case 'whoami':
                 output.push({ type: 'output', text: "You are a visitor on Shane's Portfolio!" })
+                output.push({ type: 'output', text: 'And you are awesome for checking out the terminal 😎' })
                 break
 
             case 'tree':
@@ -271,9 +296,183 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                 output.push({ type: 'output', text: '└── resume.pdf' })
                 break
 
+            case 'rickroll':
+            case 'rick':
+                output.push({ type: 'success', text: '🎵 Never gonna give you up...' })
+                output.push({ type: 'success', text: '🎵 Never gonna let you down...' })
+                output.push({ type: 'success', text: '🎵 Never gonna run around and desert you...' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'warning', text: 'You just got rickrolled! 🕺' })
+                window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank')
+                break
+
+            case 'fortune':
+            case 'quote':
+                const fortunes = [
+                    '"The only way to do great work is to love what you do." - Steve Jobs',
+                    '"Code is like humor. When you have to explain it, it\'s bad." - Cory House',
+                    '"First, solve the problem. Then, write the code." - John Johnson',
+                    '"Experience is the name everyone gives to their mistakes." - Oscar Wilde',
+                    '"The best error message is the one that never shows up." - Thomas Fuchs',
+                    '"Deleted code is debugged code." - Jeff Sickel',
+                    '"640K ought to be enough for anybody." - Bill Gates (1981)',
+                    '"It works on my machine." - Every developer ever'
+                ]
+                output.push({ type: 'system', text: fortunes[Math.floor(Math.random() * fortunes.length)] })
+                break
+
+            case '8ball':
+            case 'magic8ball':
+                const answers = [
+                    'It is certain.', 'It is decidedly so.', 'Without a doubt.',
+                    'Yes - definitely.', 'You may rely on it.', 'As I see it, yes.',
+                    'Most likely.', 'Outlook good.', 'Yes.',
+                    'Reply hazy, try again.', 'Ask again later.', 'Cannot predict now.',
+                    'Don\'t count on it.', 'My reply is no.', 'My sources say no.',
+                    'Outlook not so good.', 'Very doubtful.'
+                ]
+                output.push({ type: 'system', text: '🎱 ' + answers[Math.floor(Math.random() * answers.length)] })
+                break
+
+            case 'joke':
+                const jokes = [
+                    'Why do programmers prefer dark mode? Because light attracts bugs!',
+                    'A SQL query walks into a bar, walks up to two tables and asks... "Can I join you?"',
+                    'Why do Java developers wear glasses? Because they can\'t C#!',
+                    '!false - It\'s funny because it\'s true.',
+                    'There are only 10 types of people in the world: those who understand binary and those who don\'t.',
+                    'A programmer\'s wife tells him: "Go to the store and buy a loaf of bread. If they have eggs, buy a dozen." He comes home with 12 loaves of bread.',
+                    'Why did the developer go broke? Because he used up all his cache!'
+                ]
+                output.push({ type: 'success', text: jokes[Math.floor(Math.random() * jokes.length)] })
+                break
+
+            case 'weather':
+                output.push({ type: 'system', text: '☀️ Weather for Shane\'s Portfolio:' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: '  Temperature: 72°F (22°C)' })
+                output.push({ type: 'output', text: '  Conditions: Mostly Sunny ☀️' })
+                output.push({ type: 'output', text: '  Humidity: 42%' })
+                output.push({ type: 'output', text: '  Wind: Gentle breeze of creativity' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'warning', text: '  Forecast: 100% chance of getting hired! 💼' })
+                break
+
+            case 'coffee':
+            case 'brew':
+                output.push({ type: 'warning', text: '☕ Brewing coffee...' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: '    ( (' })
+                output.push({ type: 'output', text: '     ) )' })
+                output.push({ type: 'output', text: '  .______.' })
+                output.push({ type: 'output', text: '  |      |]' })
+                output.push({ type: 'output', text: '  \\      /' })
+                output.push({ type: 'output', text: '   `----\'' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'success', text: 'Here\'s your virtual coffee! ☕' })
+                break
+
+            case 'cat':
+                if (!args) {
+                    output.push({ type: 'output', text: '' })
+                    output.push({ type: 'output', text: '  /\\_/\\' })
+                    output.push({ type: 'output', text: ' ( o.o )' })
+                    output.push({ type: 'output', text: '  > ^ <' })
+                    output.push({ type: 'output', text: '' })
+                    output.push({ type: 'system', text: 'Meow! 🐱' })
+                } else {
+                    output.push({ type: 'error', text: `cat: ${args}: No such file or directory` })
+                    output.push({ type: 'output', text: '(But here\'s a cat anyway 🐱)' })
+                }
+                break
+
+            case 'dog':
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: '  / \\__' })
+                output.push({ type: 'output', text: ' (    @\\___' })
+                output.push({ type: 'output', text: ' /         O' })
+                output.push({ type: 'output', text: '/   (_____/' })
+                output.push({ type: 'output', text: '/_____/   U' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'system', text: 'Woof woof! 🐕' })
+                break
+
+            case 'flip':
+                output.push({ type: 'warning', text: '(╯°□°)╯︵ ┻━┻' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: 'Table flipped!' })
+                break
+
+            case 'unflip':
+                output.push({ type: 'success', text: '┬─┬ノ( º _ ºノ)' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: 'Table restored. Calm down.' })
+                break
+
+            case 'shrug':
+                output.push({ type: 'output', text: '¯\\_(ツ)_/¯' })
+                break
+
+            case 'lenny':
+                output.push({ type: 'output', text: '( ͡° ͜ʖ ͡°)' })
+                break
+
+            case 'facepalm':
+                output.push({ type: 'output', text: '(－‸ლ)' })
+                break
+
+            case 'party':
+                output.push({ type: 'success', text: '🎉🎊🥳 PARTY TIME! 🥳🎊🎉' })
+                output.push({ type: 'warning', text: '░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░' })
+                output.push({ type: 'system', text: '░░░▄▀▄▀▀▀▀▄▀▄░░░░░░░░░░░░░░░░░░░' })
+                output.push({ type: 'system', text: '░░░█░░░░░░░░▀▄░░░░░░░░░░░░░░░░░░' })
+                output.push({ type: 'system', text: '░░█░░▀░░▀░░░░░▀▄▄░░░░░░░░░░░░░░░' })
+                output.push({ type: 'system', text: '░░█░▄░█▀░▄░░░░░░░▀▀▄░░░░░░░░░░░░' })
+                output.push({ type: 'warning', text: '░░░▀▄░▀▀▀▀░░░░░░░░░▀▀░░░░░░░░░░░' })
+                break
+
+            case 'konami':
+                output.push({ type: 'success', text: '↑ ↑ ↓ ↓ ← → ← → B A' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'warning', text: '🎮 +30 LIVES!' })
+                output.push({ type: 'output', text: 'You know the code! Classic gamer detected.' })
+                break
+
+            case 'ping':
+                output.push({ type: 'output', text: 'Pinging portfolio.local with 32 bytes of data:' })
+                output.push({ type: 'success', text: 'Reply from 127.0.0.1: bytes=32 time<1ms TTL=64' })
+                output.push({ type: 'success', text: 'Reply from 127.0.0.1: bytes=32 time<1ms TTL=64' })
+                output.push({ type: 'success', text: 'Reply from 127.0.0.1: bytes=32 time<1ms TTL=64' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: 'Ping statistics for portfolio.local:' })
+                output.push({ type: 'output', text: '    Packets: Sent = 3, Received = 3, Lost = 0 (0% loss)' })
+                break
+
+            case 'ipconfig':
+                output.push({ type: 'output', text: 'Windows 95 IP Configuration' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: 'Ethernet adapter Local Area Connection:' })
+                output.push({ type: 'output', text: '   IP Address. . . . . . . . . : 192.168.1.337' })
+                output.push({ type: 'output', text: '   Subnet Mask . . . . . . . . : 255.255.255.0' })
+                output.push({ type: 'output', text: '   Default Gateway . . . . . . : 192.168.1.1' })
+                break
+
+            case 'secret':
+            case 'secrets':
+                output.push({ type: 'warning', text: '🤫 Shh... You found the secrets!' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: 'Try these commands:' })
+                output.push({ type: 'system', text: '  rickroll, joke, fortune, 8ball, weather' })
+                output.push({ type: 'system', text: '  coffee, cat, dog, flip, unflip' })
+                output.push({ type: 'system', text: '  party, konami, shrug, lenny, facepalm' })
+                output.push({ type: 'system', text: '  sudo, hack, matrix, crash, neofetch' })
+                break
+
             default:
                 output.push({ type: 'error', text: `'${command}' is not recognized as an internal or external command,` })
                 output.push({ type: 'error', text: 'operable program or batch file.' })
+                output.push({ type: 'output', text: '' })
+                output.push({ type: 'output', text: 'Type "help" for available commands or "secrets" for easter eggs!' })
         }
 
         setHistory(prev => [...prev, ...output])
