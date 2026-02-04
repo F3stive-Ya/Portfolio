@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { ICONS } from '../App'
+import { ICONS } from '../config/icons'
 
 // Generate Desktop children from ICONS array
 const generateDesktopChildren = () => {
