@@ -13,19 +13,19 @@ export const ICONS = [
         id: 'minesweeper',
         label: 'Minesweeper',
         icon: 'icons/minesweeper-0.png',
-        showOnDesktop: true
+        showOnDesktop: false
     },
     {
-        id: 'freecell',
-        label: 'FreeCell',
-        icon: 'icons/game_freecell-0.png',
-        showOnDesktop: true
+        id: 'solitaire',
+        label: 'Solitaire',
+        icon: 'icons/game_solitaire-0.png',
+        showOnDesktop: false
     },
     {
         id: 'pinball',
         label: 'Pinball',
         icon: 'icons/joystick-2.png',
-        showOnDesktop: true
+        showOnDesktop: false
     },
     {
         id: 'terminal',

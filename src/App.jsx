@@ -10,6 +10,8 @@ import ErrorDialog from './components/ErrorDialog'
 import Terminal from './components/Terminal'
 import ProjectViewer from './components/ProjectViewer'
 import Minesweeper from './components/Games/Minesweeper'
+import Solitaire from './components/Games/Solitaire'
+import Pinball from './components/Games/Pinball'
 import BSOD from './components/BSOD'
 import MobilePortfolio from './components/MobilePortfolio'
 
@@ -350,6 +352,10 @@ function App() {
                             onResize={(w, h) => handleContentResize(id, w, h)}
                             onClose={() => closeWindow(id)}
                         />
+                    ) : id === 'solitaire' ? (
+                        <Solitaire />
+                    ) : id === 'pinball' ? (
+                        <Pinball />
                     ) : id.startsWith('project_') ? (
                         <ProjectViewer
                             projectId={id.replace('project_', '')}

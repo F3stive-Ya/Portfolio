@@ -21,10 +21,27 @@ const Pinball = () => {
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
                         color: '#fff',
-                        fontFamily: 'MS Sans Serif'
+                        fontFamily: 'MS Sans Serif',
+                        textAlign: 'center'
                     }}
                 >
-                    Loading Space Cadet Pinball...
+                    <div style={{ marginBottom: '10px' }}>Loading Space Cadet Pinball...</div>
+                    <div style={{ fontSize: '10px', color: '#ccc' }}>Taking too long?</div>
+                    <button
+                        onClick={() => {
+                            const iframe = document.querySelector('iframe[title="Space Cadet Pinball"]');
+                            if (iframe) iframe.src = iframe.src;
+                        }}
+                        style={{
+                            marginTop: '5px',
+                            background: '#c0c0c0',
+                            border: '2px outset #fff',
+                            cursor: 'pointer',
+                            fontFamily: 'MS Sans Serif'
+                        }}
+                    >
+                        Reload
+                    </button>
                 </div>
             )}
             <iframe

@@ -106,11 +106,11 @@ const FILE_SYSTEM = {
                         icon: 'icons/mine_game-0.png',
                         windowId: 'minesweeper'
                     },
-                    FreeCell: {
+                    Solitaire: {
                         type: 'file',
-                        name: 'FreeCell',
+                        name: 'Solitaire',
                         icon: 'icons/game_solitaire-0.png',
-                        windowId: 'freecell'
+                        windowId: 'solitaire'
                     },
                     Pinball: {
                         type: 'file',
