@@ -164,6 +164,43 @@ const Solitaire = () => {
         }
     }
 
+    // Double Click to Auto-Move to Foundation
+    const handleDoubleClick = (card, source) => {
+        // Only allow moving the top card of a stack or waste
+        if (source.type === 'column') {
+            const col = board.columns[source.index]
+            if (source.cardIndex !== col.length - 1) return // Can only move top card
+        }
+
+        // Try to find a valid foundation pile
+        for (let i = 0; i < 4; i++) {
+            const pile = board.foundations[i]
+            if (isValidFoundationMove(card, pile)) {
+                // Execute Move
+                const newBoard = { ...board }
+
+                // Remove from Source
+                if (source.type === 'column') {
+                    newBoard.columns[source.index].pop()
+                    // Reveal new top card if needed
+                    const sourceLen = newBoard.columns[source.index].length
+                    if (sourceLen > 0) {
+                        const newTop = { ...newBoard.columns[source.index][sourceLen - 1] }
+                        newTop.faceUp = true
+                        newBoard.columns[source.index][sourceLen - 1] = newTop
+                    }
+                } else if (source.type === 'waste') {
+                    newBoard.waste.pop()
+                }
+
+                // Add to Foundation
+                newBoard.foundations[i].push(card)
+                setBoard(newBoard)
+                return // Moved!
+            }
+        }
+    }
+
     // Custom FaceDown Card Component
     const CardBack = () => (
         <div className="card back" style={{ background: 'repeating-linear-gradient(45deg, #000080 0, #000080 5px, #fff 5px, #fff 10px)' }}>
@@ -189,6 +226,7 @@ const Solitaire = () => {
                                     setDraggedCard={setDraggedCard}
                                     source={{ type: 'waste' }}
                                     setDragSource={setDragSource}
+                                    onDoubleClick={handleDoubleClick}
                                 />
                             )}
                         </div>
@@ -252,6 +290,7 @@ const Solitaire = () => {
                                     setDraggedCard={setDraggedCard}
                                     source={{ type: 'column', index: i, cardIndex: index }}
                                     setDragSource={setDragSource}
+                                    onDoubleClick={handleDoubleClick}
                                 >
                                     {renderRecursiveStack(index + 1)}
                                 </PlayingCard>

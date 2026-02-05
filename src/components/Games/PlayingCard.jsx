@@ -1,4 +1,4 @@
-const PlayingCard = ({ card, setDraggedCard, source, setDragSource, draggable = true, ...props }) => {
+const PlayingCard = ({ card, setDraggedCard, source, setDragSource, draggable = true, onDoubleClick, ...props }) => {
     const handleDragStart = () => {
         if (!draggable) return
         setDraggedCard(card)
@@ -6,7 +6,12 @@ const PlayingCard = ({ card, setDraggedCard, source, setDragSource, draggable = 
     }
 
     return (
-        <div className={`card ${card.color}`} draggable={draggable} onDragStart={handleDragStart}>
+        <div
+            className={`card ${card.color}`}
+            draggable={draggable}
+            onDragStart={handleDragStart}
+            onDoubleClick={() => onDoubleClick && onDoubleClick(card, source)}
+        >
             <div className="card-corner top-left">
                 <span>{card.rank}</span>
                 <span>{card.suit}</span>

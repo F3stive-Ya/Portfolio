@@ -231,7 +231,8 @@ export const WINDOW_CONFIGS = {
         icon: getIcon('pinball'),
         defaultStyle: { top: 20, left: 20, width: 600, height: 450 },
         content: <Pinball />,
-        bodyStyle: { padding: 0, background: '#000' }
+        bodyStyle: { padding: 0, background: '#000' },
+        resizable: false
     },
     // Project windows - dynamically created based on project ID
     project_dicegame: {
