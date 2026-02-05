@@ -2747,3 +2747,194 @@ a {
   color: #ff0000;
   font-size: 14px;
 }
+
+/* ===== Wizard Styles ===== */
+.wizard-container {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 140px 1fr;
+  height: 100%;
+  background: #c0c0c0;
+  font-family: 'MS Sans Serif', sans-serif;
+  overflow: hidden;
+}
+
+.wizard-sidebar {
+  grid-row: 1;
+  grid-column: 1;
+  background: linear-gradient(to bottom, #000080, #0000ff);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #808080;
+}
+
+.wizard-sidebar-img {
+  width: 100%;
+  height: auto;
+  margin-top: 20px;
+  image-rendering: pixelated;
+}
+
+.wizard-sidebar-text {
+  padding: 10px;
+  color: #fff;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 14px;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.wizard-content {
+  grid-row: 1;
+  grid-column: 2;
+  padding: 20px;
+  background: #c0c0c0;
+  display: flex;
+  flex-direction: column;
+}
+
+.wizard-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.wizard-step h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.wizard-step p {
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+
+.wizard-text {
+  line-height: 1.5;
+}
+
+.wizard-info-box,
+.wizard-license-box {
+  border: 2px inset #fff;
+  background: #fff;
+  padding: 10px;
+  margin-bottom: 15px;
+  max-height: 200px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.wizard-info-box {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  flex: 0 0 auto;
+}
+
+.wizard-project-icon {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.wizard-warning {
+  color: #000;
+  font-weight: bold;
+}
+
+.wizard-req-item {
+  font-family: 'Consolas', monospace;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.wizard-status {
+  font-weight: bold;
+}
+
+.wizard-progress-track {
+  height: 20px;
+  border: 2px inset #fff;
+  background: #fff;
+  margin: 20px 0;
+  position: relative;
+  display: flex;
+  padding: 1px;
+}
+
+.wizard-progress-fill {
+  background: #000080;
+  height: 100%;
+  transition: width 0.3s linear;
+}
+
+.wizard-progress-chunk {
+  flex: 1;
+  border-right: 2px solid #fff;
+  height: 100%;
+  background: #000080;
+}
+
+/* We are using a simple fill bar instead of chunks for smoother animation here, or we can use chunks style */
+.wizard-progress-track {
+  display: block;
+}
+
+.wizard-logs {
+  font-family: 'Consolas', monospace;
+  font-size: 11px;
+  height: 80px;
+  overflow-y: auto;
+  color: #808080;
+  border: 1px inset #fff;
+  padding: 4px;
+  background: #f0f0f0;
+}
+
+.wizard-final-option {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px dotted #808080;
+}
+
+.wizard-footer {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-top: 2px solid #fff;
+  /* Top highlight */
+  position: relative;
+}
+
+.wizard-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #808080;
+  /* Shadow for 3D effect separator */
+}
+
+.wizard-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.wizard-btn {
+  min-width: 75px;
+  height: 24px;
+  font-size: 11px;
+  border: 2px outset #fff;
+  /* Standard win95 btn */
+}
