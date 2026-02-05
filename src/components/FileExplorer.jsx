@@ -66,40 +66,6 @@ const FILE_SYSTEM = {
     }
 }
 
-// Project details
-const PROJECTS_DATA = {
-    'dice-game': {
-        name: 'Dice Game',
-        description: 'Python program that simulates two dice being rolled. User can roll the dice as many times as they want and quit the game at any time.',
-        tech: ['Python'],
-        github: 'https://github.com/F3stive-Ya/DiceGame'
-    },
-    'assembly-calculator': {
-        name: 'Assembly Calculator',
-        description: 'Assembly program that simulates a calculator. User can add, subtract, multiply, and divide two numbers.',
-        tech: ['Assembly', 'x86'],
-        github: 'https://github.com/F3stive-Ya/AssemblyCalculator'
-    },
-    'car-racer': {
-        name: 'Car Racer',
-        description: 'A Python program that simulates a car race. Randomly generated cars race against each other with winner presented to user.',
-        tech: ['Python'],
-        github: 'https://github.com/F3stive-Ya/CarRacer'
-    },
-    'password-maker': {
-        name: 'Password Maker',
-        description: 'A Python program that generates random passwords based on input word. Adds randomly generated characters, integers, and special-characters.',
-        tech: ['Python', 'Security'],
-        github: 'https://github.com/F3stive-Ya/PasswordMaker'
-    },
-    'common-factors': {
-        name: 'Common Factors Finder',
-        description: 'A Python program that finds the common factors of two numbers.',
-        tech: ['Python', 'Math'],
-        github: 'https://github.com/F3stive-Ya/CommonFactors'
-    }
-}
-
 function TreeItem({ item, path, level = 0, selectedPath, onSelect, expandedPaths, onToggle, onDoubleClick }) {
     const isFolder = item.type === 'folder' || item.type === 'drive'
     const fullPath = path
@@ -174,37 +140,6 @@ function FileItem({ item, itemKey, onDoubleClick }) {
                 className="file-item-icon"
             />
             <span className="file-item-name">{item.name}</span>
-        </div>
-    )
-}
-
-function ProjectCard({ project }) {
-    return (
-        <div className="project-card">
-            <div className="project-card-header">
-                <img src="icons/directory_closed_cool-0.png" alt="" style={{ width: 16, height: 16 }} />
-                {project.name}
-            </div>
-            <div className="project-card-body">
-                <div className="project-card-description">
-                    {project.description}
-                </div>
-                <div className="project-card-tech">
-                    {project.tech.map((tech, index) => (
-                        <span key={index} className="tech-badge">{tech}</span>
-                    ))}
-                </div>
-                <div className="project-card-links">
-                    <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="project-link"
-                    >
-                        📁 View on GitHub
-                    </a>
-                </div>
-            </div>
         </div>
     )
 }
@@ -351,15 +286,15 @@ function FileExplorer({ onOpenWindow }) {
             }
         } else if (item.windowId && onOpenWindow) {
             onOpenWindow(item.windowId)
-        } else if (item.type === 'project') {
-            // Show project details
-            setSelectedPath(newPath)
+        } else if (item.type === 'project' && onOpenWindow) {
+            // Open project wizard window - normalize ID (remove hyphens)
+            const normalizedId = item.id.replace(/-/g, '')
+            onOpenWindow('project_' + normalizedId)
         }
     }
 
     // Check if selected item is a project
     const selectedItem = getItemAtPath(selectedPath)
-    const selectedProject = selectedItem?.type === 'project' ? PROJECTS_DATA[selectedItem.id] : null
 
     return (
         <div className="file-explorer">
@@ -436,25 +371,21 @@ function FileExplorer({ onOpenWindow }) {
                     />
                 </div>
                 <div className="file-explorer-content">
-                    {selectedProject ? (
-                        <ProjectCard project={selectedProject} />
-                    ) : (
-                        <div className="file-grid">
-                            {Object.entries(currentChildren).map(([key, item]) => (
-                                <FileItem
-                                    key={key}
-                                    item={item}
-                                    itemKey={key}
-                                    onDoubleClick={handleItemDoubleClick}
-                                />
-                            ))}
-                            {Object.keys(currentChildren).length === 0 && (
-                                <div style={{ padding: 20, color: '#808080' }}>
-                                    This folder is empty.
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    <div className="file-grid">
+                        {Object.entries(currentChildren).map(([key, item]) => (
+                            <FileItem
+                                key={key}
+                                item={item}
+                                itemKey={key}
+                                onDoubleClick={handleItemDoubleClick}
+                            />
+                        ))}
+                        {Object.keys(currentChildren).length === 0 && (
+                            <div style={{ padding: 20, color: '#808080' }}>
+                                This folder is empty.
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
             <div className="file-explorer-status">

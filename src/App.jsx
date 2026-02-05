@@ -174,9 +174,9 @@ const WINDOW_CONFIGS = {
     },
     minesweeper: {
         title: 'Minesweeper',
-        defaultStyle: { top: 100, left: 100, width: 'auto', height: 'auto' }, // Auto size based on grid
+        defaultStyle: { top: 100, left: 100, width: 220, height: 300 },
         content: <Minesweeper />,
-        bodyStyle: { padding: 0, background: '#c0c0c0', width: 'fit-content' }
+        bodyStyle: { padding: 0, background: '#c0c0c0' }
     },
     // Project windows - dynamically created based on project ID
     project_dicegame: {
