@@ -64,6 +64,7 @@ function StartMenu({ isOpen, onItemClick }) {
                 <div className="start-item" data-open="terminal">💻 Command Prompt</div>
                 <div className="start-item" data-open="notepad">📝 Notepad</div>
                 <div className="start-item" data-open="paint">🎨 Paint</div>
+                <div className="start-item" data-open="minesweeper">💣 Minesweeper</div>
                 <div className="start-item" data-open="outlook">📧 Outlook Express</div>
                 <div className="start-sep"></div>
                 <div className="start-item" data-open="settings">⚙️ Settings</div>

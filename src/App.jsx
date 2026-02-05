@@ -15,6 +15,7 @@ import Clippy from './components/Clippy'
 import BSOD from './components/BSOD'
 import Paint from './components/Paint'
 import ProjectViewer from './components/ProjectViewer'
+import Minesweeper from './components/Minesweeper'
 import { useRecentPrograms } from './context/RecentProgramsContext'
 import { useSounds } from './hooks/useSounds'
 
@@ -170,6 +171,12 @@ const WINDOW_CONFIGS = {
         defaultStyle: { top: 60, left: 100, width: 720, height: 540 },
         content: <Paint />,
         bodyStyle: { padding: 0 }
+    },
+    minesweeper: {
+        title: 'Minesweeper',
+        defaultStyle: { top: 100, left: 100, width: 'auto', height: 'auto' }, // Auto size based on grid
+        content: <Minesweeper />,
+        bodyStyle: { padding: 0, background: '#c0c0c0', width: 'fit-content' }
     },
     // Project windows - dynamically created based on project ID
     project_dicegame: {

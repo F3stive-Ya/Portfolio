@@ -4,6 +4,7 @@
 export const ICONS = [
     { id: 'about', label: 'About Me', icon: 'icons/notepad_file-0.png', showOnDesktop: true },
     { id: 'fileexplorer', label: 'File Explorer', icon: 'icons/directory_explorer-5.png', showOnDesktop: true },
+    { id: 'minesweeper', label: 'Minesweeper', icon: 'icons/mine_sweeper-0.png' },
     { id: 'terminal', label: 'Command Prompt', icon: 'icons/console_prompt-0.png', showOnDesktop: false },
     { id: 'notepad', label: 'Notepad', icon: 'icons/notepad-0.png', showOnDesktop: true },
     { id: 'outlook', label: 'Outlook Express', icon: 'icons/outlook_express-0.png', showOnDesktop: true },
