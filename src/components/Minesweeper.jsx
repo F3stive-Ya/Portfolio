@@ -48,25 +48,27 @@ const Minesweeper = ({ onResize, onClose }) => {
     const updateWindowSize = useCallback((rows, cols) => {
         if (!onResize) return
 
-        // Exact Windows 95 measurements
-        // Cell: 16x16px
-        // Board Borders: 3px (inset) + 3px (inset) = 6px total horizontal/vertical border width
-        // Container Padding: 6px left + 6px right = 12px
-        // Menu Bar: ~20px height
-        // Header: ~34px height + 6px margin-bottom + 6px padding = ~46px total header area
-        // Window Borders (from Window.jsx): 4px border width
-
-        // Inner Width Calculation:
-        // (Cols * 16px) + 12px (Container Padding) + 6px (Board Border) = (Cols * 16) + 18px
-        // Usually need a bit more buffer for the window frame itself if the content calculation is raw.
-        // Let's go with (Cols * 16) + 24px for width to be safe and avoid horizontal scroll.
+        // Exact measurements based on Windows 95
+        // Content Heights:
+        // Menu Bar: ~24px
+        // Game Header: ~46px
+        // Board Borders/Padding: ~12px
+        // Total Content Overhead: ~82px
+        // 
+        // Window Chrome Heights (from Window.jsx):
+        // Titlebar: ~30px
+        // Window Borders: ~8px (4px top + 4px bottom)
+        // Total Chrome Overhead: ~38px
+        //
+        // Total Height Required = BoardHeight + ContentOverhead + ChromeOverhead
+        // Height = (Rows * 16) + 82 + 38 = (Rows * 16) + 120
+        // Adding slight buffer for safety -> 128px
 
         const boardWidth = cols * 16
         const boardHeight = rows * 16
 
-        const width = boardWidth + 20 // 10px on each side for frame/padding
-        // Height: Menu(20) + Header(44) + Board(Rows*16) + Borders/Padding(10)
-        const height = boardHeight + 74
+        const width = boardWidth + 40 // Ensure enough horizontal space
+        const height = boardHeight + 128
 
         onResize(width, height)
     }, [onResize])
