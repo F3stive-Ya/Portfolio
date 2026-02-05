@@ -103,7 +103,7 @@ const FILE_SYSTEM = {
                     Minesweeper: {
                         type: 'file',
                         name: 'Minesweeper',
-                        icon: 'icons/mine_game-0.png',
+                        icon: 'icons/minesweeper-0.png',
                         windowId: 'minesweeper'
                     },
                     Solitaire: {
@@ -115,7 +115,7 @@ const FILE_SYSTEM = {
                     Pinball: {
                         type: 'file',
                         name: 'Pinball',
-                        icon: 'icons/pinball-0.png',
+                        icon: 'icons/joystick-2.png',
                         windowId: 'pinball'
                     }
                 }

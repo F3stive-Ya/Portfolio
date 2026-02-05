@@ -45,7 +45,7 @@ const Pinball = () => {
                 </div>
             )}
             <iframe
-                src="https://alula.github.io/SpaceCadetPinball/"
+                src="https://pinball.alula.me/"
                 style={{
                     flex: 1,
                     border: 'none',

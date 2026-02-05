@@ -172,25 +172,42 @@ const Solitaire = () => {
     )
 
     return (
-        <div className="solitaire-container" style={{ padding: '10px', height: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="solitaire-container" style={{ padding: '10px', height: '100%', display: 'flex', flexDirection: 'column', gap: '20px', background: '#008000', color: 'white' }}>
             {/* Top Area: Stock, Waste, Foundations */}
-            <div className="top-area" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div className="stock-waste" style={{ display: 'flex', gap: '10px' }}>
-                    {/* Stock */}
-                    <div className="card-slot stock" onClick={dealFromStock}>
-                        {board.stock.length > 0 ? <CardBack /> : <div className="empty-slot" style={{ border: '2px solid #008000', borderRadius: '4px', width: '71px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#008000' }}>RELOAD</div>}
+            <div className="top-area" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', gap: '20px' }}>
+                    <div className="stock-waste" style={{ display: 'flex', gap: '10px' }}>
+                        {/* Stock */}
+                        <div className="card-slot stock" onClick={dealFromStock}>
+                            {board.stock.length > 0 ? <CardBack /> : <div className="empty-slot" style={{ border: '2px solid rgba(255,255,255,0.3)', borderRadius: '4px', width: '71px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>RELOAD</div>}
+                        </div>
+                        {/* Waste */}
+                        <div className="card-slot waste">
+                            {board.waste.length > 0 && (
+                                <PlayingCard
+                                    card={board.waste[board.waste.length - 1]}
+                                    setDraggedCard={setDraggedCard}
+                                    source={{ type: 'waste' }}
+                                    setDragSource={setDragSource}
+                                />
+                            )}
+                        </div>
                     </div>
-                    {/* Waste */}
-                    <div className="card-slot waste">
-                        {board.waste.length > 0 && (
-                            <PlayingCard
-                                card={board.waste[board.waste.length - 1]}
-                                setDraggedCard={setDraggedCard}
-                                source={{ type: 'waste' }}
-                                setDragSource={setDragSource}
-                            />
-                        )}
-                    </div>
+                    <button
+                        onClick={initializeGame}
+                        style={{
+                            height: '30px',
+                            padding: '0 10px',
+                            background: '#c0c0c0',
+                            border: '2px outset #fff',
+                            color: 'black',
+                            cursor: 'pointer',
+                            fontFamily: 'Tahoma, sans-serif',
+                            fontSize: '12px'
+                        }}
+                    >
+                        New Game
+                    </button>
                 </div>
 
                 {/* Foundations */}
