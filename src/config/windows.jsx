@@ -229,7 +229,7 @@ export const WINDOW_CONFIGS = {
     pinball: {
         title: '3D Pinball for Windows - Space Cadet',
         icon: getIcon('pinball'),
-        defaultStyle: { top: 20, left: 20, width: 600, height: 450 },
+        defaultStyle: { top: 20, left: 20, width: 650, height: 520 },
         content: <Pinball />,
         bodyStyle: { padding: 0, background: '#000' },
         resizable: false

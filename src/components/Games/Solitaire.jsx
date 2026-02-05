@@ -6,7 +6,7 @@ import '../../index.css'
 const Solitaire = () => {
     const [board, setBoard] = useState({
         columns: Array(7).fill([]),
-        foundations: Array(4).fill([]),
+        foundations: Array(4).fill().map(() => []),
         stock: [],
         waste: []
     })
@@ -52,7 +52,7 @@ const Solitaire = () => {
 
         setBoard({
             columns: newColumns,
-            foundations: Array(4).fill([]),
+            foundations: Array(4).fill().map(() => []),
             stock: newStock,
             waste: []
         })
@@ -215,11 +215,23 @@ const Solitaire = () => {
                 <div style={{ display: 'flex', gap: '20px' }}>
                     <div className="stock-waste" style={{ display: 'flex', gap: '10px' }}>
                         {/* Stock */}
-                        <div className="card-slot stock" onClick={dealFromStock}>
+                        <div
+                            className="card-slot stock"
+                            onClick={dealFromStock}
+                            style={{
+                                width: '80px',
+                                height: '105px',
+                                cursor: 'pointer',
+                                transition: 'all 0.1s',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
                             {board.stock.length > 0 ? <CardBack /> : <div className="empty-slot" style={{ border: '2px solid rgba(255,255,255,0.3)', borderRadius: '4px', width: '71px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>RELOAD</div>}
                         </div>
                         {/* Waste */}
-                        <div className="card-slot waste">
+                        <div className="card-slot waste" style={{ width: '80px', height: '105px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             {board.waste.length > 0 && (
                                 <PlayingCard
                                     card={board.waste[board.waste.length - 1]}
@@ -254,7 +266,7 @@ const Solitaire = () => {
                         <div
                             key={`found-${i}`}
                             className="card-slot foundation"
-                            style={{ border: '1px inset #fff', borderRadius: '4px', width: '71px', height: '96px' }}
+                            style={{ border: '1px inset #fff', borderRadius: '4px', width: '80px', height: '105px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={() => handleDrop('foundation', i)}
                         >
@@ -307,7 +319,7 @@ const Solitaire = () => {
                         <div
                             key={`col-${i}`}
                             className="column"
-                            style={{ position: 'relative', width: '71px' }}
+                            style={{ position: 'relative', width: '80px', minHeight: '105px' }}
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={() => handleDrop('column', i)}
                         >
