@@ -19,7 +19,7 @@ function StartMenu({ isOpen, onItemClick }) {
     // Focus management
     useEffect(() => {
         if (isOpen && menuRef.current) {
-            // Find first button to focus? 
+            // Find first button to focus?
             // Better to let user tab in or programmatically focus first item
             // preventing focus trap for now, just aria-hidden toggle
         }
@@ -54,7 +54,7 @@ function StartMenu({ isOpen, onItemClick }) {
                 {recentPrograms.length > 0 ? (
                     <>
                         <div className={styles.sectionLabel}>Recent</div>
-                        {recentPrograms.map(programId => (
+                        {recentPrograms.map((programId) => (
                             <button
                                 key={programId}
                                 className={styles.item}
@@ -68,26 +68,52 @@ function StartMenu({ isOpen, onItemClick }) {
                     </>
                 ) : (
                     <>
-                        <button className={styles.item} data-open="about" role="menuitem">About Me</button>
-                        <button className={styles.item} data-open="resume" role="menuitem">Resume</button>
-                        <button className={styles.item} data-open="projects" role="menuitem">Projects</button>
-                        <button className={styles.item} data-open="contact" role="menuitem">Contact</button>
+                        <button className={styles.item} data-open="about" role="menuitem">
+                            About Me
+                        </button>
+                        <button className={styles.item} data-open="resume" role="menuitem">
+                            Resume
+                        </button>
+                        <button className={styles.item} data-open="projects" role="menuitem">
+                            Projects
+                        </button>
+                        <button className={styles.item} data-open="contact" role="menuitem">
+                            Contact
+                        </button>
                         <div className={styles.separator}></div>
                     </>
                 )}
 
                 {/* Fixed items */}
                 <div className={styles.sectionLabel}>Programs</div>
-                <button className={styles.item} data-open="fileexplorer" role="menuitem">📁 File Explorer</button>
-                <button className={styles.item} data-open="terminal" role="menuitem">💻 Command Prompt</button>
-                <button className={styles.item} data-open="notepad" role="menuitem">📝 Notepad</button>
-                <button className={styles.item} data-open="paint" role="menuitem">🎨 Paint</button>
-                <button className={styles.item} data-open="minesweeper" role="menuitem">💣 Minesweeper</button>
-                <button className={styles.item} data-open="outlook" role="menuitem">📧 Outlook Express</button>
+                <button className={styles.item} data-open="fileexplorer" role="menuitem">
+                    📁 File Explorer
+                </button>
+                <button className={styles.item} data-open="terminal" role="menuitem">
+                    💻 Command Prompt
+                </button>
+                <button className={styles.item} data-open="notepad" role="menuitem">
+                    📝 Notepad
+                </button>
+                <button className={styles.item} data-open="paint" role="menuitem">
+                    🎨 Paint
+                </button>
+                <button className={styles.item} data-open="minesweeper" role="menuitem">
+                    💣 Minesweeper
+                </button>
+                <button className={styles.item} data-open="outlook" role="menuitem">
+                    📧 Outlook Express
+                </button>
                 <div className={styles.separator}></div>
-                <button className={styles.item} data-open="settings" role="menuitem">⚙️ Settings</button>
-                <button className={styles.item} data-action="run" role="menuitem">▶️ Run...</button>
-                <button className={styles.item} data-action="shutdown" role="menuitem">🔴 Shut Down...</button>
+                <button className={styles.item} data-open="settings" role="menuitem">
+                    ⚙️ Settings
+                </button>
+                <button className={styles.item} data-action="run" role="menuitem">
+                    ▶️ Run...
+                </button>
+                <button className={styles.item} data-action="shutdown" role="menuitem">
+                    🔴 Shut Down...
+                </button>
             </div>
         </div>
     )

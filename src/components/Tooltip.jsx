@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useLayoutEffect, useRef, useEffect } from 'react'
 
 function Tooltip({ text, children, delay = 500 }) {
     const [isVisible, setIsVisible] = useState(false)
@@ -26,7 +26,7 @@ function Tooltip({ text, children, delay = 500 }) {
     }
 
     // Adjust position to keep tooltip in viewport
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (isVisible && tooltipRef.current) {
             const rect = tooltipRef.current.getBoundingClientRect()
             const viewportWidth = window.innerWidth
@@ -46,6 +46,7 @@ function Tooltip({ text, children, delay = 500 }) {
             }
 
             if (newX !== position.x || newY !== position.y) {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setPosition({ x: newX, y: newY })
             }
         }

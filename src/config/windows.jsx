@@ -4,7 +4,9 @@ import Notepad from '../components/Notepad'
 import OutlookExpress from '../components/OutlookExpress'
 import Paint from '../components/Paint'
 import Minesweeper from '../components/Minesweeper'
-import SystemProperties from '../components/SystemProperties'
+import Freecell from '../components/Freecell'
+import Pinball from '../components/Pinball'
+
 import { ICONS, PROJECTS } from './icons'
 
 const getIcon = (id) => ICONS.find((i) => i.id === id)?.icon || 'icons/application-0.png'
@@ -216,6 +218,20 @@ export const WINDOW_CONFIGS = {
         content: <Minesweeper />,
         bodyStyle: { padding: 0, background: '#c0c0c0' },
         resizable: false
+    },
+    freecell: {
+        title: 'FreeCell',
+        icon: getIcon('freecell'),
+        defaultStyle: { top: 50, left: 50, width: 640, height: 480 },
+        content: <Freecell />,
+        bodyStyle: { padding: 0, background: '#008000' }
+    },
+    pinball: {
+        title: '3D Pinball for Windows - Space Cadet',
+        icon: getIcon('pinball'),
+        defaultStyle: { top: 20, left: 20, width: 600, height: 450 },
+        content: <Pinball />,
+        bodyStyle: { padding: 0, background: '#000' }
     },
     // Project windows - dynamically created based on project ID
     project_dicegame: {

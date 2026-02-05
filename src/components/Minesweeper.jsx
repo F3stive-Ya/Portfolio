@@ -21,6 +21,24 @@ const GAME_STATE = {
     LOST: 'lost'
 }
 
+// Styles for the Seven-Segment Display
+const Counter = ({ value }) => (
+    <div
+        style={{
+            background: '#000',
+            color: '#ff0000',
+            fontFamily: 'monospace',
+            fontSize: '22px',
+            lineHeight: '1',
+            padding: '1px 2px',
+            border: '2px inset #dfdfdf',
+            letterSpacing: '1px'
+        }}
+    >
+        {value}
+    </div>
+)
+
 const Minesweeper = ({ onResize, onClose }) => {
     const [difficulty, setDifficulty] = useState('beginner')
     const [grid, setGrid] = useState([])
@@ -29,7 +47,6 @@ const Minesweeper = ({ onResize, onClose }) => {
     const [time, setTime] = useState(0)
     const [isMouseDown, setIsMouseDown] = useState(false)
     const [activeMenu, setActiveMenu] = useState(null)
-    const [lastGameSettings, setLastGameSettings] = useState(null)
 
     const timerRef = useRef(null)
     const menuRef = useRef(null)
@@ -45,33 +62,36 @@ const Minesweeper = ({ onResize, onClose }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
-    const updateWindowSize = useCallback((rows, cols) => {
-        if (!onResize) return
+    const updateWindowSize = useCallback(
+        (rows, cols) => {
+            if (!onResize) return
 
-        // Exact measurements based on Windows 95
-        // Content Heights:
-        // Menu Bar: ~24px
-        // Game Header: ~46px
-        // Board Borders/Padding: ~12px
-        // Total Content Overhead: ~82px
-        // 
-        // Window Chrome Heights (from Window.jsx):
-        // Titlebar: ~30px
-        // Window Borders: ~8px (4px top + 4px bottom)
-        // Total Chrome Overhead: ~38px
-        //
-        // Total Height Required = BoardHeight + ContentOverhead + ChromeOverhead
-        // Height = (Rows * 16) + 82 + 38 = (Rows * 16) + 120
-        // Adding slight buffer for safety -> 140px
+            // Exact measurements based on Windows 95
+            // Content Heights:
+            // Menu Bar: ~24px
+            // Game Header: ~46px
+            // Board Borders/Padding: ~12px
+            // Total Content Overhead: ~82px
+            //
+            // Window Chrome Heights (from Window.jsx):
+            // Titlebar: ~30px
+            // Window Borders: ~8px (4px top + 4px bottom)
+            // Total Chrome Overhead: ~38px
+            //
+            // Total Height Required = BoardHeight + ContentOverhead + ChromeOverhead
+            // Height = (Rows * 16) + 82 + 38 = (Rows * 16) + 120
+            // Adding slight buffer for safety -> 140px
 
-        const boardWidth = cols * 16
-        const boardHeight = rows * 16
+            const boardWidth = cols * 16
+            const boardHeight = rows * 16
 
-        const width = boardWidth + 40 // Ensure enough horizontal space
-        const height = boardHeight + 140
+            const width = boardWidth + 40 // Ensure enough horizontal space
+            const height = boardHeight + 140
 
-        onResize(width, height)
-    }, [onResize])
+            onResize(width, height)
+        },
+        [onResize]
+    )
 
     const initGame = useCallback(
         (diff = difficulty) => {
@@ -114,50 +134,56 @@ const Minesweeper = ({ onResize, onClose }) => {
     // Initial load
     useEffect(() => {
         if (grid.length === 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             initGame('beginner')
         }
         return () => clearInterval(timerRef.current)
     }, [initGame, grid.length]) // Depend on grid.length to only run once if empty
 
-    const placeMines = (firstRow, firstCol) => {
-        const { rows, cols, mines } = DIFFICULTIES[difficulty]
-        const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })))
+    const placeMines = useCallback(
+        (firstRow, firstCol) => {
+            const { rows, cols, mines } = DIFFICULTIES[difficulty]
+            const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })))
 
-        let minesPlaced = 0
-        while (minesPlaced < mines) {
-            const r = Math.floor(Math.random() * rows)
-            const c = Math.floor(Math.random() * cols)
+            let minesPlaced = 0
+            while (minesPlaced < mines) {
+                const r = Math.floor(Math.random() * rows)
+                const c = Math.floor(Math.random() * cols)
 
-            if (!newGrid[r][c].isMine && (r !== firstRow || c !== firstCol)) {
-                newGrid[r][c].isMine = true
-                minesPlaced++
-            }
-        }
-
-        // Calculate neighbors
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                if (!newGrid[r][c].isMine) {
-                    let count = 0
-                    for (let i = -1; i <= 1; i++) {
-                        for (let j = -1; j <= 1; j++) {
-                            const nr = r + i
-                            const nc = c + j
-                            if (
-                                nr >= 0 && nr < rows &&
-                                nc >= 0 && nc < cols &&
-                                newGrid[nr][nc].isMine
-                            ) {
-                                count++
-                            }
-                        }
-                    }
-                    newGrid[r][c].neighborCount = count
+                if (!newGrid[r][c].isMine && (r !== firstRow || c !== firstCol)) {
+                    newGrid[r][c].isMine = true
+                    minesPlaced++
                 }
             }
-        }
-        return newGrid
-    }
+
+            // Calculate neighbors
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (!newGrid[r][c].isMine) {
+                        let count = 0
+                        for (let i = -1; i <= 1; i++) {
+                            for (let j = -1; j <= 1; j++) {
+                                const nr = r + i
+                                const nc = c + j
+                                if (
+                                    nr >= 0 &&
+                                    nr < rows &&
+                                    nc >= 0 &&
+                                    nc < cols &&
+                                    newGrid[nr][nc].isMine
+                                ) {
+                                    count++
+                                }
+                            }
+                        }
+                        newGrid[r][c].neighborCount = count
+                    }
+                }
+            }
+            return newGrid
+        },
+        [difficulty, grid]
+    )
 
     const startGame = (r, c) => {
         const newGrid = placeMines(r, c)
@@ -172,7 +198,11 @@ const Minesweeper = ({ onResize, onClose }) => {
     }
 
     const revealCell = (currentGrid, r, c) => {
-        if (currentGrid[r][c].state !== CELL_STATE.HIDDEN && currentGrid[r][c].state !== CELL_STATE.QUESTION) return
+        if (
+            currentGrid[r][c].state !== CELL_STATE.HIDDEN &&
+            currentGrid[r][c].state !== CELL_STATE.QUESTION
+        )
+            return
 
         currentGrid[r][c].state = CELL_STATE.REVEALED
 
@@ -208,7 +238,7 @@ const Minesweeper = ({ onResize, onClose }) => {
         }
 
         // Playing state
-        newGrid = grid.map(row => row.map(cell => ({ ...cell })))
+        newGrid = grid.map((row) => row.map((cell) => ({ ...cell })))
         const cell = newGrid[r][c]
 
         if (cell.isMine) {
@@ -228,15 +258,15 @@ const Minesweeper = ({ onResize, onClose }) => {
         if (gameState !== GAME_STATE.PLAYING && gameState !== GAME_STATE.IDLE) return
         if (grid[r][c].state === CELL_STATE.REVEALED) return
 
-        const newGrid = grid.map(row => row.map(cell => ({ ...cell })))
+        const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })))
         const cell = newGrid[r][c]
 
         if (cell.state === CELL_STATE.HIDDEN) {
             cell.state = CELL_STATE.FLAGGED
-            setMinesLeft(m => m - 1)
+            setMinesLeft((m) => m - 1)
         } else if (cell.state === CELL_STATE.FLAGGED) {
             cell.state = CELL_STATE.QUESTION
-            setMinesLeft(m => m + 1)
+            setMinesLeft((m) => m + 1)
         } else if (cell.state === CELL_STATE.QUESTION) {
             cell.state = CELL_STATE.HIDDEN
         }
@@ -247,11 +277,15 @@ const Minesweeper = ({ onResize, onClose }) => {
         setGameState(GAME_STATE.LOST)
         clearInterval(timerRef.current)
         // Reveal all mines
-        const newGrid = finalGrid.map(row => row.map(cell => {
-            if (cell.isMine && cell.state !== CELL_STATE.FLAGGED) return { ...cell, state: CELL_STATE.REVEALED }
-            if (!cell.isMine && cell.state === CELL_STATE.FLAGGED) return { ...cell, isMisflagged: true }
-            return cell
-        }))
+        const newGrid = finalGrid.map((row) =>
+            row.map((cell) => {
+                if (cell.isMine && cell.state !== CELL_STATE.FLAGGED)
+                    return { ...cell, state: CELL_STATE.REVEALED }
+                if (!cell.isMine && cell.state === CELL_STATE.FLAGGED)
+                    return { ...cell, isMisflagged: true }
+                return cell
+            })
+        )
         setGrid(newGrid)
     }
 
@@ -268,62 +302,13 @@ const Minesweeper = ({ onResize, onClose }) => {
             clearInterval(timerRef.current)
             setMinesLeft(0)
             // Flag remaining
-            const newGrid = currentGrid.map(row => row.map(cell => {
-                if (cell.isMine) return { ...cell, state: CELL_STATE.FLAGGED }
-                return cell
-            }))
+            const newGrid = currentGrid.map((row) =>
+                row.map((cell) => {
+                    if (cell.isMine) return { ...cell, state: CELL_STATE.FLAGGED }
+                    return cell
+                })
+            )
             setGrid(newGrid)
-        }
-    }
-
-    const checkChord = (r, c) => {
-        if (gameState !== GAME_STATE.PLAYING) return
-        if (grid[r][c].state !== CELL_STATE.REVEALED) return
-        if (grid[r][c].neighborCount === 0) return
-
-        // Count flags around
-        let flags = 0
-        const { rows, cols } = DIFFICULTIES[difficulty]
-
-        for (let i = -1; i <= 1; i++) {
-            for (let j = -1; j <= 1; j++) {
-                const nr = r + i
-                const nc = c + j
-                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-                    if (grid[nr][nc].state === CELL_STATE.FLAGGED) flags++
-                }
-            }
-        }
-
-        if (flags === grid[r][c].neighborCount) {
-            // Reveal neighbors
-            let newGrid = grid.map(row => row.map(cell => ({ ...cell })))
-            let hitMine = false
-
-            const chordReveal = (currGrid, cr, cc) => {
-                if (currGrid[cr][cc].state !== CELL_STATE.HIDDEN && currGrid[cr][cc].state !== CELL_STATE.QUESTION) return
-
-                if (currGrid[cr][cc].state === CELL_STATE.FLAGGED) return // Should allow chording? No, flag is protected
-
-                currGrid[cr][cc].state = CELL_STATE.REVEALED
-                if (currGrid[cr][cc].isMine) {
-                    currGrid[cr][cc].isExploded = true
-                    hitMine = true
-                } else if (currGrid[cr][cc].neighborCount === 0) {
-                    // recursive reveal if 0
-                    // (Copy logic from revealCell if needed, but simplified for single depth usually)
-                    // Actually standard rules say if you reveal a 0, it opens up. 
-                    // We can reuse revealCell logic if we refactor, but for now let's just do basics or reuse.
-                    // The issue is reusing revealCell works on 'currentGrid' but we are iterating.
-                    // For simplicity, let's just reveal immediate. 
-                    // PROPER WAY: call revealCell for each neighbor.
-                }
-            }
-
-            // ... simpler chording for now: just trigger clicks on neighbors?
-            // Implementing proper chording might be complex in this single function. 
-            // Skipping complex chording for this 'heavy improve' since it wasn't explicitly asked, 
-            // but 'fit to window' and 'menu' were.
         }
     }
 
@@ -342,40 +327,31 @@ const Minesweeper = ({ onResize, onClose }) => {
         setActiveMenu(null)
     }
 
-    // Styles for the Seven-Segment Display
-    const Counter = ({ value }) => (
-        <div style={{
-            background: '#000',
-            color: '#ff0000',
-            fontFamily: 'monospace',
-            fontSize: '22px',
-            lineHeight: '1',
-            padding: '1px 2px',
-            border: '2px inset #dfdfdf',
-            letterSpacing: '1px'
-        }}>
-            {value}
-        </div>
-    )
-
     return (
-        <div className="minesweeper-container" style={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            width: '100%',
-            overflow: 'hidden',
-            background: '#c0c0c0'
-        }}>
-            {/* Menu Bar */}
-            <div className="minesweeper-menubar" ref={menuRef} style={{
+        <div
+            className="minesweeper-container"
+            style={{
                 display: 'flex',
-                padding: '2px 0 2px 0',
-                background: '#c0c0c0',
-                userSelect: 'none',
-                flexShrink: 0,
-                minHeight: '24px'
-            }}>
+                flexDirection: 'column',
+                height: '100%',
+                width: '100%',
+                overflow: 'hidden',
+                background: '#c0c0c0'
+            }}
+        >
+            {/* Menu Bar */}
+            <div
+                className="minesweeper-menubar"
+                ref={menuRef}
+                style={{
+                    display: 'flex',
+                    padding: '2px 0 2px 0',
+                    background: '#c0c0c0',
+                    userSelect: 'none',
+                    flexShrink: 0,
+                    minHeight: '24px'
+                }}
+            >
                 <div style={{ position: 'relative' }}>
                     <div
                         className={`menu-item ${activeMenu === 'game' ? 'active' : ''}`}
@@ -390,34 +366,112 @@ const Minesweeper = ({ onResize, onClose }) => {
                         <u style={{ textDecoration: 'underline' }}>G</u>ame
                     </div>
                     {activeMenu === 'game' && (
-                        <div style={{
-                            position: 'absolute',
-                            top: '100%',
-                            left: 0,
-                            zIndex: 100,
-                            background: '#c0c0c0',
-                            border: '2px outset #dfdfdf',
-                            boxShadow: '2px 2px 5px rgba(0,0,0,0.5)',
-                            minWidth: '120px',
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}>
-                            <div className="hover-item" onClick={() => { initGame(); setActiveMenu(null) }} style={{ padding: '4px 12px', cursor: 'pointer' }}>New</div>
-                            <div style={{ height: '1px', background: '#808080', margin: '2px 1px', borderBottom: '1px solid #fff' }}></div>
-                            <div className="hover-item" onClick={() => handleDifficultySelect('beginner')} style={{ padding: '4px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                                {difficulty === 'beginner' && <span style={{ marginRight: '4px' }}>✓</span>}
-                                <span style={{ marginLeft: difficulty === 'beginner' ? 0 : '14px' }}>Beginner</span>
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: '100%',
+                                left: 0,
+                                zIndex: 100,
+                                background: '#c0c0c0',
+                                border: '2px outset #dfdfdf',
+                                boxShadow: '2px 2px 5px rgba(0,0,0,0.5)',
+                                minWidth: '120px',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}
+                        >
+                            <div
+                                className="hover-item"
+                                onClick={() => {
+                                    initGame()
+                                    setActiveMenu(null)
+                                }}
+                                style={{ padding: '4px 12px', cursor: 'pointer' }}
+                            >
+                                New
                             </div>
-                            <div className="hover-item" onClick={() => handleDifficultySelect('intermediate')} style={{ padding: '4px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                                {difficulty === 'intermediate' && <span style={{ marginRight: '4px' }}>✓</span>}
-                                <span style={{ marginLeft: difficulty === 'intermediate' ? 0 : '14px' }}>Intermediate</span>
+                            <div
+                                style={{
+                                    height: '1px',
+                                    background: '#808080',
+                                    margin: '2px 1px',
+                                    borderBottom: '1px solid #fff'
+                                }}
+                            ></div>
+                            <div
+                                className="hover-item"
+                                onClick={() => handleDifficultySelect('beginner')}
+                                style={{
+                                    padding: '4px 12px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                {difficulty === 'beginner' && (
+                                    <span style={{ marginRight: '4px' }}>✓</span>
+                                )}
+                                <span
+                                    style={{ marginLeft: difficulty === 'beginner' ? 0 : '14px' }}
+                                >
+                                    Beginner
+                                </span>
                             </div>
-                            <div className="hover-item" onClick={() => handleDifficultySelect('expert')} style={{ padding: '4px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                                {difficulty === 'expert' && <span style={{ marginRight: '4px' }}>✓</span>}
-                                <span style={{ marginLeft: difficulty === 'expert' ? 0 : '14px' }}>Expert</span>
+                            <div
+                                className="hover-item"
+                                onClick={() => handleDifficultySelect('intermediate')}
+                                style={{
+                                    padding: '4px 12px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                {difficulty === 'intermediate' && (
+                                    <span style={{ marginRight: '4px' }}>✓</span>
+                                )}
+                                <span
+                                    style={{
+                                        marginLeft: difficulty === 'intermediate' ? 0 : '14px'
+                                    }}
+                                >
+                                    Intermediate
+                                </span>
                             </div>
-                            <div style={{ height: '1px', background: '#808080', margin: '2px 1px', borderBottom: '1px solid #fff' }}></div>
-                            <div className="hover-item" onClick={() => { if (onClose) onClose(); }} style={{ padding: '4px 12px', cursor: 'pointer' }}>Exit</div>
+                            <div
+                                className="hover-item"
+                                onClick={() => handleDifficultySelect('expert')}
+                                style={{
+                                    padding: '4px 12px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                {difficulty === 'expert' && (
+                                    <span style={{ marginRight: '4px' }}>✓</span>
+                                )}
+                                <span style={{ marginLeft: difficulty === 'expert' ? 0 : '14px' }}>
+                                    Expert
+                                </span>
+                            </div>
+                            <div
+                                style={{
+                                    height: '1px',
+                                    background: '#808080',
+                                    margin: '2px 1px',
+                                    borderBottom: '1px solid #fff'
+                                }}
+                            ></div>
+                            <div
+                                className="hover-item"
+                                onClick={() => {
+                                    if (onClose) onClose()
+                                }}
+                                style={{ padding: '4px 12px', cursor: 'pointer' }}
+                            >
+                                Exit
+                            </div>
                         </div>
                     )}
                 </div>
@@ -429,7 +483,7 @@ const Minesweeper = ({ onResize, onClose }) => {
                             padding: '2px 6px',
                             cursor: 'default',
                             background: activeMenu === 'help' ? '#000080' : 'transparent',
-                            color: activeMenu === 'help' ? '#fff' : '#000',
+                            color: activeMenu === 'help' ? '#fff' : '#000'
                         }}
                     >
                         <u style={{ textDecoration: 'underline' }}>H</u>elp
@@ -438,38 +492,47 @@ const Minesweeper = ({ onResize, onClose }) => {
             </div>
 
             {/* Game Area */}
-            <div className="minesweeper-game-area" style={{
-                padding: '6px',
-                borderLeft: '3px solid #fff',
-                borderTop: '3px solid #fff',
-                borderRight: '3px solid #808080',
-                borderBottom: '3px solid #808080',
-                background: '#c0c0c0',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                margin: '0 3px 3px 3px' // slight offset to look like frame
-            }}>
-                {/* Header */}
-                <div className="minesweeper-header" style={{
-                    border: '2px inset #dfdfdf', // Actually inset is usually border-left/top gray, bottom/right white inverted? 
-                    // Windows 95 inset: Top/Left = #808080, Bottom/Right = #fff
-                    borderLeft: '2px solid #808080',
-                    borderTop: '2px solid #808080',
-                    borderRight: '2px solid #fff',
-                    borderBottom: '2px solid #fff',
-                    padding: '4px 6px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+            <div
+                className="minesweeper-game-area"
+                style={{
+                    padding: '6px',
+                    borderLeft: '3px solid #fff',
+                    borderTop: '3px solid #fff',
+                    borderRight: '3px solid #808080',
+                    borderBottom: '3px solid #808080',
                     background: '#c0c0c0',
-                    marginBottom: '0'
-                }}>
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px',
+                    margin: '0 3px 3px 3px' // slight offset to look like frame
+                }}
+            >
+                {/* Header */}
+                <div
+                    className="minesweeper-header"
+                    style={{
+                        border: '2px inset #dfdfdf', // Actually inset is usually border-left/top gray, bottom/right white inverted?
+                        // Windows 95 inset: Top/Left = #808080, Bottom/Right = #fff
+                        borderLeft: '2px solid #808080',
+                        borderTop: '2px solid #808080',
+                        borderRight: '2px solid #fff',
+                        borderBottom: '2px solid #fff',
+                        padding: '4px 6px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: '#c0c0c0',
+                        marginBottom: '0'
+                    }}
+                >
                     <Counter value={formatNumber(minesLeft)} />
 
                     <button
                         onClick={() => initGame()}
-                        onMouseDown={(e) => { e.preventDefault(); setIsMouseDown(true) }}
+                        onMouseDown={(e) => {
+                            e.preventDefault()
+                            setIsMouseDown(true)
+                        }}
                         onMouseUp={() => setIsMouseDown(false)}
                         onMouseLeave={() => setIsMouseDown(false)}
                         style={{
@@ -485,9 +548,13 @@ const Minesweeper = ({ onResize, onClose }) => {
                             cursor: 'pointer'
                         }}
                     >
-                        {gameState === GAME_STATE.WON ? '😎' :
-                            gameState === GAME_STATE.LOST ? '😵' :
-                                isMouseDown ? '😮' : '🙂'}
+                        {gameState === GAME_STATE.WON
+                            ? '😎'
+                            : gameState === GAME_STATE.LOST
+                                ? '😵'
+                                : isMouseDown
+                                    ? '😮'
+                                    : '🙂'}
                     </button>
 
                     <Counter value={formatNumber(time)} />
@@ -509,7 +576,7 @@ const Minesweeper = ({ onResize, onClose }) => {
                         width: 'fit-content' // Ensure grid wraps tight
                     }}
                 >
-                    {grid.map((row, r) => (
+                    {grid.map((row, r) =>
                         row.map((cell, c) => (
                             <div
                                 key={`${r}-${c}`}
@@ -522,13 +589,21 @@ const Minesweeper = ({ onResize, onClose }) => {
                                 style={{
                                     width: '16px',
                                     height: '16px',
-                                    border: cell.state === CELL_STATE.REVEALED ? '1px dotted #808080' : '2px outset #fff', // Revealed has standard 1px gray border or none?
+                                    border:
+                                        cell.state === CELL_STATE.REVEALED
+                                            ? '1px dotted #808080'
+                                            : '2px outset #fff', // Revealed has standard 1px gray border or none?
                                     // Revealed cells in Win95 usually have a very subtle border or none (inset look).
                                     // Actually they share a 1px border #808080.
                                     borderWidth: cell.state === CELL_STATE.REVEALED ? '1px' : '2px',
-                                    borderStyle: cell.state === CELL_STATE.REVEALED ? 'solid' : 'outset',
-                                    borderColor: cell.state === CELL_STATE.REVEALED ? '#808080' : '#fff', // Outset uses light/dark automatic, but specific colors help
-                                    background: cell.state === CELL_STATE.REVEALED && cell.isExploded ? '#ff0000' : '#c0c0c0',
+                                    borderStyle:
+                                        cell.state === CELL_STATE.REVEALED ? 'solid' : 'outset',
+                                    borderColor:
+                                        cell.state === CELL_STATE.REVEALED ? '#808080' : '#fff', // Outset uses light/dark automatic, but specific colors help
+                                    background:
+                                        cell.state === CELL_STATE.REVEALED && cell.isExploded
+                                            ? '#ff0000'
+                                            : '#c0c0c0',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -537,24 +612,36 @@ const Minesweeper = ({ onResize, onClose }) => {
                                     cursor: 'default',
                                     boxSizing: 'border-box',
                                     color:
-                                        cell.neighborCount === 1 ? '#0000ff' :
-                                            cell.neighborCount === 2 ? '#008000' :
-                                                cell.neighborCount === 3 ? '#ff0000' :
-                                                    cell.neighborCount === 4 ? '#000080' :
-                                                        cell.neighborCount === 5 ? '#800000' :
-                                                            cell.neighborCount === 6 ? '#008080' :
-                                                                cell.neighborCount === 7 ? '#000000' :
-                                                                    cell.neighborCount === 8 ? '#808080' : '#000'
+                                        cell.neighborCount === 1
+                                            ? '#0000ff'
+                                            : cell.neighborCount === 2
+                                                ? '#008000'
+                                                : cell.neighborCount === 3
+                                                    ? '#ff0000'
+                                                    : cell.neighborCount === 4
+                                                        ? '#000080'
+                                                        : cell.neighborCount === 5
+                                                            ? '#800000'
+                                                            : cell.neighborCount === 6
+                                                                ? '#008080'
+                                                                : cell.neighborCount === 7
+                                                                    ? '#000000'
+                                                                    : cell.neighborCount === 8
+                                                                        ? '#808080'
+                                                                        : '#000'
                                 }}
                             >
                                 {cell.state === CELL_STATE.FLAGGED && '🚩'}
                                 {cell.state === CELL_STATE.QUESTION && '?'}
                                 {cell.state === CELL_STATE.REVEALED && cell.isMine && '💣'}
-                                {cell.state === CELL_STATE.REVEALED && !cell.isMine && cell.neighborCount > 0 && cell.neighborCount}
+                                {cell.state === CELL_STATE.REVEALED &&
+                                    !cell.isMine &&
+                                    cell.neighborCount > 0 &&
+                                    cell.neighborCount}
                                 {cell.isMisflagged && <span className="misflag">❌</span>}
                             </div>
                         ))
-                    ))}
+                    )}
                 </div>
             </div>
             <style>{`

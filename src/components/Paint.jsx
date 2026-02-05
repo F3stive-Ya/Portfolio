@@ -49,6 +49,16 @@ const COLOR_PALETTE = [
 
 const BRUSH_SIZES = [1, 2, 4, 6, 8, 12, 16, 24]
 
+const ToolButton = ({ toolType, icon, title, currentTool, onSelectTool }) => (
+    <button
+        className={`paint-tool-btn ${currentTool === toolType ? 'active' : ''}`}
+        onClick={() => onSelectTool(toolType)}
+        title={title}
+    >
+        {icon}
+    </button>
+)
+
 function Paint() {
     const canvasRef = useRef(null)
     const overlayCanvasRef = useRef(null)
@@ -88,9 +98,8 @@ function Paint() {
 
         // Save initial state
         saveToHistory()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-
 
     // Undo
     const undo = useCallback(() => {
@@ -343,17 +352,6 @@ function Paint() {
         link.click()
     }
 
-    // Tool button component
-    const ToolButton = ({ toolType, icon, title }) => (
-        <button
-            className={`paint-tool-btn ${tool === toolType ? 'active' : ''}`}
-            onClick={() => setTool(toolType)}
-            title={title}
-        >
-            {icon}
-        </button>
-    )
-
     return (
         <div className="paint-container">
             {/* Menu bar */}
@@ -381,15 +379,63 @@ function Paint() {
             <div className="paint-main">
                 {/* Toolbar */}
                 <div className="paint-toolbar">
-                    <ToolButton toolType={TOOLS.PENCIL} icon="✏️" title="Pencil" />
-                    <ToolButton toolType={TOOLS.BRUSH} icon="🖌️" title="Brush" />
-                    <ToolButton toolType={TOOLS.ERASER} icon="🧹" title="Eraser" />
-                    <ToolButton toolType={TOOLS.FILL} icon="🪣" title="Fill" />
-                    <ToolButton toolType={TOOLS.EYEDROPPER} icon="💉" title="Eyedropper" />
+                    <ToolButton
+                        toolType={TOOLS.PENCIL}
+                        icon="✏️"
+                        title="Pencil"
+                        currentTool={tool}
+                        onSelectTool={setTool}
+                    />
+                    <ToolButton
+                        toolType={TOOLS.BRUSH}
+                        icon="🖌️"
+                        title="Brush"
+                        currentTool={tool}
+                        onSelectTool={setTool}
+                    />
+                    <ToolButton
+                        toolType={TOOLS.ERASER}
+                        icon="🧹"
+                        title="Eraser"
+                        currentTool={tool}
+                        onSelectTool={setTool}
+                    />
+                    <ToolButton
+                        toolType={TOOLS.FILL}
+                        icon="🪣"
+                        title="Fill"
+                        currentTool={tool}
+                        onSelectTool={setTool}
+                    />
+                    <ToolButton
+                        toolType={TOOLS.EYEDROPPER}
+                        icon="💉"
+                        title="Eyedropper"
+                        currentTool={tool}
+                        onSelectTool={setTool}
+                    />
                     <div className="paint-tool-separator" />
-                    <ToolButton toolType={TOOLS.LINE} icon="📏" title="Line" />
-                    <ToolButton toolType={TOOLS.RECTANGLE} icon="⬜" title="Rectangle" />
-                    <ToolButton toolType={TOOLS.ELLIPSE} icon="⭕" title="Ellipse" />
+                    <ToolButton
+                        toolType={TOOLS.LINE}
+                        icon="📏"
+                        title="Line"
+                        currentTool={tool}
+                        onSelectTool={setTool}
+                    />
+                    <ToolButton
+                        toolType={TOOLS.RECTANGLE}
+                        icon="⬜"
+                        title="Rectangle"
+                        currentTool={tool}
+                        onSelectTool={setTool}
+                    />
+                    <ToolButton
+                        toolType={TOOLS.ELLIPSE}
+                        icon="⭕"
+                        title="Ellipse"
+                        currentTool={tool}
+                        onSelectTool={setTool}
+                    />
 
                     <div className="paint-tool-separator" />
 

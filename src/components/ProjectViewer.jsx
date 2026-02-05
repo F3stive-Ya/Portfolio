@@ -63,6 +63,7 @@ const ProjectViewer = ({ projectId, onClose, isOpen }) => {
     // Reset state when project changes or window is re-opened
     useEffect(() => {
         if (isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setStep(WIZARD_STEPS.WELCOME)
             setProgress(0)
             setInstallLog([])

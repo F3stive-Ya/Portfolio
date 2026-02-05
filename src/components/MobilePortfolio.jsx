@@ -1,5 +1,3 @@
-import React from 'react'
-
 const MobilePortfolio = () => {
     return (
         <div className="mobile-portfolio">

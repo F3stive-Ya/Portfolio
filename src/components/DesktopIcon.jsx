@@ -10,6 +10,13 @@ function DesktopIcon({ id, label, iconSrc, onDoubleClick, isSelected }) {
             draggable="false"
             onDragStart={handleDragStart}
             onDoubleClick={onDoubleClick}
+            role="button"
+            tabIndex="0"
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    onDoubleClick()
+                }
+            }}
         >
             <div className="icon-inner">
                 <img className="icon-img" src={iconSrc} alt="" />

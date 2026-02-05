@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 
 const LetterGlitch = ({
     glitchColors = ['#00ff00', '#00cc00', '#009900'], // Matrix-green colors for BIOS
@@ -15,7 +15,7 @@ const LetterGlitch = ({
     const letters = useRef([])
     const grid = useRef({ columns: 0, rows: 0 })
     const context = useRef(null)
-    const lastGlitchTime = useRef(Date.now())
+    const lastGlitchTime = useRef(0)
 
     const lettersAndSymbols = Array.from(characters)
 
@@ -23,13 +23,13 @@ const LetterGlitch = ({
     const charWidth = 10
     const charHeight = 20
 
-    const getRandomChar = () => {
+    const getRandomChar = useCallback(() => {
         return lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)]
-    }
+    }, [lettersAndSymbols])
 
-    const getRandomColor = () => {
+    const getRandomColor = useCallback(() => {
         return glitchColors[Math.floor(Math.random() * glitchColors.length)]
-    }
+    }, [glitchColors])
 
     const hexToRgb = (hex) => {
         const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
@@ -40,10 +40,10 @@ const LetterGlitch = ({
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
         return result
             ? {
-                  r: parseInt(result[1], 16),
-                  g: parseInt(result[2], 16),
-                  b: parseInt(result[3], 16)
-              }
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            }
             : null
     }
 
@@ -62,18 +62,37 @@ const LetterGlitch = ({
         return { columns, rows }
     }
 
-    const initializeLetters = (columns, rows) => {
-        grid.current = { columns, rows }
-        const totalLetters = columns * rows
-        letters.current = Array.from({ length: totalLetters }, () => ({
-            char: getRandomChar(),
-            color: getRandomColor(),
-            targetColor: getRandomColor(),
-            colorProgress: 1
-        }))
-    }
+    const initializeLetters = useCallback(
+        (columns, rows) => {
+            grid.current = { columns, rows }
+            const totalLetters = columns * rows
+            letters.current = Array.from({ length: totalLetters }, () => ({
+                char: getRandomChar(),
+                color: getRandomColor(),
+                targetColor: getRandomColor(),
+                colorProgress: 1
+            }))
+        },
+        [getRandomChar, getRandomColor]
+    )
 
-    const resizeCanvas = () => {
+    const drawLetters = useCallback(() => {
+        if (!context.current || letters.current.length === 0) return
+        const ctx = context.current
+        const { width, height } = canvasRef.current.getBoundingClientRect()
+        ctx.clearRect(0, 0, width, height)
+        ctx.font = `${fontSize}px monospace`
+        ctx.textBaseline = 'top'
+
+        letters.current.forEach((letter, index) => {
+            const x = (index % grid.current.columns) * charWidth
+            const y = Math.floor(index / grid.current.columns) * charHeight
+            ctx.fillStyle = letter.color
+            ctx.fillText(letter.char, x, y)
+        })
+    }, [])
+
+    const resizeCanvas = useCallback(() => {
         const canvas = canvasRef.current
         if (!canvas) return
         const parent = canvas.parentElement
@@ -96,25 +115,9 @@ const LetterGlitch = ({
         initializeLetters(columns, rows)
 
         drawLetters()
-    }
+    }, [initializeLetters, drawLetters])
 
-    const drawLetters = () => {
-        if (!context.current || letters.current.length === 0) return
-        const ctx = context.current
-        const { width, height } = canvasRef.current.getBoundingClientRect()
-        ctx.clearRect(0, 0, width, height)
-        ctx.font = `${fontSize}px monospace`
-        ctx.textBaseline = 'top'
-
-        letters.current.forEach((letter, index) => {
-            const x = (index % grid.current.columns) * charWidth
-            const y = Math.floor(index / grid.current.columns) * charHeight
-            ctx.fillStyle = letter.color
-            ctx.fillText(letter.char, x, y)
-        })
-    }
-
-    const updateLetters = () => {
+    const updateLetters = useCallback(() => {
         if (!letters.current || letters.current.length === 0) return
 
         const updateCount = Math.max(1, Math.floor(letters.current.length * 0.05))
@@ -133,9 +136,9 @@ const LetterGlitch = ({
                 letters.current[index].colorProgress = 0
             }
         }
-    }
+    }, [getRandomChar, getRandomColor, smooth])
 
-    const handleSmoothTransitions = () => {
+    const handleSmoothTransitions = useCallback(() => {
         let needsRedraw = false
         letters.current.forEach((letter) => {
             if (letter.colorProgress < 1) {
@@ -154,22 +157,28 @@ const LetterGlitch = ({
         if (needsRedraw) {
             drawLetters()
         }
-    }
+    }, [drawLetters])
 
-    const animate = () => {
-        const now = Date.now()
-        if (now - lastGlitchTime.current >= glitchSpeed) {
-            updateLetters()
-            drawLetters()
-            lastGlitchTime.current = now
+    // Use a ref to break the circular dependency for the recursive call
+    // Use a ref to break the circular dependency for the recursive call
+    const animateRef = useRef(null)
+
+    useEffect(() => {
+        animateRef.current = () => {
+            const now = Date.now()
+            if (now - lastGlitchTime.current >= glitchSpeed) {
+                updateLetters()
+                drawLetters()
+                lastGlitchTime.current = now
+            }
+
+            if (smooth) {
+                handleSmoothTransitions()
+            }
+
+            animationRef.current = requestAnimationFrame(animateRef.current)
         }
-
-        if (smooth) {
-            handleSmoothTransitions()
-        }
-
-        animationRef.current = requestAnimationFrame(animate)
-    }
+    }, [drawLetters, glitchSpeed, handleSmoothTransitions, smooth, updateLetters])
 
     useEffect(() => {
         const canvas = canvasRef.current
@@ -177,27 +186,29 @@ const LetterGlitch = ({
 
         context.current = canvas.getContext('2d')
         resizeCanvas()
-        animate()
+
+        // Start animation
+        if (lastGlitchTime.current === 0) lastGlitchTime.current = Date.now()
+        animationRef.current = requestAnimationFrame(animateRef.current) // Start loop
 
         let resizeTimeout
 
         const handleResize = () => {
             clearTimeout(resizeTimeout)
             resizeTimeout = setTimeout(() => {
-                cancelAnimationFrame(animationRef.current)
+                if (animationRef.current) cancelAnimationFrame(animationRef.current)
                 resizeCanvas()
-                animate()
+                animationRef.current = requestAnimationFrame(animateRef.current)
             }, 100)
         }
 
         window.addEventListener('resize', handleResize)
 
         return () => {
-            cancelAnimationFrame(animationRef.current)
+            if (animationRef.current) cancelAnimationFrame(animationRef.current)
             window.removeEventListener('resize', handleResize)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [glitchSpeed, smooth])
+    }, [resizeCanvas]) // Removed animate dependency
 
     const containerStyle = {
         position: 'absolute',

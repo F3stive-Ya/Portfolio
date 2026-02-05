@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // Get base path for sounds (dev vs prod)
 const getBasePath = () => {
@@ -11,18 +11,18 @@ const getBasePath = () => {
 function LoginScreen({ onComplete }) {
     const [phase, setPhase] = useState('welcome') // welcome, logging, complete
     const [progress, setProgress] = useState(0)
-    const [audioPlayed, setAudioPlayed] = useState(false)
+    const audioPlayedRef = useRef(false)
 
     // Play startup sound when component mounts
     useEffect(() => {
-        if (!audioPlayed) {
+        if (!audioPlayedRef.current) {
             const basePath = getBasePath()
             const audio = new Audio(`${basePath}/sounds/startup.wav`)
             audio.volume = 0.5
             audio.play().catch(() => {})
-            setAudioPlayed(true)
+            audioPlayedRef.current = true
         }
-    }, [audioPlayed])
+    }, [])
 
     // Progress animation - runs for about 4 seconds (100 steps at 40ms = 4s)
     useEffect(() => {

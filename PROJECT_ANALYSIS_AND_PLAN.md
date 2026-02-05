@@ -3,84 +3,82 @@
 **Date:** 2026-02-05
 **Target:** Windows 95 Portfolio (`react-app`)
 
-## 1. Executive Summary
+---
 
-The project is a creative, Windows 95-themed portfolio built with React and Vite. It successfully emulates the desktop experience with window management, a start menu, and various applications. The codebase is functional but exhibits signs of rapid development, such as a monolithic `App.jsx` and a massive global stylesheet. To ensure long-term maintainability and performance, architectural refactoring is recommended alongside the introduction of testing and accessibility improvements.
+## 1. Codebase Analysis Summary
 
-## 2. Codebase Health Analysis
+### Architecture & Tech Stack
+- **Framework:** React 18 with Vite.
+- **Package Manager:** Bun.
+- **State Management:** Centralized in `App.jsx` with window management logic encapsulated in `useWindowManager` hook.
+- **Styling:** Primarily a large `index.css` file. Components recently starting to use CSS Modules (e.g., `StartMenu.module.css`).
+- **Persistence:** `localStorage` for theme, recent programs, and Notepad content. `sessionStorage` for boot state.
 
-| Category          | Status               | Notes                                                                                                                        |
-| :---------------- | :------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
-| **Architecture**  | ⚠️ Needs Improvement | `App.jsx` acts as a "God Component" managing too many responsibilities (Window State, System State, Drag/Resize, Shortcuts). |
-| **Styling**       | ⚠️ Unmaintainable    | Single `index.css` file (>67KB) contains all styles. Global scope collision risk is high.                                    |
-| **Performance**   | ✅ Good              | Build passes. Vite ensures fast dev server.                                                                                  |
-| **Testing**       | ❌ Missing           | No test runner configured. No unit or integration tests found.                                                               |
-| **Accessibility** | ❌ Critical          | Many interactive elements (div buttons) lack `role`, `tabIndex`, and `aria` attributes.                                      |
-| **Type Safety**   | ❌ None              | Plain JavaScript used. Prop types are not validated (missing `prop-types` or TypeScript).                                    |
+### Implementation Patterns
+- **Windows:** Defined in `src/config/windows.jsx` and rendered via the `Window.jsx` wrapper in `App.jsx`.
+- **Aesthetics:** High-fidelity Windows 95 recreation using beveled borders, specific hex colors (`#c0c0c0`), and classic icons.
 
-## 3. Identified Issues & Bugs
+---
 
-### 3.1. Accessibility (Critical)
+## 2. Identified Bugs & Improvement Areas
 
-- **Issue:** Custom UI elements like Desktop Icons, Taskbar buttons, and Start Menu items are implemented as `div`s with `onClick` handlers.
-- **Impact:** Users relying on keyboard navigation or screen readers cannot use the portfolio effectively.
-- **Fix:**
-    - Convert clickable `div`s to `<button>` elements where possible.
-    - Add `tabIndex="0"`, `role="button"`, and `onKeyDown` handlers for custom elements.
-    - Ensure focus management when opening/closing windows.
+### 2.1. Accessibility (Priority: High)
+- **Issue:** Many interactive elements (Desktop Icons, Taskbar buttons) are `div`s without proper ARIA roles or keyboard focus support.
+- **Impact:** Keyboard-only users and screen readers cannot navigate the OS effectively.
 
-### 3.2. Mobile Experience
+### 2.2. Style Maintainability (Priority: Medium)
+- **Issue:** `index.css` is quite large. While modularization has begun, many core styles are still global.
+- **Recommendation:** Continue migrating to CSS Modules for all components to prevent style bleeding.
 
-- **Issue:** The app blocks execution on mobile devices with a "Desktop Only" message.
-- **Impact:** A significant portion of portfolio traffic comes from mobile. Blocking them results in lost opportunities.
-- **Fix:** Implement a "Mobile Desktop" view or a fallback "Simple Portfolio" view for small screens instead of blocking access.
+### 2.3. Notepad Functionality (Priority: Medium)
+- **Issue:** Lacks standard File I/O operations expected of a "productivity" app.
+- **Improvement:** Implement "Save to Local" and "Open from Local".
 
-### 3.3. Monolithic State Manager
+### 2.4. Minesweeper UI (Priority: Low)
+- **Improvement:** Ensure the window perfectly fits the board on all difficulties without any redundant scrollbars or dead space.
 
-- **Issue:** `App.jsx` handles low-level logic (dragging math, resizing math) mixed with high-level logic (boot sequence, window orchestration).
-- **Impact:** Hard to read, hard to test, and prone to regression bugs when modifying one part.
+---
 
-## 4. Improvement Solutions & Upgrades
+## 3. Investigated Features & Solutions
 
-### Phase 1: Stability & Standards (Immediate)
+### 3.1. Notepad: Local Device Saving
+- **Feasibility:** ✅ Highly Feasible.
+- **Solution:** 
+    - **Save:** Use the `Blob` API to create a plain text object: `new Blob([content], { type: 'text/plain' })`. Trigger download using an ephemeral `<a>` tag.
+    - **Open:** Implement a hidden `<input type="file" accept=".txt">`. Use `FileReader` to read the content and update the Notepad state.
 
-1.  **Install Linting & Formatting**:
-    - Add `eslint` and `prettier` to enforce code style.
-    - Fix existing lint warnings.
-2.  **Setup Testing Infrastructure**:
-    - Install `vitest` and `@testing-library/react`.
-    - Write basic smoke tests for `App.jsx` and critical components like `Minesweeper`.
+### 3.2. Solitaire (Freecell)
+- **Feasibility:** ✅ Feasible (Custom Implementation).
+- **Preferred Approach:** **Custom React Implementation**.
+- **Details:** 
+    - Build a deck-shuffling utility using the Fisher-Yates algorithm.
+    - Implement drag-and-drop using standard mouse events (matching the project's existing drag logic) or a lightweight library like `react-use-gesture`.
+    - Aesthetics: Use the classic Windows card assets (can be sourced or recreated) and the `React95` look for the window.
 
-### Phase 2: Architectural Refactor (High Priority)
+---
 
-1.  **Extract Custom Hooks**:
-    - `useWindowDrag`: Encapsulate the drag-and-drop logic currently in `App.jsx`.
-    - `useWindowResize`: Encapsulate the resize logic.
-    - `useWindowManager`: Manage `windowStates`, `openWindow`, `closeWindow`, `zCounter`.
-    - `useSystemBoot`: Handle the BIOS -> Login -> Desktop state machine.
-2.  **Component Splitting**:
-    - Move `WINDOW_CONFIGS` to a separate `config/windows.jsx` file.
-    - Create a `<WindowManager />` component that consumes the context and renders windows, removing the loop from `App.jsx`.
+## 4. Proposed Upgrades & Solutions
 
-### Phase 3: CSS Modularization
+### Upgrade 1: The "Power User" Notepad
+- Add **Status Bar** showing real-time cursor position (Ln/Col).
+- Add **File Menu** with:
+    - `New`: Clear current document (with confirmation).
+    - `Open...`: Load local `.txt` files.
+    - `Save`: Download as `document.txt`.
+    - `Save As...`: Download with custom name.
 
-1.  **Refactor `index.css`**:
-    - Split the massive file into component-specific files.
-    - **Recommendation**: Use **CSS Modules** (e.g., `Window.module.css`, `Taskbar.module.css`) to scope styles locally and avoid collisions.
+### Upgrade 2: Classic Games Pack
+- **Freecell:** A fully playable version with 8 columns, 4 free cells, and 4 home cells.
 
-### Phase 4: Feature Upgrades (Future)
+### Upgrade 3: Architectural Cleanup
+- Split `index.css` further.
+- Extract any remaining logic from `App.jsx` (e.g., keyboard shortcuts) into a `useKeyboardShortcuts` hook.
 
-1.  **TypeScript Migration**:
-    - Gradually convert files to `.tsx` to add type safety, especially for the `windowStates` object and complex props.
-2.  **Lazy Loading**:
-    - Use `React.lazy` and `Suspense` for heavy "apps" like `Paint` or `Terminal` so they don't bloat the initial bundle.
+---
 
-## 5. Action Plan for Next Agent
+## 5. Implementation Roadmap for Next Agent
 
-If you are the agent receiving this plan, please execute the following steps in order:
-
-1.  **Setup ESLint/Prettier** to stabilize the code style.
-2.  **Create Custom Hooks** folder and extract `useWindowManager.js` from `App.jsx`.
-3.  **Refactor `App.jsx`** to use the new hook.
-4.  **Modularize CSS** for one component (e.g., `StartMenu`) as a proof-of-concept, then apply to others.
-5.  **Address Accessibility** in the `StartMenu` and `Taskbar`.
+1. **Step 1: Notepad Overhaul** - Implement the Save/Open logic.
+2. **Step 2: Accessibility Blitz** - Add `role="button"` and `tabIndex="0"` across the desktop.
+3. **Step 3: Freecell Development** - Build the logic-heavy Freecell component.
+4. **Step 4: Final Polish** - Run linting and verify responsive behavior.

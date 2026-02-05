@@ -169,8 +169,6 @@ function TreeItem({
 }
 
 function FileItem({ item, itemKey, onDoubleClick }) {
-    const isFolder = item.type === 'folder'
-
     return (
         <div className="file-item" onDoubleClick={() => onDoubleClick(item, itemKey)}>
             <img
@@ -335,7 +333,6 @@ function FileExplorer({ onOpenWindow }) {
     }
 
     // Check if selected item is a project
-    const selectedItem = getItemAtPath(selectedPath)
 
     return (
         <div className="file-explorer">

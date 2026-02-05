@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react'
 import LetterGlitch from './LetterGlitch'
-
-// System hardware info (shared with My Computer window)
-export const SYSTEM_INFO = {
-    cpu: 'Quantum Core @ 4.2 GHz',
-    ram: '32768 MB',
-    hdd: '2 TB SSD',
-    gpu: 'HyperGraphics 9000'
-}
+import { SYSTEM_INFO } from '../config/system'
 
 // BIOS text lines to display progressively
 const BOOT_SEQUENCE = [
@@ -48,7 +41,7 @@ function BiosScreen({ mode, onComplete }) {
 
     useEffect(() => {
         // Show lines progressively
-        const timers = sequence.map((line, index) => {
+        const timers = sequence.map((line) => {
             return setTimeout(() => {
                 setVisibleLines((prev) => [...prev, line.text])
             }, line.delay)
@@ -69,7 +62,7 @@ function BiosScreen({ mode, onComplete }) {
             clearTimeout(waitTimer)
             clearInterval(cursorInterval)
         }
-    }, [mode, lastMessageDelay])
+    }, [mode, lastMessageDelay, sequence])
 
     // Listen for any key or click to continue
     useEffect(() => {
@@ -99,8 +92,8 @@ function BiosScreen({ mode, onComplete }) {
                 opacity={0.15}
             />
             <div className="bios-content">
-                {visibleLines.map((line, index) => (
-                    <div key={index} className="bios-line">
+                {visibleLines.map((line, i) => (
+                    <div key={i} className="bios-line">
                         {line || '\u00A0'}
                     </div>
                 ))}

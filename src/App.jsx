@@ -27,8 +27,6 @@ const SYSTEM_STATE = {
     SHUTDOWN: 'shutdown' // Shutdown sequence
 }
 
-
-
 function App() {
     const { playError } = useSounds()
     const {
@@ -140,9 +138,9 @@ function App() {
         [windowStates, activeWindowId, openWindow, minimizeWindow, bringToFront]
     )
 
-    // Start menu handlers
-    const toggleStartMenu = () => setStartMenuOpen((prev) => !prev)
-    const closeStartMenu = () => setStartMenuOpen(false)
+    // Start menu handlers (defined early key handlers)
+    const toggleStartMenu = useCallback(() => setStartMenuOpen((prev) => !prev), [])
+    const closeStartMenu = useCallback(() => setStartMenuOpen(false), [])
 
     // Run dialog handlers
     const handleRunSubmit = (e) => {
@@ -187,7 +185,7 @@ function App() {
         const handleClick = () => closeStartMenu()
         document.addEventListener('click', handleClick)
         return () => document.removeEventListener('click', handleClick)
-    }, [])
+    }, [closeStartMenu])
 
     // Keyboard shortcuts
     useEffect(() => {
@@ -389,11 +387,15 @@ function App() {
             >
                 <form onSubmit={handleRunSubmit} className="run-form">
                     <div className="run-top-section">
-                        <img src="icons/file_program_group-0.png" alt="" className="run-dialog-icon" />
+                        <img
+                            src="icons/file_program_group-0.png"
+                            alt=""
+                            className="run-dialog-icon"
+                        />
                         <div className="run-description">
                             <p>
-                                Type the name of a program, folder, document, or Internet
-                                resource, and Windows will open it for you.
+                                Type the name of a program, folder, document, or Internet resource,
+                                and Windows will open it for you.
                             </p>
                         </div>
                     </div>
@@ -408,13 +410,21 @@ function App() {
                                 autoFocus
                                 className="combobox-input"
                             />
-                            <div className="combobox-button"><span>▼</span></div>
+                            <div className="combobox-button">
+                                <span>▼</span>
+                            </div>
                         </div>
                     </div>
 
                     <div className="run-buttons">
-                        <button type="submit" className="run-btn">OK</button>
-                        <button type="button" className="run-btn" onClick={() => closeWindow('run')}>
+                        <button type="submit" className="run-btn">
+                            OK
+                        </button>
+                        <button
+                            type="button"
+                            className="run-btn"
+                            onClick={() => closeWindow('run')}
+                        >
                             Cancel
                         </button>
                     </div>

@@ -167,7 +167,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                     setHistory([])
                     return
 
-                case 'dir':
+                case 'dir': {
                     const files = fileSystem[currentDir.toUpperCase()] || []
                     output.push({ type: 'output', text: ` Volume in drive C is PORTFOLIO` })
                     output.push({ type: 'output', text: ` Volume Serial Number is 1337-C0DE` })
@@ -192,6 +192,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                         text: `               ${files.length} File(s)          42,069 bytes`
                     })
                     break
+                }
 
                 case 'cd':
                     if (!args || args === '\\' || args === '/') {
@@ -340,7 +341,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                     output.push({ type: 'output', text: '' })
                     break
 
-                case 'cowsay':
+                case 'cowsay': {
                     const msg = args || 'Moo!'
                     const border = '─'.repeat(msg.length + 2)
                     output.push({ type: 'output', text: ` ┌${border}┐` })
@@ -352,6 +353,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                     output.push({ type: 'output', text: '                ||----w |' })
                     output.push({ type: 'output', text: '                ||     ||' })
                     break
+                }
 
                 case 'github':
                     window.open('https://github.com/F3stive-Ya', '_blank')
@@ -365,7 +367,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
 
                 case 'hello':
                 case 'hi':
-                case 'hey':
+                case 'hey': {
                     const greetings = [
                         'Hello there! 👋',
                         'Hey! How are you?',
@@ -378,6 +380,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                         text: greetings[Math.floor(Math.random() * greetings.length)]
                     })
                     break
+                }
 
                 case 'whoami':
                     output.push({ type: 'output', text: "You are a visitor on Shane's Portfolio!" })
@@ -414,7 +417,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                     break
 
                 case 'fortune':
-                case 'quote':
+                case 'quote': {
                     const fortunes = [
                         '"The only way to do great work is to love what you do." - Steve Jobs',
                         '"Code is like humor. When you have to explain it, it\'s bad." - Cory House',
@@ -430,9 +433,10 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                         text: fortunes[Math.floor(Math.random() * fortunes.length)]
                     })
                     break
+                }
 
                 case '8ball':
-                case 'magic8ball':
+                case 'magic8ball': {
                     const answers = [
                         'It is certain.',
                         'It is decidedly so.',
@@ -457,8 +461,9 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                         text: '🎱 ' + answers[Math.floor(Math.random() * answers.length)]
                     })
                     break
+                }
 
-                case 'joke':
+                case 'joke': {
                     const jokes = [
                         'Why do programmers prefer dark mode? Because light attracts bugs!',
                         'A SQL query walks into a bar, walks up to two tables and asks... "Can I join you?"',
@@ -473,6 +478,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
                         text: jokes[Math.floor(Math.random() * jokes.length)]
                     })
                     break
+                }
 
                 case 'weather':
                     output.push({ type: 'system', text: "☀️ Weather for Shane's Portfolio:" })
@@ -646,7 +652,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
 
             setHistory((prev) => [...prev, ...output])
         },
-        [currentDir, openWindow, triggerBSOD]
+        [currentDir, openWindow, triggerBSOD, fileSystem]
     )
 
     // Handle key events

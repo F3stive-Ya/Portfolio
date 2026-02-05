@@ -365,7 +365,7 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
         if (updated) {
             setIconPositions(newPositions)
         }
-    }, [icons])
+    }, [icons, iconPositions])
 
     return (
         <div

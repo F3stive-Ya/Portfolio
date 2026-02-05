@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { SYSTEM_INFO } from './BiosScreen'
+import { useState } from 'react'
+import { SYSTEM_INFO } from '../config/system'
 
 const SystemProperties = ({ onClose }) => {
     const [activeTab, setActiveTab] = useState('general')

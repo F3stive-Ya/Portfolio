@@ -16,6 +16,18 @@ export const ICONS = [
         showOnDesktop: true
     },
     {
+        id: 'freecell',
+        label: 'FreeCell',
+        icon: 'icons/game_freecell-0.png',
+        showOnDesktop: true
+    },
+    {
+        id: 'pinball',
+        label: 'Pinball',
+        icon: 'icons/joystick-2.png',
+        showOnDesktop: true
+    },
+    {
         id: 'terminal',
         label: 'Command Prompt',
         icon: 'icons/console_prompt-0.png',

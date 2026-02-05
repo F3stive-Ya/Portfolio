@@ -70,6 +70,7 @@ function Taskbar({ openWindows, activeWindowId, onTaskClick, onStartClick }) {
                         <button
                             className={`task-btn${activeWindowId === id ? ' active' : ''}`}
                             onClick={() => onTaskClick(id)}
+                            aria-pressed={activeWindowId === id}
                         >
                             {formatTitle(id)}
                         </button>
@@ -94,6 +95,13 @@ function Taskbar({ openWindows, activeWindowId, onTaskClick, onStartClick }) {
                         className="tray-date"
                         onClick={() => setShowCalendar(!showCalendar)}
                         style={{ cursor: 'pointer' }}
+                        role="button"
+                        tabIndex="0"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                setShowCalendar(!showCalendar)
+                            }
+                        }}
                     >
                         {dateTime.date || '--'}
                     </div>
@@ -102,6 +110,13 @@ function Taskbar({ openWindows, activeWindowId, onTaskClick, onStartClick }) {
                     className="tray-clock"
                     onClick={() => setShowCalendar(!showCalendar)}
                     style={{ cursor: 'pointer' }}
+                    role="button"
+                    tabIndex="0"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            setShowCalendar(!showCalendar)
+                        }
+                    }}
                 >
                     {dateTime.time || '--:--'}
                 </div>

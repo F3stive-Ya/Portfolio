@@ -22,7 +22,10 @@ Have fun exploring! 🖥️`
 
     const [wordWrap, setWordWrap] = useState(true)
     const [hasChanges, setHasChanges] = useState(false)
+    const [fileName, setFileName] = useState('Untitled.txt')
+    const [cursorCol, setCursorCol] = useState(1)
     const textAreaRef = useRef(null)
+    const fileInputRef = useRef(null)
 
     // Auto-save to localStorage
     useEffect(() => {
@@ -33,6 +36,15 @@ Have fun exploring! 🖥️`
         return () => clearTimeout(timer)
     }, [content])
 
+    const updateCursorStats = () => {
+        if (textAreaRef.current) {
+            const { selectionStart, value } = textAreaRef.current
+            const lastNewLine = value.lastIndexOf('\n', selectionStart - 1)
+            const col = selectionStart - lastNewLine
+            setCursorCol(col)
+        }
+    }
+
     const handleNew = () => {
         if (content && hasChanges) {
             if (!window.confirm('You have unsaved changes. Start a new document?')) {
@@ -40,12 +52,58 @@ Have fun exploring! 🖥️`
             }
         }
         setContent('')
+        setFileName('Untitled.txt')
         setHasChanges(false)
+    }
+
+    const handleOpenClick = () => {
+        fileInputRef.current?.click()
+    }
+
+    const handleFileLoad = (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        const reader = new FileReader()
+        reader.onload = (event) => {
+            setContent(event.target.result)
+            setFileName(file.name)
+            setHasChanges(false)
+        }
+        reader.readAsText(file)
+
+        // Reset input to allow re-selecting same file
+        e.target.value = ''
+    }
+
+    const downloadFile = (name) => {
+        const blob = new Blob([content], { type: 'text/plain' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = name
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+    }
+
+    const handleSave = () => {
+        downloadFile(fileName)
+    }
+
+    const handleSaveAs = () => {
+        const name = prompt('Save As:', fileName)
+        if (name) {
+            setFileName(name)
+            downloadFile(name)
+        }
     }
 
     const handleChange = (e) => {
         setContent(e.target.value)
         setHasChanges(true)
+        updateCursorStats()
     }
 
     // Calculate stats
@@ -55,18 +113,33 @@ Have fun exploring! 🖥️`
 
     return (
         <div className="notepad-container">
+            <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                accept=".txt,.md,.js,.json,.css,.html"
+                onChange={handleFileLoad}
+            />
             <div className="notepad-menubar">
                 <div className="notepad-menu-item">
                     <span className="notepad-menu-label">File</span>
                     <div className="notepad-dropdown">
                         <button onClick={handleNew}>New</button>
+                        <button onClick={handleOpenClick}>Open...</button>
+                        <button onClick={handleSave}>Save</button>
+                        <button onClick={handleSaveAs}>Save As...</button>
                     </div>
                 </div>
                 <div className="notepad-menu-item">
                     <span className="notepad-menu-label">Edit</span>
                     <div className="notepad-dropdown">
                         <button onClick={() => document.execCommand('undo')}>Undo</button>
-                        <button onClick={() => document.execCommand('selectAll')}>
+                        <button
+                            onClick={() => {
+                                textAreaRef.current?.select()
+                                document.execCommand('selectAll')
+                            }}
+                        >
                             Select All
                         </button>
                     </div>
@@ -85,12 +158,16 @@ Have fun exploring! 🖥️`
                 className="notepad-textarea"
                 value={content}
                 onChange={handleChange}
+                onKeyUp={updateCursorStats}
+                onClick={updateCursorStats}
                 wrap={wordWrap ? 'soft' : 'off'}
                 spellCheck={false}
             />
             <div className="notepad-statusbar">
                 <span>{hasChanges ? 'Modified' : 'Saved'}</span>
-                <span>Ln {lines}, Col 1</span>
+                <span>
+                    Ln {lines}, Col {cursorCol}
+                </span>
                 <span>
                     {words} words, {chars} chars
                 </span>
