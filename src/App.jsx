@@ -348,7 +348,10 @@ function App() {
                     ) : id === 'terminal' ? (
                         <Terminal openWindow={openWindow} triggerBSOD={() => setShowBSOD(true)} />
                     ) : id === 'minesweeper' ? (
-                        <Minesweeper onResize={(w, h) => handleContentResize(id, w, h)} />
+                        <Minesweeper
+                            onResize={(w, h) => handleContentResize(id, w, h)}
+                            onClose={() => closeWindow(id)}
+                        />
                     ) : id.startsWith('project_') ? (
                         <ProjectViewer
                             projectId={id.replace('project_', '')}

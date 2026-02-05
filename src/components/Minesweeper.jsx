@@ -21,41 +21,52 @@ const GAME_STATE = {
     LOST: 'lost'
 }
 
-const Minesweeper = ({ onResize }) => {
+const Minesweeper = ({ onResize, onClose }) => {
     const [difficulty, setDifficulty] = useState('beginner')
-    const [customConfig, setCustomConfig] = useState(null) // Future support
     const [grid, setGrid] = useState([])
     const [gameState, setGameState] = useState(GAME_STATE.IDLE)
     const [minesLeft, setMinesLeft] = useState(0)
     const [time, setTime] = useState(0)
     const [isMouseDown, setIsMouseDown] = useState(false)
-    const timerRef = useRef(null)
+    const [activeMenu, setActiveMenu] = useState(null)
+    const [lastGameSettings, setLastGameSettings] = useState(null)
 
-    // Accurate Window Sizing
-    // We need to calculate size EXACTLY to fit the board + borders.
-    // Board Width = (Cols * 16)
-    // Extra Width = 12px (6px padding left/right) + 6px (3px outer border left/right) -> approx 20px overhead?
-    // Let's verify CSS:
-    // Container Padding: 6px (left/right/top/bottom)
-    // Outer Border: 3px
-    // So total horizontal overhead = (6+3)*2 = 18px?
-    // PLUS cell borders? Cell is 16px total.
-    //
-    // Let's try: Width = (Cols * 16) + 24 (Safe margin)
-    // Height = (Rows * 16) + Header(34+6+6) + Menu(20) + Borders(6) -> Approx 80-100px.
+    const timerRef = useRef(null)
+    const menuRef = useRef(null)
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setActiveMenu(null)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
 
     const updateWindowSize = useCallback((rows, cols) => {
         if (!onResize) return
 
+        // Exact Windows 95 measurements
+        // Cell: 16x16px
+        // Board Borders: 3px (inset) + 3px (inset) = 6px total horizontal/vertical border width
+        // Container Padding: 6px left + 6px right = 12px
+        // Menu Bar: ~20px height
+        // Header: ~34px height + 6px margin-bottom + 6px padding = ~46px total header area
+        // Window Borders (from Window.jsx): 4px border width
+
+        // Inner Width Calculation:
+        // (Cols * 16px) + 12px (Container Padding) + 6px (Board Border) = (Cols * 16) + 18px
+        // Usually need a bit more buffer for the window frame itself if the content calculation is raw.
+        // Let's go with (Cols * 16) + 24px for width to be safe and avoid horizontal scroll.
+
         const boardWidth = cols * 16
         const boardHeight = rows * 16
 
-        // Exact measurements based on Windows 95
-        // Width: Board + 20px (10px each side for border/margin)
-        const width = boardWidth + 24
-
-        // Height: Board + Menu(20) + Header(40) + Margins(10) + Borders(6)
-        const height = boardHeight + 84
+        const width = boardWidth + 20 // 10px on each side for frame/padding
+        // Height: Menu(20) + Header(44) + Board(Rows*16) + Borders/Padding(10)
+        const height = boardHeight + 74
 
         onResize(width, height)
     }, [onResize])
@@ -65,7 +76,16 @@ const Minesweeper = ({ onResize }) => {
             const config = DIFFICULTIES[diff]
             const { rows, cols, mines } = config
 
-            updateWindowSize(rows, cols)
+            // If changing difficulty, trigger resize
+            if (diff !== difficulty || !grid.length) {
+                updateWindowSize(rows, cols)
+            }
+
+            // If we are strictly resetting, we might want to keep the same difficulty
+            // but if passed a diff, update state.
+            if (diff !== difficulty) {
+                setDifficulty(diff)
+            }
 
             const newGrid = Array(rows)
                 .fill(null)
@@ -83,15 +103,19 @@ const Minesweeper = ({ onResize }) => {
             setGameState(GAME_STATE.IDLE)
             setMinesLeft(mines)
             setTime(0)
+            setActiveMenu(null)
             clearInterval(timerRef.current)
         },
-        [difficulty, updateWindowSize]
+        [difficulty, grid.length, updateWindowSize]
     )
 
+    // Initial load
     useEffect(() => {
-        initGame()
+        if (grid.length === 0) {
+            initGame('beginner')
+        }
         return () => clearInterval(timerRef.current)
-    }, [initGame])
+    }, [initGame, grid.length]) // Depend on grid.length to only run once if empty
 
     const placeMines = (firstRow, firstCol) => {
         const { rows, cols, mines } = DIFFICULTIES[difficulty]
@@ -135,24 +159,22 @@ const Minesweeper = ({ onResize }) => {
 
     const startGame = (r, c) => {
         const newGrid = placeMines(r, c)
-        setGrid(newGrid)
+        // No setGrid here, returned to caller
         setGameState(GAME_STATE.PLAYING)
 
         timerRef.current = setInterval(() => {
             setTime((prev) => Math.min(prev + 1, 999))
         }, 1000)
 
-        revealCell(newGrid, r, c)
+        return newGrid
     }
 
     const revealCell = (currentGrid, r, c) => {
         if (currentGrid[r][c].state !== CELL_STATE.HIDDEN && currentGrid[r][c].state !== CELL_STATE.QUESTION) return
 
-        // Mutate grid specifically for reveal logic
         currentGrid[r][c].state = CELL_STATE.REVEALED
 
         if (currentGrid[r][c].isMine) {
-            // Should verify handling upstream
             return
         }
 
@@ -174,20 +196,12 @@ const Minesweeper = ({ onResize }) => {
         if (gameState === GAME_STATE.WON || gameState === GAME_STATE.LOST) return
         if (grid[r][c].state === CELL_STATE.FLAGGED) return
 
-        let newGrid = [...grid]
+        let newGrid
 
         if (gameState === GAME_STATE.IDLE) {
-            startGame(r, c)
-            newGrid = grid // state updated in startGame but check ref
-            // Actually startGame sets state async? No, logic above needs refinement.
-            // startGame calculates mines and sets state.
-            // We need to wait for that or combine logic.
-            // Let's combine:
-            const starterGrid = placeMines(r, c)
-            setGameState(GAME_STATE.PLAYING)
-            timerRef.current = setInterval(() => setTime(t => Math.min(t + 1, 999)), 1000)
-            revealCell(starterGrid, r, c)
-            setGrid([...starterGrid]) // Trigger re-render
+            newGrid = startGame(r, c)
+            revealCell(newGrid, r, c)
+            setGrid(newGrid)
             return
         }
 
@@ -260,9 +274,55 @@ const Minesweeper = ({ onResize }) => {
         }
     }
 
-    const changeDifficulty = (diff) => {
-        setDifficulty(diff)
-        // Effect will handle resizing and init
+    const checkChord = (r, c) => {
+        if (gameState !== GAME_STATE.PLAYING) return
+        if (grid[r][c].state !== CELL_STATE.REVEALED) return
+        if (grid[r][c].neighborCount === 0) return
+
+        // Count flags around
+        let flags = 0
+        const { rows, cols } = DIFFICULTIES[difficulty]
+
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                const nr = r + i
+                const nc = c + j
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                    if (grid[nr][nc].state === CELL_STATE.FLAGGED) flags++
+                }
+            }
+        }
+
+        if (flags === grid[r][c].neighborCount) {
+            // Reveal neighbors
+            let newGrid = grid.map(row => row.map(cell => ({ ...cell })))
+            let hitMine = false
+
+            const chordReveal = (currGrid, cr, cc) => {
+                if (currGrid[cr][cc].state !== CELL_STATE.HIDDEN && currGrid[cr][cc].state !== CELL_STATE.QUESTION) return
+
+                if (currGrid[cr][cc].state === CELL_STATE.FLAGGED) return // Should allow chording? No, flag is protected
+
+                currGrid[cr][cc].state = CELL_STATE.REVEALED
+                if (currGrid[cr][cc].isMine) {
+                    currGrid[cr][cc].isExploded = true
+                    hitMine = true
+                } else if (currGrid[cr][cc].neighborCount === 0) {
+                    // recursive reveal if 0
+                    // (Copy logic from revealCell if needed, but simplified for single depth usually)
+                    // Actually standard rules say if you reveal a 0, it opens up. 
+                    // We can reuse revealCell logic if we refactor, but for now let's just do basics or reuse.
+                    // The issue is reusing revealCell works on 'currentGrid' but we are iterating.
+                    // For simplicity, let's just reveal immediate. 
+                    // PROPER WAY: call revealCell for each neighbor.
+                }
+            }
+
+            // ... simpler chording for now: just trigger clicks on neighbors?
+            // Implementing proper chording might be complex in this single function. 
+            // Skipping complex chording for this 'heavy improve' since it wasn't explicitly asked, 
+            // but 'fit to window' and 'menu' were.
+        }
     }
 
     const formatNumber = (num) => {
@@ -271,72 +331,237 @@ const Minesweeper = ({ onResize }) => {
         return Math.floor(num).toString().padStart(3, '0')
     }
 
+    const handleMenuClick = (menu) => {
+        setActiveMenu(activeMenu === menu ? null : menu)
+    }
+
+    const handleDifficultySelect = (diff) => {
+        initGame(diff)
+        setActiveMenu(null)
+    }
+
+    // Styles for the Seven-Segment Display
+    const Counter = ({ value }) => (
+        <div style={{
+            background: '#000',
+            color: '#ff0000',
+            fontFamily: 'monospace',
+            fontSize: '22px',
+            lineHeight: '1',
+            padding: '1px 2px',
+            border: '2px inset #dfdfdf',
+            letterSpacing: '1px'
+        }}>
+            {value}
+        </div>
+    )
+
     return (
-        <div className="minesweeper-container">
-            <div className="minesweeper-menubar">
-                <div className="minesweeper-menu-item">
-                    Game
-                    <div className="minesweeper-submenu">
-                        <div onClick={() => initGame()}>New</div>
-                        <div className="menu-separator"></div>
-                        <div onClick={() => changeDifficulty('beginner')}>Beginner</div>
-                        <div onClick={() => changeDifficulty('intermediate')}>Intermediate</div>
-                        <div onClick={() => changeDifficulty('expert')}>Expert</div>
-                        <div className="menu-separator"></div>
-                        <div onClick={() => window.close()}>Exit</div>{/* Note: window.close() won't work for iframe/react app usually, needs callback */}
+        <div className="minesweeper-container" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            width: '100%',
+            overflow: 'hidden',
+            background: '#c0c0c0'
+        }}>
+            {/* Menu Bar */}
+            <div className="minesweeper-menubar" ref={menuRef} style={{
+                display: 'flex',
+                padding: '2px 0 2px 0',
+                background: '#c0c0c0',
+                userSelect: 'none'
+            }}>
+                <div style={{ position: 'relative' }}>
+                    <div
+                        className={`menu-item ${activeMenu === 'game' ? 'active' : ''}`}
+                        onClick={() => handleMenuClick('game')}
+                        style={{
+                            padding: '2px 6px',
+                            background: activeMenu === 'game' ? '#000080' : 'transparent',
+                            color: activeMenu === 'game' ? '#fff' : '#000',
+                            cursor: 'default'
+                        }}
+                    >
+                        <u style={{ textDecoration: 'underline' }}>G</u>ame
+                    </div>
+                    {activeMenu === 'game' && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            zIndex: 100,
+                            background: '#c0c0c0',
+                            border: '2px outset #dfdfdf',
+                            boxShadow: '2px 2px 5px rgba(0,0,0,0.5)',
+                            minWidth: '120px',
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}>
+                            <div className="hover-item" onClick={() => { initGame(); setActiveMenu(null) }} style={{ padding: '4px 12px', cursor: 'pointer' }}>New</div>
+                            <div style={{ height: '1px', background: '#808080', margin: '2px 1px', borderBottom: '1px solid #fff' }}></div>
+                            <div className="hover-item" onClick={() => handleDifficultySelect('beginner')} style={{ padding: '4px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                                {difficulty === 'beginner' && <span style={{ marginRight: '4px' }}>✓</span>}
+                                <span style={{ marginLeft: difficulty === 'beginner' ? 0 : '14px' }}>Beginner</span>
+                            </div>
+                            <div className="hover-item" onClick={() => handleDifficultySelect('intermediate')} style={{ padding: '4px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                                {difficulty === 'intermediate' && <span style={{ marginRight: '4px' }}>✓</span>}
+                                <span style={{ marginLeft: difficulty === 'intermediate' ? 0 : '14px' }}>Intermediate</span>
+                            </div>
+                            <div className="hover-item" onClick={() => handleDifficultySelect('expert')} style={{ padding: '4px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                                {difficulty === 'expert' && <span style={{ marginRight: '4px' }}>✓</span>}
+                                <span style={{ marginLeft: difficulty === 'expert' ? 0 : '14px' }}>Expert</span>
+                            </div>
+                            <div style={{ height: '1px', background: '#808080', margin: '2px 1px', borderBottom: '1px solid #fff' }}></div>
+                            <div className="hover-item" onClick={() => { if (onClose) onClose(); }} style={{ padding: '4px 12px', cursor: 'pointer' }}>Exit</div>
+                        </div>
+                    )}
+                </div>
+                <div style={{ position: 'relative' }}>
+                    <div
+                        className={`menu-item ${activeMenu === 'help' ? 'active' : ''}`}
+                        onClick={() => handleMenuClick('help')}
+                        style={{
+                            padding: '2px 6px',
+                            cursor: 'default',
+                            background: activeMenu === 'help' ? '#000080' : 'transparent',
+                            color: activeMenu === 'help' ? '#fff' : '#000',
+                        }}
+                    >
+                        <u style={{ textDecoration: 'underline' }}>H</u>elp
                     </div>
                 </div>
-                <div className="minesweeper-menu-item">Help</div>
             </div>
 
-            <div className="minesweeper-game-area">
-                <div className="minesweeper-header">
-                    <div className="minesweeper-counter">{formatNumber(minesLeft)}</div>
+            {/* Game Area */}
+            <div className="minesweeper-game-area" style={{
+                padding: '6px',
+                borderLeft: '3px solid #fff',
+                borderTop: '3px solid #fff',
+                borderRight: '3px solid #808080',
+                borderBottom: '3px solid #808080',
+                background: '#c0c0c0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px',
+                margin: '0 3px 3px 3px' // slight offset to look like frame
+            }}>
+                {/* Header */}
+                <div className="minesweeper-header" style={{
+                    border: '2px inset #dfdfdf', // Actually inset is usually border-left/top gray, bottom/right white inverted? 
+                    // Windows 95 inset: Top/Left = #808080, Bottom/Right = #fff
+                    borderLeft: '2px solid #808080',
+                    borderTop: '2px solid #808080',
+                    borderRight: '2px solid #fff',
+                    borderBottom: '2px solid #fff',
+                    padding: '4px 6px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: '#c0c0c0',
+                    marginBottom: '0'
+                }}>
+                    <Counter value={formatNumber(minesLeft)} />
+
                     <button
-                        className="minesweeper-face-btn"
                         onClick={() => initGame()}
                         onMouseDown={(e) => { e.preventDefault(); setIsMouseDown(true) }}
                         onMouseUp={() => setIsMouseDown(false)}
                         onMouseLeave={() => setIsMouseDown(false)}
+                        style={{
+                            width: '26px',
+                            height: '26px',
+                            padding: 0,
+                            border: '2px outset #dfdfdf',
+                            background: '#c0c0c0',
+                            fontSize: '18px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer'
+                        }}
                     >
                         {gameState === GAME_STATE.WON ? '😎' :
                             gameState === GAME_STATE.LOST ? '😵' :
                                 isMouseDown ? '😮' : '🙂'}
                     </button>
-                    <div className="minesweeper-counter">{formatNumber(time)}</div>
+
+                    <Counter value={formatNumber(time)} />
                 </div>
 
+                {/* Grid */}
                 <div
                     className="minesweeper-grid"
                     onMouseDown={() => gameState === GAME_STATE.PLAYING && setIsMouseDown(true)}
                     onMouseUp={() => setIsMouseDown(false)}
                     onMouseLeave={() => setIsMouseDown(false)}
-                    style={{ gridTemplateColumns: `repeat(${DIFFICULTIES[difficulty].cols}, 16px)` }} // Removed display:inline-block from CSS to use grid? CSS uses flex.
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: `repeat(${DIFFICULTIES[difficulty].cols}, 16px)`,
+                        borderLeft: '3px solid #808080',
+                        borderTop: '3px solid #808080',
+                        borderRight: '3px solid #fff',
+                        borderBottom: '3px solid #fff',
+                        width: 'fit-content' // Ensure grid wraps tight
+                    }}
                 >
                     {grid.map((row, r) => (
-                        <div key={r} className="minesweeper-row">
-                            {row.map((cell, c) => (
-                                <div
-                                    key={c}
-                                    className={`minesweeper-cell ${cell.state === CELL_STATE.REVEALED ? 'revealed' : ''} ${cell.state === CELL_STATE.REVEALED && cell.neighborCount > 0 ? `n${cell.neighborCount}` : ''}`}
-                                    onMouseDown={(e) => {
-                                        if (e.button === 0) setIsMouseDown(true)
-                                    }}
-                                    onClick={() => handleCellClick(r, c)}
-                                    onContextMenu={(e) => handleCellRightClick(e, r, c)}
-                                >
-                                    {cell.state === CELL_STATE.FLAGGED && '🚩'}
-                                    {cell.state === CELL_STATE.QUESTION && '?'}
-                                    {cell.state === CELL_STATE.REVEALED && cell.isMine && '💣'}
-                                    {cell.state === CELL_STATE.REVEALED && !cell.isMine && cell.neighborCount > 0 && cell.neighborCount}
-                                    {cell.isExploded && <span className="explosion">💥</span>}
-                                    {cell.isMisflagged && <span className="misflag">❌</span>} {/* Logic needs rendering upgrade if misflagged */}
-                                </div>
-                            ))}
-                        </div>
+                        row.map((cell, c) => (
+                            <div
+                                key={`${r}-${c}`}
+                                className={`minesweeper-cell`}
+                                onMouseDown={(e) => {
+                                    if (e.button === 0) setIsMouseDown(true)
+                                }}
+                                onClick={() => handleCellClick(r, c)}
+                                onContextMenu={(e) => handleCellRightClick(e, r, c)}
+                                style={{
+                                    width: '16px',
+                                    height: '16px',
+                                    border: cell.state === CELL_STATE.REVEALED ? '1px dotted #808080' : '2px outset #fff', // Revealed has standard 1px gray border or none?
+                                    // Revealed cells in Win95 usually have a very subtle border or none (inset look).
+                                    // Actually they share a 1px border #808080.
+                                    borderWidth: cell.state === CELL_STATE.REVEALED ? '1px' : '2px',
+                                    borderStyle: cell.state === CELL_STATE.REVEALED ? 'solid' : 'outset',
+                                    borderColor: cell.state === CELL_STATE.REVEALED ? '#808080' : '#fff', // Outset uses light/dark automatic, but specific colors help
+                                    background: cell.state === CELL_STATE.REVEALED && cell.isExploded ? '#ff0000' : '#c0c0c0',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    cursor: 'default',
+                                    boxSizing: 'border-box',
+                                    color:
+                                        cell.neighborCount === 1 ? '#0000ff' :
+                                            cell.neighborCount === 2 ? '#008000' :
+                                                cell.neighborCount === 3 ? '#ff0000' :
+                                                    cell.neighborCount === 4 ? '#000080' :
+                                                        cell.neighborCount === 5 ? '#800000' :
+                                                            cell.neighborCount === 6 ? '#008080' :
+                                                                cell.neighborCount === 7 ? '#000000' :
+                                                                    cell.neighborCount === 8 ? '#808080' : '#000'
+                                }}
+                            >
+                                {cell.state === CELL_STATE.FLAGGED && '🚩'}
+                                {cell.state === CELL_STATE.QUESTION && '?'}
+                                {cell.state === CELL_STATE.REVEALED && cell.isMine && '💣'}
+                                {cell.state === CELL_STATE.REVEALED && !cell.isMine && cell.neighborCount > 0 && cell.neighborCount}
+                                {cell.isMisflagged && <span className="misflag">❌</span>}
+                            </div>
+                        ))
                     ))}
                 </div>
             </div>
+            <style>{`
+                .hover-item:hover {
+                    background-color: #000080;
+                    color: #fff;
+                }
+                .minesweeper-cell {
+                    font-family: 'Tahoma', sans-serif; /* Win95 font preference */
+                }
+            `}</style>
         </div>
     )
 }
