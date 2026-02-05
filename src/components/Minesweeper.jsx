@@ -21,7 +21,7 @@ const GAME_STATE = {
     LOST: 'lost'
 }
 
-const Minesweeper = () => {
+const Minesweeper = ({ onResize }) => {
     const [difficulty, setDifficulty] = useState('beginner')
     const [grid, setGrid] = useState([])
     const [gameState, setGameState] = useState(GAME_STATE.IDLE)
@@ -33,6 +33,31 @@ const Minesweeper = () => {
     // Initialize game
     const initGame = useCallback((diff = difficulty) => {
         const { rows, cols, mines } = DIFFICULTIES[diff]
+
+        // Calculate needed window size
+        // Cell is 16px + 3px border (approx 20px?)
+        // Actually CSS says 16px width/height + 2px border?
+        // Let's estimate: 16px cell * cols + borders + padding
+        // Header height is approx 50-60px
+        // Frame borders (3px + 3px)
+
+        // Exact calculation:
+        // Borders: 3px (window body) + 6px (game area padding) + 6px (inset border) = 15px width overhead
+        // Cells: 16px * cols
+        // Width = 16 * cols + 30 (adjust for safety/margins)
+
+        // Height: 
+        // Header: approx 50px
+        // Board: 16px * rows
+        // Borders: similar overhead
+        // Height = 16 * rows + 80
+
+        const neededWidth = cols * 16 + 40
+        const neededHeight = rows * 16 + 100
+
+        if (onResize) {
+            onResize(neededWidth, neededHeight)
+        }
 
         // Create empty grid
         const newGrid = Array(rows).fill(null).map(() =>
@@ -48,7 +73,7 @@ const Minesweeper = () => {
         setMinesLeft(mines)
         setTime(0)
         clearInterval(timerRef.current)
-    }, [difficulty])
+    }, [difficulty, onResize])
 
     useEffect(() => {
         initGame()

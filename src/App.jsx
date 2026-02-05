@@ -712,6 +712,22 @@ function App() {
         return <BiosScreen mode="shutdown" onComplete={handleShutdownComplete} />
     }
 
+    // Handle resizing from inside a component (e.g. Minesweeper)
+    const handleContentResize = (id, width, height) => {
+        setWindowStates(prev => {
+            if (prev[id]?.position?.width === width && prev[id]?.position?.height === height) {
+                return prev // No change needed
+            }
+            return {
+                ...prev,
+                [id]: {
+                    ...prev[id],
+                    position: { ...prev[id].position, width, height }
+                }
+            }
+        })
+    }
+
     return (
         <>
             <Desktop
@@ -749,6 +765,8 @@ function App() {
                         <FileExplorer onOpenWindow={openWindow} />
                     ) : id === 'terminal' ? (
                         <Terminal openWindow={openWindow} triggerBSOD={() => setShowBSOD(true)} />
+                    ) : id === 'minesweeper' ? (
+                        <Minesweeper onResize={(w, h) => handleContentResize(id, w, h)} />
                     ) : id.startsWith('project_') ? (
                         <ProjectViewer
                             projectId={id.replace('project_', '')}
