@@ -202,8 +202,8 @@ const Solitaire = () => {
     }
 
     // Custom FaceDown Card Component
-    const CardBack = () => (
-        <div className="card back" style={{ background: 'repeating-linear-gradient(45deg, #000080 0, #000080 5px, #fff 5px, #fff 10px)' }}>
+    const CardBack = ({ style }) => (
+        <div className="card back" style={{ ...style, background: 'repeating-linear-gradient(45deg, #000080 0, #000080 5px, #fff 5px, #fff 10px)' }}>
             <div className="pattern" style={{ width: '100%', height: '100%', opacity: 0.5 }}></div>
         </div>
     )
@@ -228,7 +228,7 @@ const Solitaire = () => {
                                 justifyContent: 'center'
                             }}
                         >
-                            {board.stock.length > 0 ? <CardBack /> : <div className="empty-slot" style={{ border: '2px solid rgba(255,255,255,0.3)', borderRadius: '4px', width: '71px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>RELOAD</div>}
+                            {board.stock.length > 0 ? <CardBack style={{ pointerEvents: 'none' }} /> : <div className="empty-slot" style={{ pointerEvents: 'none', border: '2px solid rgba(255,255,255,0.3)', borderRadius: '4px', width: '71px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>RELOAD</div>}
                         </div>
                         {/* Waste */}
                         <div className="card-slot waste" style={{ width: '80px', height: '105px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

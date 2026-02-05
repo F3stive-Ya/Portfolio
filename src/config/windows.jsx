@@ -222,7 +222,7 @@ export const WINDOW_CONFIGS = {
     solitaire: {
         title: 'Solitaire',
         icon: getIcon('solitaire'),
-        defaultStyle: { top: 50, left: 50, width: 640, height: 480 },
+        defaultStyle: { top: 50, left: 50, width: 640, height: 600 },
         content: <Solitaire />,
         bodyStyle: { padding: 0 }
     },
