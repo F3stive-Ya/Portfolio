@@ -3,9 +3,9 @@ import Settings from '../components/Settings'
 import Notepad from '../components/Notepad'
 import OutlookExpress from '../components/OutlookExpress'
 import Paint from '../components/Paint'
-import Minesweeper from '../components/Minesweeper'
-import Freecell from '../components/Freecell'
-import Pinball from '../components/Pinball'
+import Minesweeper from '../components/Games/Minesweeper'
+import Freecell from '../components/Games/Freecell'
+import Pinball from '../components/Games/Pinball'
 
 import { ICONS, PROJECTS } from './icons'
 

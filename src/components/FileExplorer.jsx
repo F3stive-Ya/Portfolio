@@ -94,6 +94,31 @@ const FILE_SYSTEM = {
                         }
                     }
                 }
+            },
+            Games: {
+                type: 'folder',
+                name: 'Games',
+                icon: 'icons/directory_closed_cool-0.png',
+                children: {
+                    Minesweeper: {
+                        type: 'file',
+                        name: 'Minesweeper',
+                        icon: 'icons/mine_game-0.png',
+                        windowId: 'minesweeper'
+                    },
+                    FreeCell: {
+                        type: 'file',
+                        name: 'FreeCell',
+                        icon: 'icons/game_solitaire-0.png',
+                        windowId: 'freecell'
+                    },
+                    Pinball: {
+                        type: 'file',
+                        name: 'Pinball',
+                        icon: 'icons/pinball-0.png',
+                        windowId: 'pinball'
+                    }
+                }
             }
         }
     }

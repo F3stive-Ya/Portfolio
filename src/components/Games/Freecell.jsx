@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import PlayingCard from './PlayingCard'
-import { SUITS, RANKS } from '../config/freecell'
-import '../index.css'
+import { SUITS, RANKS } from '../../config/freecell'
+import '../../index.css'
 
 const Freecell = () => {
     const [board, setBoard] = useState({

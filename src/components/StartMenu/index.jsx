@@ -85,7 +85,7 @@ function StartMenu({ isOpen, onItemClick }) {
                 )}
 
                 {/* Fixed items */}
-                <div className={styles.sectionLabel}>Programs</div>
+                <div className={styles.sectionLabel}>Favorites</div>
                 <button className={styles.item} data-open="fileexplorer" role="menuitem">
                     📁 File Explorer
                 </button>
@@ -95,14 +95,19 @@ function StartMenu({ isOpen, onItemClick }) {
                 <button className={styles.item} data-open="notepad" role="menuitem">
                     📝 Notepad
                 </button>
-                <button className={styles.item} data-open="paint" role="menuitem">
-                    🎨 Paint
+                <button className={styles.item} data-open="mycomputer" role="menuitem">
+                    💾 My Computer
                 </button>
+
+                <div className={styles.sectionLabel}>Games</div>
                 <button className={styles.item} data-open="minesweeper" role="menuitem">
                     💣 Minesweeper
                 </button>
-                <button className={styles.item} data-open="outlook" role="menuitem">
-                    📧 Outlook Express
+                <button className={styles.item} data-open="freecell" role="menuitem">
+                    ♠️ FreeCell
+                </button>
+                <button className={styles.item} data-open="pinball" role="menuitem">
+                    🕹️ Pinball
                 </button>
                 <div className={styles.separator}></div>
                 <button className={styles.item} data-open="settings" role="menuitem">

@@ -9,7 +9,7 @@ import LoginScreen from './components/LoginScreen'
 import ErrorDialog from './components/ErrorDialog'
 import Terminal from './components/Terminal'
 import ProjectViewer from './components/ProjectViewer'
-import Minesweeper from './components/Minesweeper'
+import Minesweeper from './components/Games/Minesweeper'
 import BSOD from './components/BSOD'
 import MobilePortfolio from './components/MobilePortfolio'
 

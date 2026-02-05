@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import '../index.css'
+import '../../index.css'
 
 const DIFFICULTIES = {
     beginner: { rows: 9, cols: 9, mines: 10 },
