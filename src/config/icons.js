@@ -4,7 +4,7 @@
 export const ICONS = [
     { id: 'about', label: 'About Me', icon: 'icons/notepad_file-0.png', showOnDesktop: true },
     { id: 'fileexplorer', label: 'File Explorer', icon: 'icons/directory_explorer-5.png', showOnDesktop: true },
-    { id: 'minesweeper', label: 'Minesweeper', icon: 'icons/mine_sweeper-0.png', showOnDesktop: true },
+    { id: 'minesweeper', label: 'Minesweeper', icon: 'icons/minesweeper-0.png', showOnDesktop: true },
     { id: 'terminal', label: 'Command Prompt', icon: 'icons/console_prompt-0.png', showOnDesktop: false },
     { id: 'notepad', label: 'Notepad', icon: 'icons/notepad-0.png', showOnDesktop: true },
     { id: 'outlook', label: 'Outlook Express', icon: 'icons/outlook_express-0.png', showOnDesktop: true },
@@ -20,7 +20,7 @@ export const PROJECTS = [
     {
         id: 'dicegame',
         name: 'Dice Game',
-        icon: 'icons/dice-0.png',
+        icon: 'icons/game_solitaire-0.png', // User requested solitaire icon
         description: 'A Python-based dice rolling game with betting mechanics.',
         tech: ['Python', 'Random', 'CLI'],
         github: 'https://github.com/F3stive-Ya/DiceGame',
@@ -29,8 +29,7 @@ export const PROJECTS = [
     {
         id: 'carracer',
         name: 'Car Racer',
-        icon: 'icons/racing_car-0.png',
-        description: 'A simple car racing game built with Python and Pygame.',
+        icon: 'icons/joystick-0.png', // User requested joystick icon
         tech: ['Python', 'Pygame', 'Game Dev'],
         github: 'https://github.com/F3stive-Ya/CarRacer',
         type: 'Python Game'

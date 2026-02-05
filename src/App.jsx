@@ -174,9 +174,10 @@ const WINDOW_CONFIGS = {
     },
     minesweeper: {
         title: 'Minesweeper',
-        defaultStyle: { top: 100, left: 100, width: 220, height: 300 },
+        defaultStyle: { top: 100, left: 100, width: 220, height: 320 },
         content: <Minesweeper />,
-        bodyStyle: { padding: 0, background: '#c0c0c0' }
+        bodyStyle: { padding: 0, background: '#c0c0c0' },
+        resizable: false
     },
     // Project windows - dynamically created based on project ID
     project_dicegame: {
@@ -741,7 +742,7 @@ function App() {
                             bringToFront(id)
                         }
                     }}
-                    onResizeStart={(e, direction) => handleResizeStart(e, id, direction)}
+                    onResizeStart={config.resizable !== false ? (e, direction) => handleResizeStart(e, id, direction) : undefined}
                     bodyStyle={config.bodyStyle}
                 >
                     {id === 'fileexplorer' ? (
