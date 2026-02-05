@@ -240,33 +240,62 @@ const Solitaire = () => {
 
             {/* Columns */}
             <div className="columns" style={{ display: 'flex', justifyContent: 'space-between', flex: 1 }}>
-                {board.columns.map((col, i) => (
-                    <div
-                        key={`col-${i}`}
-                        className="column"
-                        style={{ position: 'relative', width: '71px' }}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={() => handleDrop('column', i)}
-                    >
-                        {col.map((card, idx) => (
-                            <div
-                                key={card.id}
-                                style={{ position: 'absolute', top: `${idx * 20}px`, zIndex: idx }}
-                            >
-                                {card.faceUp ? (
-                                    <PlayingCard
-                                        card={card}
-                                        setDraggedCard={setDraggedCard}
-                                        source={{ type: 'column', index: i, cardIndex: idx }}
-                                        setDragSource={setDragSource}
-                                    />
-                                ) : (
-                                    <CardBack />
-                                )}
+                {board.columns.map((col, i) => {
+                    const renderRecursiveStack = (index) => {
+                        if (index >= col.length) return null
+                        const card = col[index]
+
+                        return (
+                            <div style={index > 0 ? { position: 'absolute', top: '25px', width: '100%', zIndex: 1 } : {}}>
+                                <PlayingCard
+                                    card={card}
+                                    setDraggedCard={setDraggedCard}
+                                    source={{ type: 'column', index: i, cardIndex: index }}
+                                    setDragSource={setDragSource}
+                                >
+                                    {renderRecursiveStack(index + 1)}
+                                </PlayingCard>
                             </div>
-                        ))}
-                    </div>
-                ))}
+                        )
+                    }
+
+                    // Separation of concerns: Face-down cards (flat) vs Face-up stack (nested/recursive)
+                    // Actually, simpler: nested everything is cleaner but face-down cards aren't draggable.
+                    // Keep face-down flat, face-up nested.
+                    const firstFaceUpIdx = col.findIndex(c => c.faceUp)
+
+                    return (
+                        <div
+                            key={`col-${i}`}
+                            className="column"
+                            style={{ position: 'relative', width: '71px' }}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={() => handleDrop('column', i)}
+                        >
+                            {col.map((card, idx) => {
+                                // If card is face up, it will be part of the recursive stack starting at firstFaceUpIdx
+                                if (idx >= firstFaceUpIdx && firstFaceUpIdx !== -1) return null
+
+                                // Render Face Down Cards
+                                return (
+                                    <div
+                                        key={card.id}
+                                        style={{ position: 'absolute', top: `${idx * 10}px`, zIndex: idx }}
+                                    >
+                                        <CardBack />
+                                    </div>
+                                )
+                            })}
+
+                            {/* Start Recursive Stack from first FaceUp card */}
+                            {firstFaceUpIdx !== -1 && (
+                                <div style={{ position: 'absolute', top: `${firstFaceUpIdx * 10}px`, zIndex: firstFaceUpIdx }}>
+                                    {renderRecursiveStack(firstFaceUpIdx)}
+                                </div>
+                            )}
+                        </div>
+                    )
+                })}
             </div>
         </div>
     )

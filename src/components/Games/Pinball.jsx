@@ -45,7 +45,7 @@ const Pinball = () => {
                 </div>
             )}
             <iframe
-                src="https://pinball.alula.me/"
+                src="https://98.js.org/programs/pinball/space-cadet.html"
                 style={{
                     flex: 1,
                     border: 'none',

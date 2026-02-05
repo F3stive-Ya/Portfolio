@@ -1,4 +1,4 @@
-const PlayingCard = ({ card, setDraggedCard, source, setDragSource, draggable = true }) => {
+const PlayingCard = ({ card, setDraggedCard, source, setDragSource, draggable = true, ...props }) => {
     const handleDragStart = () => {
         if (!draggable) return
         setDraggedCard(card)
@@ -16,6 +16,8 @@ const PlayingCard = ({ card, setDraggedCard, source, setDragSource, draggable = 
                 <span>{card.rank}</span>
                 <span>{card.suit}</span>
             </div>
+            {/* Allow rendering children (stacked cards) */}
+            {props.children}
         </div>
     )
 }

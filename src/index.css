@@ -919,6 +919,7 @@ a {
 }
 
 @keyframes blink {
+
     0%,
     49% {
         opacity: 1;
@@ -935,13 +936,11 @@ a {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 0, 0, 0.15),
-        rgba(0, 0, 0, 0.15) 1px,
-        transparent 1px,
-        transparent 2px
-    );
+    background: repeating-linear-gradient(0deg,
+            rgba(0, 0, 0, 0.15),
+            rgba(0, 0, 0, 0.15) 1px,
+            transparent 1px,
+            transparent 2px);
     pointer-events: none;
 }
 
@@ -989,6 +988,7 @@ a {
 }
 
 @keyframes float {
+
     0%,
     100% {
         transform: translateY(0);
@@ -1212,13 +1212,11 @@ a {
 
 .progress-bar-inner {
     height: 100%;
-    background: repeating-linear-gradient(
-        90deg,
-        var(--titlebar-start) 0px,
-        var(--titlebar-start) 8px,
-        transparent 8px,
-        transparent 10px
-    );
+    background: repeating-linear-gradient(90deg,
+            var(--titlebar-start) 0px,
+            var(--titlebar-start) 8px,
+            transparent 8px,
+            transparent 10px);
     transition: width 0.2s ease-out;
 }
 
@@ -1725,13 +1723,11 @@ a {
 
 .login-progress-bar {
     height: 100%;
-    background: repeating-linear-gradient(
-        90deg,
-        #000080 0px,
-        #000080 8px,
-        #0000a0 8px,
-        #0000a0 10px
-    );
+    background: repeating-linear-gradient(90deg,
+            #000080 0px,
+            #000080 8px,
+            #0000a0 8px,
+            #0000a0 10px);
     transition: width 0.1s linear;
 }
 
@@ -2334,6 +2330,7 @@ a {
 }
 
 @keyframes clippyBounce {
+
     0%,
     100% {
         transform: translateY(0);
@@ -2379,6 +2376,7 @@ a {
 }
 
 @keyframes bsodBlink {
+
     0%,
     49% {
         opacity: 1;
@@ -3621,4 +3619,76 @@ a {
 
 .minesweeper-cell.revealed:has(.explosion) {
     background: #ff0000 !important;
+}
+
+/* ===== Playing Card Styles ===== */
+.card {
+    width: 71px;
+    height: 96px;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid #000;
+    position: relative;
+    user-select: none;
+    cursor: grab;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.card:active {
+    cursor: grabbing;
+}
+
+.card.red {
+    color: red;
+}
+
+.card.black {
+    color: black;
+}
+
+.card-corner {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.card-corner.top-left {
+    top: 2px;
+    left: 2px;
+}
+
+.card-corner.bottom-right {
+    bottom: 2px;
+    right: 2px;
+    transform: rotate(180deg);
+}
+
+.card-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+}
+
+.card.back {
+    background: repeating-linear-gradient(45deg,
+            #000080 0,
+            #000080 5px,
+            #fff 5px,
+            #fff 10px);
+    border: 2px solid #fff;
+    cursor: default;
+}
+
+.placeholder {
+    width: 71px;
+    height: 96px;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
 }
