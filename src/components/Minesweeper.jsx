@@ -31,49 +31,56 @@ const Minesweeper = ({ onResize }) => {
     const timerRef = useRef(null)
 
     // Initialize game
-    const initGame = useCallback((diff = difficulty) => {
-        const { rows, cols, mines } = DIFFICULTIES[diff]
+    const initGame = useCallback(
+        (diff = difficulty) => {
+            const { rows, cols, mines } = DIFFICULTIES[diff]
 
-        // Calculate needed window size
-        // Cell is 16px + 3px border (approx 20px?)
-        // Actually CSS says 16px width/height + 2px border?
-        // Let's estimate: 16px cell * cols + borders + padding
-        // Header height is approx 50-60px
-        // Frame borders (3px + 3px)
+            // Calculate needed window size
+            // Cell is 16px + 3px border (approx 20px?)
+            // Actually CSS says 16px width/height + 2px border?
+            // Let's estimate: 16px cell * cols + borders + padding
+            // Header height is approx 50-60px
+            // Frame borders (3px + 3px)
 
-        // Exact calculation:
-        // Borders: 3px (window body) + 6px (game area padding) + 6px (inset border) = 15px width overhead
-        // Cells: 16px * cols
-        // Width = 16 * cols + 30 (adjust for safety/margins)
+            // Exact calculation:
+            // Borders: 3px (window body) + 6px (game area padding) + 6px (inset border) = 15px width overhead
+            // Cells: 16px * cols
+            // Width = 16 * cols + 30 (adjust for safety/margins)
 
-        // Height: 
-        // Header: approx 50px
-        // Board: 16px * rows
-        // Borders: similar overhead
-        // Height = 16 * rows + 80
+            // Height:
+            // Header: approx 50px
+            // Board: 16px * rows
+            // Borders: similar overhead
+            // Height = 16 * rows + 80
 
-        const neededWidth = cols * 16 + 40
-        const neededHeight = rows * 16 + 100
+            const neededWidth = cols * 16 + 40
+            const neededHeight = rows * 16 + 100
 
-        if (onResize) {
-            onResize(neededWidth, neededHeight)
-        }
+            if (onResize) {
+                onResize(neededWidth, neededHeight)
+            }
 
-        // Create empty grid
-        const newGrid = Array(rows).fill(null).map(() =>
-            Array(cols).fill(null).map(() => ({
-                isMine: false,
-                state: CELL_STATE.HIDDEN,
-                neighborCount: 0
-            }))
-        )
+            // Create empty grid
+            const newGrid = Array(rows)
+                .fill(null)
+                .map(() =>
+                    Array(cols)
+                        .fill(null)
+                        .map(() => ({
+                            isMine: false,
+                            state: CELL_STATE.HIDDEN,
+                            neighborCount: 0
+                        }))
+                )
 
-        setGrid(newGrid)
-        setGameState(GAME_STATE.IDLE)
-        setMinesLeft(mines)
-        setTime(0)
-        clearInterval(timerRef.current)
-    }, [difficulty, onResize])
+            setGrid(newGrid)
+            setGameState(GAME_STATE.IDLE)
+            setMinesLeft(mines)
+            setTime(0)
+            clearInterval(timerRef.current)
+        },
+        [difficulty, onResize]
+    )
 
     useEffect(() => {
         initGame()
@@ -87,7 +94,7 @@ const Minesweeper = ({ onResize }) => {
         // Deep copy needed for mutation during setup? Actually, mapping is safer.
         // Let's just mutate the logic for placement since we are replacing state anyway.
         // But for React state safety, we should clone.
-        const gridClone = newGrid.map(row => row.map(cell => ({ ...cell })))
+        const gridClone = newGrid.map((row) => row.map((cell) => ({ ...cell })))
 
         let minesPlaced = 0
         while (minesPlaced < mines) {
@@ -95,9 +102,7 @@ const Minesweeper = ({ onResize }) => {
             const c = Math.floor(Math.random() * cols)
 
             // Don't place mine on first clicked cell or neighbors
-            if (!gridClone[r][c].isMine &&
-                stateIsSafe(r, c, firstRow, firstCol)) {
-
+            if (!gridClone[r][c].isMine && stateIsSafe(r, c, firstRow, firstCol)) {
                 gridClone[r][c].isMine = true
                 minesPlaced++
             }
@@ -112,7 +117,13 @@ const Minesweeper = ({ onResize }) => {
                         for (let j = -1; j <= 1; j++) {
                             const nr = r + i
                             const nc = c + j
-                            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && gridClone[nr][nc].isMine) {
+                            if (
+                                nr >= 0 &&
+                                nr < rows &&
+                                nc >= 0 &&
+                                nc < cols &&
+                                gridClone[nr][nc].isMine
+                            ) {
                                 count++
                             }
                         }
@@ -126,7 +137,7 @@ const Minesweeper = ({ onResize }) => {
     }
 
     const stateIsSafe = (r, c, firstRow, firstCol) => {
-        // Safe if not the clicked cell (and maybe neighbors for strictly fair start, 
+        // Safe if not the clicked cell (and maybe neighbors for strictly fair start,
         // but standard usually just guarantees the cell itself is not a mine, or is a 0)
         // Windows 95 moves the mine to the first available safe spot if you click one.
         // Simplified: Ensure first click is not a mine.
@@ -141,7 +152,7 @@ const Minesweeper = ({ onResize }) => {
 
         // Start timer
         timerRef.current = setInterval(() => {
-            setTime(prev => Math.min(prev + 1, 999))
+            setTime((prev) => Math.min(prev + 1, 999))
         }, 1000)
 
         // Reveal the first clicked cell
@@ -149,8 +160,11 @@ const Minesweeper = ({ onResize }) => {
     }
 
     const revealCell = (currentGrid, r, c) => {
-        if (currentGrid[r][c].state !== CELL_STATE.HIDDEN &&
-            currentGrid[r][c].state !== CELL_STATE.QUESTION) return
+        if (
+            currentGrid[r][c].state !== CELL_STATE.HIDDEN &&
+            currentGrid[r][c].state !== CELL_STATE.QUESTION
+        )
+            return
 
         if (currentGrid[r][c].isMine) {
             // Game Over
@@ -178,9 +192,13 @@ const Minesweeper = ({ onResize }) => {
                     for (let j = -1; j <= 1; j++) {
                         const nr = currR + i
                         const nc = currC + j
-                        if (nr >= 0 && nr < DIFFICULTIES[difficulty].rows &&
-                            nc >= 0 && nc < DIFFICULTIES[difficulty].cols &&
-                            newGrid[nr][nc].state === CELL_STATE.HIDDEN) {
+                        if (
+                            nr >= 0 &&
+                            nr < DIFFICULTIES[difficulty].rows &&
+                            nc >= 0 &&
+                            nc < DIFFICULTIES[difficulty].cols &&
+                            newGrid[nr][nc].state === CELL_STATE.HIDDEN
+                        ) {
                             queue.push([nr, nc])
                         }
                     }
@@ -200,7 +218,7 @@ const Minesweeper = ({ onResize }) => {
             startGame(r, c)
         } else {
             // Deep clone to modify state
-            const newGrid = grid.map(row => row.map(cell => ({ ...cell })))
+            const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })))
             if (newGrid[r][c].isMine) {
                 newGrid[r][c].isExploded = true // Mark specifically which mine exploded
                 setGrid(newGrid)
@@ -216,15 +234,15 @@ const Minesweeper = ({ onResize }) => {
         if (gameState === GAME_STATE.WON || gameState === GAME_STATE.LOST) return
         if (grid[r][c].state === CELL_STATE.REVEALED) return
 
-        const newGrid = grid.map(row => row.map(cell => ({ ...cell })))
+        const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })))
         const cell = newGrid[r][c]
 
         if (cell.state === CELL_STATE.HIDDEN) {
             cell.state = CELL_STATE.FLAGGED
-            setMinesLeft(prev => prev - 1)
+            setMinesLeft((prev) => prev - 1)
         } else if (cell.state === CELL_STATE.FLAGGED) {
             cell.state = CELL_STATE.QUESTION
-            setMinesLeft(prev => prev + 1)
+            setMinesLeft((prev) => prev + 1)
         } else if (cell.state === CELL_STATE.QUESTION) {
             cell.state = CELL_STATE.HIDDEN
         }
@@ -237,15 +255,17 @@ const Minesweeper = ({ onResize }) => {
         clearInterval(timerRef.current)
 
         // Reveal all mines usually
-        const newGrid = finalGrid.map(row => row.map(cell => {
-            if (cell.isMine && cell.state !== CELL_STATE.FLAGGED) {
-                return { ...cell, state: CELL_STATE.REVEALED }
-            }
-            if (!cell.isMine && cell.state === CELL_STATE.FLAGGED) {
-                return { ...cell, isMisflagged: true }
-            }
-            return cell
-        }))
+        const newGrid = finalGrid.map((row) =>
+            row.map((cell) => {
+                if (cell.isMine && cell.state !== CELL_STATE.FLAGGED) {
+                    return { ...cell, state: CELL_STATE.REVEALED }
+                }
+                if (!cell.isMine && cell.state === CELL_STATE.FLAGGED) {
+                    return { ...cell, isMisflagged: true }
+                }
+                return cell
+            })
+        )
         setGrid(newGrid)
     }
 
@@ -265,12 +285,14 @@ const Minesweeper = ({ onResize }) => {
             clearInterval(timerRef.current)
             setMinesLeft(0)
             // Flag remaining mines
-            const newGrid = currentGrid.map(row => row.map(cell => {
-                if (cell.isMine) {
-                    return { ...cell, state: CELL_STATE.FLAGGED }
-                }
-                return cell
-            }))
+            const newGrid = currentGrid.map((row) =>
+                row.map((cell) => {
+                    if (cell.isMine) {
+                        return { ...cell, state: CELL_STATE.FLAGGED }
+                    }
+                    return cell
+                })
+            )
             setGrid(newGrid)
         }
     }
@@ -317,10 +339,7 @@ const Minesweeper = ({ onResize }) => {
             <div className="minesweeper-game-area">
                 <div className="minesweeper-header">
                     <div className="minesweeper-counter">{formatNumber(minesLeft)}</div>
-                    <button
-                        className="minesweeper-face-btn"
-                        onClick={() => initGame()}
-                    >
+                    <button className="minesweeper-face-btn" onClick={() => initGame()}>
                         {getSmiley()}
                     </button>
                     <div className="minesweeper-counter">{formatNumber(time)}</div>
@@ -337,16 +356,23 @@ const Minesweeper = ({ onResize }) => {
                             {row.map((cell, c) => (
                                 <div
                                     key={c}
-                                    className={`minesweeper-cell ${cell.state === CELL_STATE.REVEALED ? 'revealed' : ''
-                                        } ${cell.state === CELL_STATE.REVEALED && cell.neighborCount > 0 ? `n${cell.neighborCount}` : ''
-                                        }`}
+                                    className={`minesweeper-cell ${
+                                        cell.state === CELL_STATE.REVEALED ? 'revealed' : ''
+                                    } ${
+                                        cell.state === CELL_STATE.REVEALED && cell.neighborCount > 0
+                                            ? `n${cell.neighborCount}`
+                                            : ''
+                                    }`}
                                     onClick={() => handleCellClick(r, c)}
                                     onContextMenu={(e) => handleCellRightClick(e, r, c)}
                                 >
                                     {cell.state === CELL_STATE.FLAGGED && '🚩'}
                                     {cell.state === CELL_STATE.QUESTION && '?'}
                                     {cell.state === CELL_STATE.REVEALED && cell.isMine && '💣'}
-                                    {cell.state === CELL_STATE.REVEALED && !cell.isMine && cell.neighborCount > 0 && cell.neighborCount}
+                                    {cell.state === CELL_STATE.REVEALED &&
+                                        !cell.isMine &&
+                                        cell.neighborCount > 0 &&
+                                        cell.neighborCount}
                                     {cell.isExploded && <span className="explosion">💥</span>}
                                     {cell.isMisflagged && <span className="misflag">❌</span>}
                                 </div>

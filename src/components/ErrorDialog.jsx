@@ -1,14 +1,26 @@
-function ErrorDialog({ title = 'Error', message, type = 'error', icon, buttons = ['OK'], onClose }) {
+function ErrorDialog({
+    title = 'Error',
+    message,
+    type = 'error',
+    icon,
+    buttons = ['OK'],
+    onClose
+}) {
     // Support 'icon' prop as alias for 'type'
     const dialogType = icon || type
 
     const getIcon = () => {
         switch (dialogType) {
-            case 'error': return '❌'
-            case 'warning': return '⚠️'
-            case 'info': return 'ℹ️'
-            case 'question': return '❓'
-            default: return '❌'
+            case 'error':
+                return '❌'
+            case 'warning':
+                return '⚠️'
+            case 'info':
+                return 'ℹ️'
+            case 'question':
+                return '❓'
+            default:
+                return '❌'
         }
     }
 
@@ -25,15 +37,15 @@ function ErrorDialog({ title = 'Error', message, type = 'error', icon, buttons =
             <div className="error-dialog">
                 <div className="error-dialog-titlebar">
                     <span>{title}</span>
-                    <button className="titlebar-close" onClick={() => onClose && onClose()}>×</button>
+                    <button className="titlebar-close" onClick={() => onClose && onClose()}>
+                        ×
+                    </button>
                 </div>
                 <div className="error-dialog-content">
                     <div className="error-dialog-icon">
                         <span style={{ fontSize: '32px' }}>{getIcon()}</span>
                     </div>
-                    <div className="error-dialog-message">
-                        {message}
-                    </div>
+                    <div className="error-dialog-message">{message}</div>
                 </div>
                 <div className="error-dialog-buttons">
                     {buttons.map((button, index) => {

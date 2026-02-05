@@ -36,7 +36,9 @@ function Window({
         isMaximized ? 'maximized' : '',
         isActive ? 'active' : '',
         className
-    ].filter(Boolean).join(' ')
+    ]
+        .filter(Boolean)
+        .join(' ')
 
     // Handle control button clicks
     const handleControlClick = (e, action) => {
@@ -75,14 +77,38 @@ function Window({
             {/* Resize handles (only when not maximized) */}
             {!isMaximized && onResizeStart && (
                 <>
-                    <div className="resize-handle resize-handle-n" onMouseDown={(e) => handleResizeMouseDown(e, 'n')} />
-                    <div className="resize-handle resize-handle-s" onMouseDown={(e) => handleResizeMouseDown(e, 's')} />
-                    <div className="resize-handle resize-handle-e" onMouseDown={(e) => handleResizeMouseDown(e, 'e')} />
-                    <div className="resize-handle resize-handle-w" onMouseDown={(e) => handleResizeMouseDown(e, 'w')} />
-                    <div className="resize-handle resize-handle-ne" onMouseDown={(e) => handleResizeMouseDown(e, 'ne')} />
-                    <div className="resize-handle resize-handle-nw" onMouseDown={(e) => handleResizeMouseDown(e, 'nw')} />
-                    <div className="resize-handle resize-handle-se" onMouseDown={(e) => handleResizeMouseDown(e, 'se')} />
-                    <div className="resize-handle resize-handle-sw" onMouseDown={(e) => handleResizeMouseDown(e, 'sw')} />
+                    <div
+                        className="resize-handle resize-handle-n"
+                        onMouseDown={(e) => handleResizeMouseDown(e, 'n')}
+                    />
+                    <div
+                        className="resize-handle resize-handle-s"
+                        onMouseDown={(e) => handleResizeMouseDown(e, 's')}
+                    />
+                    <div
+                        className="resize-handle resize-handle-e"
+                        onMouseDown={(e) => handleResizeMouseDown(e, 'e')}
+                    />
+                    <div
+                        className="resize-handle resize-handle-w"
+                        onMouseDown={(e) => handleResizeMouseDown(e, 'w')}
+                    />
+                    <div
+                        className="resize-handle resize-handle-ne"
+                        onMouseDown={(e) => handleResizeMouseDown(e, 'ne')}
+                    />
+                    <div
+                        className="resize-handle resize-handle-nw"
+                        onMouseDown={(e) => handleResizeMouseDown(e, 'nw')}
+                    />
+                    <div
+                        className="resize-handle resize-handle-se"
+                        onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
+                    />
+                    <div
+                        className="resize-handle resize-handle-sw"
+                        onMouseDown={(e) => handleResizeMouseDown(e, 'sw')}
+                    />
                 </>
             )}
             <div

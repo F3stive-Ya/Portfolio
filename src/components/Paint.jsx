@@ -13,10 +13,38 @@ const TOOLS = {
 }
 
 const COLOR_PALETTE = [
-    '#000000', '#808080', '#800000', '#808000', '#008000', '#008080', '#000080', '#800080',
-    '#ffffff', '#c0c0c0', '#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff',
-    '#c0dcc0', '#a6caf0', '#fffbf0', '#a0a0a4', '#ff8040', '#00ff80', '#80ffff', '#8080ff',
-    '#ff0080', '#804040', '#408040', '#004080', '#408080', '#804080', '#ff8080', '#80ff80'
+    '#000000',
+    '#808080',
+    '#800000',
+    '#808000',
+    '#008000',
+    '#008080',
+    '#000080',
+    '#800080',
+    '#ffffff',
+    '#c0c0c0',
+    '#ff0000',
+    '#ffff00',
+    '#00ff00',
+    '#00ffff',
+    '#0000ff',
+    '#ff00ff',
+    '#c0dcc0',
+    '#a6caf0',
+    '#fffbf0',
+    '#a0a0a4',
+    '#ff8040',
+    '#00ff80',
+    '#80ffff',
+    '#8080ff',
+    '#ff0080',
+    '#804040',
+    '#408040',
+    '#004080',
+    '#408080',
+    '#804080',
+    '#ff8080',
+    '#80ff80'
 ]
 
 const BRUSH_SIZES = [1, 2, 4, 6, 8, 12, 16, 24]
@@ -34,6 +62,20 @@ function Paint() {
     const [historyIndex, setHistoryIndex] = useState(-1)
     const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
 
+    // Save canvas state to history
+    const saveToHistory = useCallback(() => {
+        const canvas = canvasRef.current
+        if (!canvas) return
+
+        const imageData = canvas.toDataURL()
+        setHistory((prev) => {
+            const newHistory = prev.slice(0, historyIndex + 1)
+            newHistory.push(imageData)
+            return newHistory.slice(-20) // Keep last 20 states
+        })
+        setHistoryIndex((prev) => Math.min(prev + 1, 19))
+    }, [historyIndex])
+
     // Initialize canvas
     useEffect(() => {
         const canvas = canvasRef.current
@@ -48,19 +90,7 @@ function Paint() {
         saveToHistory()
     }, [])
 
-    // Save canvas state to history
-    const saveToHistory = useCallback(() => {
-        const canvas = canvasRef.current
-        if (!canvas) return
 
-        const imageData = canvas.toDataURL()
-        setHistory(prev => {
-            const newHistory = prev.slice(0, historyIndex + 1)
-            newHistory.push(imageData)
-            return newHistory.slice(-20) // Keep last 20 states
-        })
-        setHistoryIndex(prev => Math.min(prev + 1, 19))
-    }, [historyIndex])
 
     // Undo
     const undo = useCallback(() => {
@@ -73,7 +103,7 @@ function Paint() {
                 ctx.drawImage(img, 0, 0)
             }
             img.src = history[historyIndex - 1]
-            setHistoryIndex(prev => prev - 1)
+            setHistoryIndex((prev) => prev - 1)
         }
     }, [history, historyIndex])
 
@@ -88,7 +118,7 @@ function Paint() {
                 ctx.drawImage(img, 0, 0)
             }
             img.src = history[historyIndex + 1]
-            setHistoryIndex(prev => prev + 1)
+            setHistoryIndex((prev) => prev + 1)
         }
     }, [history, historyIndex])
 
@@ -191,7 +221,8 @@ function Paint() {
             if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) continue
 
             const idx = (y * canvas.width + x) * 4
-            if (data[idx] !== startR || data[idx + 1] !== startG || data[idx + 2] !== startB) continue
+            if (data[idx] !== startR || data[idx + 1] !== startG || data[idx + 2] !== startB)
+                continue
 
             visited.add(key)
             data[idx] = fillR
@@ -210,7 +241,9 @@ function Paint() {
         const canvas = canvasRef.current
         const ctx = canvas.getContext('2d')
         const pixel = ctx.getImageData(x, y, 1, 1).data
-        const hex = '#' + [pixel[0], pixel[1], pixel[2]].map(c => c.toString(16).padStart(2, '0')).join('')
+        const hex =
+            '#' +
+            [pixel[0], pixel[1], pixel[2]].map((c) => c.toString(16).padStart(2, '0')).join('')
         setColor(hex)
     }
 
@@ -228,7 +261,8 @@ function Paint() {
         } else if (tool === TOOLS.PENCIL || tool === TOOLS.BRUSH || tool === TOOLS.ERASER) {
             const canvas = canvasRef.current
             const ctx = canvas.getContext('2d')
-            const drawColor = tool === TOOLS.ERASER ? secondaryColor : (e.button === 2 ? secondaryColor : color)
+            const drawColor =
+                tool === TOOLS.ERASER ? secondaryColor : e.button === 2 ? secondaryColor : color
             const size = tool === TOOLS.BRUSH ? brushSize * 2 : brushSize
 
             ctx.beginPath()
@@ -334,8 +368,12 @@ function Paint() {
                 <div className="paint-menu-item">
                     <span className="paint-menu-label">Edit</span>
                     <div className="paint-dropdown">
-                        <button onClick={undo} disabled={historyIndex <= 0}>Undo</button>
-                        <button onClick={redo} disabled={historyIndex >= history.length - 1}>Redo</button>
+                        <button onClick={undo} disabled={historyIndex <= 0}>
+                            Undo
+                        </button>
+                        <button onClick={redo} disabled={historyIndex >= history.length - 1}>
+                            Redo
+                        </button>
                     </div>
                 </div>
             </div>
@@ -357,20 +395,22 @@ function Paint() {
 
                     {/* Brush size */}
                     <div className="paint-size-selector">
-                        {BRUSH_SIZES.slice(0, 4).map(size => (
+                        {BRUSH_SIZES.slice(0, 4).map((size) => (
                             <button
                                 key={size}
                                 className={`paint-size-btn ${brushSize === size ? 'active' : ''}`}
                                 onClick={() => setBrushSize(size)}
                                 title={`Size ${size}`}
                             >
-                                <span style={{
-                                    width: Math.min(size * 2, 16),
-                                    height: Math.min(size * 2, 16),
-                                    background: '#000',
-                                    borderRadius: '50%',
-                                    display: 'inline-block'
-                                }} />
+                                <span
+                                    style={{
+                                        width: Math.min(size * 2, 16),
+                                        height: Math.min(size * 2, 16),
+                                        background: '#000',
+                                        borderRadius: '50%',
+                                        display: 'inline-block'
+                                    }}
+                                />
                             </button>
                         ))}
                     </div>
@@ -421,7 +461,10 @@ function Paint() {
                                 className={`paint-color-btn ${color === c ? 'active' : ''}`}
                                 style={{ backgroundColor: c }}
                                 onClick={() => setColor(c)}
-                                onContextMenu={(e) => { e.preventDefault(); setSecondaryColor(c) }}
+                                onContextMenu={(e) => {
+                                    e.preventDefault()
+                                    setSecondaryColor(c)
+                                }}
                                 title={c}
                             />
                         ))}
@@ -431,7 +474,9 @@ function Paint() {
 
             {/* Status bar */}
             <div className="paint-statusbar">
-                <span>Position: {cursorPos.x}, {cursorPos.y}</span>
+                <span>
+                    Position: {cursorPos.x}, {cursorPos.y}
+                </span>
                 <span>Tool: {tool}</span>
                 <span>Size: {brushSize}px</span>
             </div>

@@ -1,39 +1,43 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 const PROJECTS_DATA = {
-    'dicegame': {
+    dicegame: {
         name: 'Dice Game',
-        description: 'Python program that simulates two dice being rolled. User can roll the dice as many times as they want.',
+        description:
+            'Python program that simulates two dice being rolled. User can roll the dice as many times as they want.',
         tech: ['Python', 'Random Module', 'CLI'],
         github: 'https://github.com/F3stive-Ya/DiceGame',
         icon: 'icons/dice-0.png',
         version: '1.0.0'
     },
-    'assemblycalculator': {
+    assemblycalculator: {
         name: 'Assembly Calculator',
-        description: 'Low-level Assembly program performing basic arithmetic operations (Add, Sub, Mul, Div).',
+        description:
+            'Low-level Assembly program performing basic arithmetic operations (Add, Sub, Mul, Div).',
         tech: ['Assembly x86', 'CPU Registers', 'Stack Operations'],
         github: 'https://github.com/F3stive-Ya/AssemblyCalculator',
         icon: 'icons/calculator_cool-0.png',
         version: '0.9.beta'
     },
-    'carracer': {
+    carracer: {
         name: 'Car Racer',
-        description: 'Simulation of a car race using Python. Random generation determines the winner.',
+        description:
+            'Simulation of a car race using Python. Random generation determines the winner.',
         tech: ['Python', 'Object Oriented', 'Game Loop'],
         github: 'https://github.com/F3stive-Ya/CarRacer',
         icon: 'icons/racing_car-0.png',
         version: '2.0-turbo'
     },
-    'passwordmaker': {
+    passwordmaker: {
         name: 'Password Maker',
-        description: 'Security tool to generate strong, random passwords with customizable criteria.',
+        description:
+            'Security tool to generate strong, random passwords with customizable criteria.',
         tech: ['Python', 'Cryptography', 'String Manipulation'],
         github: 'https://github.com/F3stive-Ya/PasswordMaker',
         icon: 'icons/key_win-0.png',
         version: '3.1'
     },
-    'commonfactors': {
+    commonfactors: {
         name: 'Common Factors',
         description: 'Mathematical utility to compute common factors efficiently between numbers.',
         tech: ['Python', 'Math Algorithms', 'Optimization'],
@@ -50,18 +54,20 @@ const WIZARD_STEPS = {
     FINISHED: 3
 }
 
-const ProjectViewer = ({ projectId, onClose }) => {
+const ProjectViewer = ({ projectId, onClose, isOpen }) => {
     const project = PROJECTS_DATA[projectId]
     const [step, setStep] = useState(WIZARD_STEPS.WELCOME)
     const [progress, setProgress] = useState(0)
     const [installLog, setInstallLog] = useState([])
 
-    // Reset state when project changes
+    // Reset state when project changes or window is re-opened
     useEffect(() => {
-        setStep(WIZARD_STEPS.WELCOME)
-        setProgress(0)
-        setInstallLog([])
-    }, [projectId])
+        if (isOpen) {
+            setStep(WIZARD_STEPS.WELCOME)
+            setProgress(0)
+            setInstallLog([])
+        }
+    }, [projectId, isOpen])
 
     // Handle installation simulation
     useEffect(() => {
@@ -90,7 +96,7 @@ const ProjectViewer = ({ projectId, onClose }) => {
                 // Add random log
                 if (Math.random() > 0.7) {
                     const log = logs[Math.floor(Math.random() * logs.length)]
-                    setInstallLog(prev => [...prev.slice(-4), log])
+                    setInstallLog((prev) => [...prev.slice(-4), log])
                 }
             }, 300)
 
@@ -102,7 +108,7 @@ const ProjectViewer = ({ projectId, onClose }) => {
 
     const handleNext = () => {
         if (step < WIZARD_STEPS.FINISHED) {
-            setStep(prev => prev + 1)
+            setStep((prev) => prev + 1)
         } else {
             // Launch (Open GitHub) and Close
             window.open(project.github, '_blank')
@@ -112,17 +118,19 @@ const ProjectViewer = ({ projectId, onClose }) => {
 
     const handleBack = () => {
         if (step > WIZARD_STEPS.WELCOME) {
-            setStep(prev => prev - 1)
+            setStep((prev) => prev - 1)
         }
     }
 
     return (
         <div className="wizard-container">
             <div className="wizard-sidebar">
-                <img src="icons/installer_generic_old-0.png" alt="Setup" className="wizard-sidebar-img" />
-                <div className="wizard-sidebar-text">
-                    Borges OS Setup
-                </div>
+                <img
+                    src="icons/installer_generic_old-0.png"
+                    alt="Setup"
+                    className="wizard-sidebar-img"
+                />
+                <div className="wizard-sidebar-text">Borges OS Setup</div>
             </div>
 
             <div className="wizard-content">
@@ -130,28 +138,34 @@ const ProjectViewer = ({ projectId, onClose }) => {
                     <div className="wizard-step">
                         <h3>Welcome to the {project.name} Setup Wizard</h3>
                         <p className="wizard-text">
-                            This wizard will guide you through the "installation" of {project.name} version {project.version}.
+                            This wizard will guide you through the "installation" of {project.name}{' '}
+                            version {project.version}.
                         </p>
                         <div className="wizard-info-box">
-                            <img src={project.icon} alt={project.name} className="wizard-project-icon" />
+                            <img
+                                src={project.icon}
+                                alt={project.name}
+                                className="wizard-project-icon"
+                            />
                             <div>
                                 <strong>{project.name}</strong>
                                 <p>{project.description}</p>
                             </div>
                         </div>
                         <p className="wizard-warning">
-                            WARNING: This is strictly a portfolio demonstration. No actual software will be installed on your computer.
+                            WARNING: This is strictly a portfolio demonstration. No actual software
+                            will be installed on your computer.
                         </p>
-                        <p>
-                            Click Next to continue.
-                        </p>
+                        <p>Click Next to continue.</p>
                     </div>
                 )}
 
                 {step === WIZARD_STEPS.LICENSE && (
                     <div className="wizard-step">
                         <h3>System Requirements</h3>
-                        <p>The following technologies are required and "used" by this application:</p>
+                        <p>
+                            The following technologies are required and "used" by this application:
+                        </p>
                         <div className="wizard-license-box">
                             {project.tech.map((t, i) => (
                                 <div key={i} className="wizard-req-item">
@@ -160,7 +174,8 @@ const ProjectViewer = ({ projectId, onClose }) => {
                             ))}
                         </div>
                         <p>
-                            This project is hosted on GitHub. Clicking "Next" will simulate the installation process.
+                            This project is hosted on GitHub. Clicking "Next" will simulate the
+                            installation process.
                         </p>
                     </div>
                 )}
@@ -183,7 +198,9 @@ const ProjectViewer = ({ projectId, onClose }) => {
                         </div>
 
                         <div className="wizard-logs">
-                            {installLog.map((log, i) => <div key={i}>{log}</div>)}
+                            {installLog.map((log, i) => (
+                                <div key={i}>{log}</div>
+                            ))}
                         </div>
                     </div>
                 )}
@@ -191,19 +208,13 @@ const ProjectViewer = ({ projectId, onClose }) => {
                 {step === WIZARD_STEPS.FINISHED && (
                     <div className="wizard-step">
                         <h3>Installation Complete</h3>
-                        <p>
-                            Setup has finished "installing" {project.name} on your computer.
-                        </p>
-                        <p>
-                            The application may be launched by selecting the installed icons.
-                        </p>
+                        <p>Setup has finished "installing" {project.name} on your computer.</p>
+                        <p>The application may be launched by selecting the installed icons.</p>
                         <div className="wizard-final-option">
                             <input type="checkbox" checked readOnly />
                             <label>Launch {project.name} (Opens GitHub)</label>
                         </div>
-                        <p>
-                            Click Finish to exit Setup.
-                        </p>
+                        <p>Click Finish to exit Setup.</p>
                     </div>
                 )}
             </div>
@@ -213,7 +224,11 @@ const ProjectViewer = ({ projectId, onClose }) => {
                 <div className="wizard-buttons">
                     <button
                         className="wizard-btn"
-                        disabled={step === WIZARD_STEPS.WELCOME || step === WIZARD_STEPS.INSTALLING || step === WIZARD_STEPS.FINISHED}
+                        disabled={
+                            step === WIZARD_STEPS.WELCOME ||
+                            step === WIZARD_STEPS.INSTALLING ||
+                            step === WIZARD_STEPS.FINISHED
+                        }
                         onClick={handleBack}
                     >
                         &lt; Back
@@ -225,10 +240,7 @@ const ProjectViewer = ({ projectId, onClose }) => {
                     >
                         {step === WIZARD_STEPS.FINISHED ? 'Finish' : 'Next >'}
                     </button>
-                    <button
-                        className="wizard-btn"
-                        onClick={onClose}
-                    >
+                    <button className="wizard-btn" onClick={onClose}>
                         Cancel
                     </button>
                 </div>

@@ -19,7 +19,7 @@ function LoginScreen({ onComplete }) {
             const basePath = getBasePath()
             const audio = new Audio(`${basePath}/sounds/startup.wav`)
             audio.volume = 0.5
-            audio.play().catch(() => { })
+            audio.play().catch(() => {})
             setAudioPlayed(true)
         }
     }, [audioPlayed])
@@ -28,7 +28,7 @@ function LoginScreen({ onComplete }) {
     useEffect(() => {
         if (phase === 'logging') {
             const interval = setInterval(() => {
-                setProgress(prev => {
+                setProgress((prev) => {
                     if (prev >= 100) {
                         clearInterval(interval)
                         setPhase('complete')
@@ -78,10 +78,7 @@ function LoginScreen({ onComplete }) {
                     <div className="login-content">
                         <p className="login-status">Logging on...</p>
                         <div className="login-progress">
-                            <div
-                                className="login-progress-bar"
-                                style={{ width: `${progress}%` }}
-                            />
+                            <div className="login-progress-bar" style={{ width: `${progress}%` }} />
                         </div>
                     </div>
                 )}

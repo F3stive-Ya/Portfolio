@@ -15,7 +15,7 @@ const OutlookExpress = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
+        setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
     const handleSubmit = (e) => {
@@ -136,7 +136,7 @@ const OutlookExpress = () => {
                     ) : (
                         <>
                             <div className="outlook-sent-list">
-                                {sentItems.map(email => (
+                                {sentItems.map((email) => (
                                     <div key={email.id} className="outlook-sent-item">
                                         <div className="outlook-sent-header">
                                             <strong>To:</strong> shanemborges@gmail.com

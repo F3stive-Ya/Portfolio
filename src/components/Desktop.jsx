@@ -17,7 +17,7 @@ const getDefaultPositions = (icons) => {
     let leftIndex = 0
     let rightIndex = 0
 
-    icons.forEach(icon => {
+    icons.forEach((icon) => {
         if (TOP_RIGHT_ICONS.includes(icon.id)) {
             positions[icon.id] = {
                 x: window.innerWidth - 100,
@@ -55,14 +55,15 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
     // Icon positions with localStorage persistence
     const [iconPositions, setIconPositions] = useState(() => {
         const saved = localStorage.getItem('desktop-icon-positions')
-        const currentIconIds = icons.map(i => i.id)
+        const currentIconIds = icons.map((i) => i.id)
 
         if (saved) {
             try {
                 const parsed = JSON.parse(saved)
                 // Check if saved positions match current icons
                 const savedIds = Object.keys(parsed)
-                const allMatch = currentIconIds.every(id => savedIds.includes(id)) &&
+                const allMatch =
+                    currentIconIds.every((id) => savedIds.includes(id)) &&
                     savedIds.length === currentIconIds.length
 
                 if (allMatch) {
@@ -88,10 +89,10 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
     // Handle window resize - reposition right-aligned icons
     useEffect(() => {
         const handleResize = () => {
-            setIconPositions(prev => {
+            setIconPositions((prev) => {
                 const newPositions = { ...prev }
                 let rightIndex = 0
-                icons.forEach(icon => {
+                icons.forEach((icon) => {
                     if (TOP_RIGHT_ICONS.includes(icon.id)) {
                         newPositions[icon.id] = {
                             x: window.innerWidth - 100,
@@ -129,21 +130,24 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
     const [propertiesDialog, setPropertiesDialog] = useState(null)
 
     // Handle icon drag start
-    const handleIconMouseDown = useCallback((e, iconId) => {
-        if (e.button !== 0) return // Only left click
+    const handleIconMouseDown = useCallback(
+        (e, iconId) => {
+            if (e.button !== 0) return // Only left click
 
-        e.stopPropagation()
+            e.stopPropagation()
 
-        // Select this icon if not already selected
-        if (!selectedIcons.has(iconId)) {
-            setSelectedIcons(new Set([iconId]))
-        }
+            // Select this icon if not already selected
+            if (!selectedIcons.has(iconId)) {
+                setSelectedIcons(new Set([iconId]))
+            }
 
-        const iconPos = iconPositions[iconId] || { x: 0, y: 0 }
-        dragStartPos.current = { x: e.clientX, y: e.clientY }
-        dragStartIconPos.current = { x: iconPos.x, y: iconPos.y }
-        setDraggingIcon(iconId)
-    }, [iconPositions, selectedIcons])
+            const iconPos = iconPositions[iconId] || { x: 0, y: 0 }
+            dragStartPos.current = { x: e.clientX, y: e.clientY }
+            dragStartIconPos.current = { x: iconPos.x, y: iconPos.y }
+            setDraggingIcon(iconId)
+        },
+        [iconPositions, selectedIcons]
+    )
 
     // Handle icon right-click
     const handleIconContextMenu = useCallback((e, icon) => {
@@ -160,56 +164,69 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
     }, [])
 
     // Handle mouse move for icon dragging or selection
-    const handleMouseMove = useCallback((e) => {
-        // Handle icon dragging
-        if (draggingIcon) {
-            const deltaX = e.clientX - dragStartPos.current.x
-            const deltaY = e.clientY - dragStartPos.current.y
+    const handleMouseMove = useCallback(
+        (e) => {
+            // Handle icon dragging
+            if (draggingIcon) {
+                const deltaX = e.clientX - dragStartPos.current.x
+                const deltaY = e.clientY - dragStartPos.current.y
 
-            const newX = Math.max(0, Math.min(window.innerWidth - 80, dragStartIconPos.current.x + deltaX))
-            const newY = Math.max(0, Math.min(window.innerHeight - 120, dragStartIconPos.current.y + deltaY))
+                const newX = Math.max(
+                    0,
+                    Math.min(window.innerWidth - 80, dragStartIconPos.current.x + deltaX)
+                )
+                const newY = Math.max(
+                    0,
+                    Math.min(window.innerHeight - 120, dragStartIconPos.current.y + deltaY)
+                )
 
-            setIconPositions(prev => ({
-                ...prev,
-                [draggingIcon]: { x: newX, y: newY }
-            }))
-            return
-        }
+                setIconPositions((prev) => ({
+                    ...prev,
+                    [draggingIcon]: { x: newX, y: newY }
+                }))
+                return
+            }
 
-        // Handle selection box and determine which icons are inside
-        if (!isSelectingRef.current || !desktopRef.current) return
+            // Handle selection box and determine which icons are inside
+            if (!isSelectingRef.current || !desktopRef.current) return
 
-        const rect = desktopRef.current.getBoundingClientRect()
-        const currentX = e.clientX - rect.left
-        const currentY = e.clientY - rect.top
+            const rect = desktopRef.current.getBoundingClientRect()
+            const currentX = e.clientX - rect.left
+            const currentY = e.clientY - rect.top
 
-        const startX = startPosRef.current.x
-        const startY = startPosRef.current.y
+            const startX = startPosRef.current.x
+            const startY = startPosRef.current.y
 
-        const x = Math.min(startX, currentX)
-        const y = Math.min(startY, currentY)
-        const width = Math.abs(currentX - startX)
-        const height = Math.abs(currentY - startY)
+            const x = Math.min(startX, currentX)
+            const y = Math.min(startY, currentY)
+            const width = Math.abs(currentX - startX)
+            const height = Math.abs(currentY - startY)
 
-        setSelectionBox({ x, y, width, height })
+            setSelectionBox({ x, y, width, height })
 
-        // Determine which icons are inside the selection box
-        if (width > 5 && height > 5) {
-            const newSelected = new Set()
-            icons.forEach(icon => {
-                const pos = iconPositions[icon.id]
-                if (pos) {
-                    const iconCenterX = pos.x + 48
-                    const iconCenterY = pos.y + 46
-                    if (iconCenterX >= x && iconCenterX <= x + width &&
-                        iconCenterY >= y && iconCenterY <= y + height) {
-                        newSelected.add(icon.id)
+            // Determine which icons are inside the selection box
+            if (width > 5 && height > 5) {
+                const newSelected = new Set()
+                icons.forEach((icon) => {
+                    const pos = iconPositions[icon.id]
+                    if (pos) {
+                        const iconCenterX = pos.x + 48
+                        const iconCenterY = pos.y + 46
+                        if (
+                            iconCenterX >= x &&
+                            iconCenterX <= x + width &&
+                            iconCenterY >= y &&
+                            iconCenterY <= y + height
+                        ) {
+                            newSelected.add(icon.id)
+                        }
                     }
-                }
-            })
-            setSelectedIcons(newSelected)
-        }
-    }, [draggingIcon, icons, iconPositions])
+                })
+                setSelectedIcons(newSelected)
+            }
+        },
+        [draggingIcon, icons, iconPositions]
+    )
 
     // Handle mouse up - snap to grid
     const handleMouseUp = useCallback(() => {
@@ -218,7 +235,7 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
             const currentPos = iconPositions[draggingIcon]
             if (currentPos) {
                 const snapped = snapToGrid(currentPos.x, currentPos.y)
-                setIconPositions(prev => ({
+                setIconPositions((prev) => ({
                     ...prev,
                     [draggingIcon]: snapped
                 }))
@@ -230,26 +247,29 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
     }, [draggingIcon, iconPositions])
 
     // Handle desktop mouse down (for selection box)
-    const handleDesktopMouseDown = useCallback((e) => {
-        if (contextMenu) setContextMenu(null)
-        if (iconContextMenu) setIconContextMenu(null)
+    const handleDesktopMouseDown = useCallback(
+        (e) => {
+            if (contextMenu) setContextMenu(null)
+            if (iconContextMenu) setIconContextMenu(null)
 
-        // Deselect all icons if clicking on desktop background
-        if (!e.target.closest('.icon')) {
-            setSelectedIcons(new Set())
-        }
+            // Deselect all icons if clicking on desktop background
+            if (!e.target.closest('.icon')) {
+                setSelectedIcons(new Set())
+            }
 
-        // Don't start selection if clicking on an icon
-        if (e.target.closest('.icon-wrapper')) return
+            // Don't start selection if clicking on an icon
+            if (e.target.closest('.icon-wrapper')) return
 
-        const rect = desktopRef.current.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
+            const rect = desktopRef.current.getBoundingClientRect()
+            const x = e.clientX - rect.left
+            const y = e.clientY - rect.top
 
-        startPosRef.current = { x, y }
-        isSelectingRef.current = true
-        setSelectionBox({ x, y, width: 0, height: 0 })
-    }, [contextMenu, iconContextMenu])
+            startPosRef.current = { x, y }
+            isSelectingRef.current = true
+            setSelectionBox({ x, y, width: 0, height: 0 })
+        },
+        [contextMenu, iconContextMenu]
+    )
 
     const handleDesktopContextMenu = useCallback((e) => {
         e.preventDefault()
@@ -274,7 +294,7 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
     // Line up icons - snap all to nearest grid position
     const lineUpIcons = useCallback(() => {
         const newPositions = {}
-        icons.forEach(icon => {
+        icons.forEach((icon) => {
             const pos = iconPositions[icon.id]
             if (pos) {
                 newPositions[icon.id] = snapToGrid(pos.x, pos.y)
@@ -293,11 +313,23 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
         { label: 'Arrange Icons', onClick: arrangeIcons },
         { label: 'Line up Icons', onClick: lineUpIcons },
         { type: 'separator' },
-        { label: 'Properties', onClick: () => { setContextMenu(null); onContextMenuAction?.('properties') } }
+        {
+            label: 'Properties',
+            onClick: () => {
+                setContextMenu(null)
+                onContextMenuAction?.('properties')
+            }
+        }
     ]
 
     const getIconMenuItems = (icon) => [
-        { label: 'Open', onClick: () => { setIconContextMenu(null); onIconDoubleClick(icon.id) } },
+        {
+            label: 'Open',
+            onClick: () => {
+                setIconContextMenu(null)
+                onIconDoubleClick(icon.id)
+            }
+        },
         { type: 'separator' },
         { label: 'Cut', disabled: true },
         { label: 'Copy', disabled: true },
@@ -307,7 +339,8 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
         { label: 'Rename', disabled: true },
         { type: 'separator' },
         {
-            label: 'Properties', onClick: () => {
+            label: 'Properties',
+            onClick: () => {
                 setIconContextMenu(null)
                 setPropertiesDialog(getIconProperties(icon))
             }
@@ -318,7 +351,7 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
     useEffect(() => {
         const newPositions = { ...iconPositions }
         let updated = false
-        icons.forEach(icon => {
+        icons.forEach((icon) => {
             if (!newPositions[icon.id]) {
                 const defaults = getDefaultPositions(icons)
                 newPositions[icon.id] = defaults[icon.id]
@@ -341,7 +374,7 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
             onContextMenu={handleDesktopContextMenu}
         >
             {/* Free-positioned icons */}
-            {icons.map(icon => {
+            {icons.map((icon) => {
                 const pos = iconPositions[icon.id] || { x: 0, y: 0 }
                 const isSelected = selectedIcons.has(icon.id)
                 return (
@@ -408,9 +441,15 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
                     title={`${propertiesDialog.name} Properties`}
                     message={
                         <div style={{ textAlign: 'left', fontSize: '11px', lineHeight: '1.8' }}>
-                            <p><strong>File Name:</strong> {propertiesDialog.name}</p>
-                            <p><strong>Path:</strong> {propertiesDialog.path}</p>
-                            <p><strong>Owner:</strong> {propertiesDialog.owner}</p>
+                            <p>
+                                <strong>File Name:</strong> {propertiesDialog.name}
+                            </p>
+                            <p>
+                                <strong>Path:</strong> {propertiesDialog.path}
+                            </p>
+                            <p>
+                                <strong>Owner:</strong> {propertiesDialog.owner}
+                            </p>
                         </div>
                     }
                     icon="info"

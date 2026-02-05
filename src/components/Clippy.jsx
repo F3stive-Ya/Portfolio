@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react'
 const TIPS = [
     "It looks like you're trying to hire a developer. Would you like help?",
     "Tip: Open the Resume to learn more about Shane's experience!",
-    "Did you know? You can type commands in the Run dialog (Ctrl+R).",
+    'Did you know? You can type commands in the Run dialog (Ctrl+R).',
     "Try the Terminal! Type 'help' for a list of commands.",
-    "Pro tip: Use the Settings to customize your theme colors!",
-    "Looking for projects? Check out the Projects window!",
-    "Want to get in touch? Open Outlook Express or use Contact!",
-    "Fun fact: This portfolio was built with React and Vite!",
-    "Drag windows around! You can also resize them from the corners.",
-    "Double-click a titlebar to maximize a window!",
+    'Pro tip: Use the Settings to customize your theme colors!',
+    'Looking for projects? Check out the Projects window!',
+    'Want to get in touch? Open Outlook Express or use Contact!',
+    'Fun fact: This portfolio was built with React and Vite!',
+    'Drag windows around! You can also resize them from the corners.',
+    'Double-click a titlebar to maximize a window!'
 ]
 
 const Clippy = ({ onAction, onDismiss }) => {
@@ -39,7 +39,7 @@ const Clippy = ({ onAction, onDismiss }) => {
         if (!isVisible) return
 
         const tipTimer = setInterval(() => {
-            setCurrentTip(prev => (prev + 1) % TIPS.length)
+            setCurrentTip((prev) => (prev + 1) % TIPS.length)
         }, 30000) // 30 seconds (increased from 8s)
 
         return () => clearInterval(tipTimer)
@@ -59,7 +59,7 @@ const Clippy = ({ onAction, onDismiss }) => {
     }
 
     const handleNextTip = () => {
-        setCurrentTip(prev => (prev + 1) % TIPS.length)
+        setCurrentTip((prev) => (prev + 1) % TIPS.length)
     }
 
     const handleOpenResume = () => {
@@ -88,11 +88,7 @@ const Clippy = ({ onAction, onDismiss }) => {
                 </button>
             </div>
             <div className="clippy-character">
-                <img
-                    src="icons/msagent-0.png"
-                    alt="Clippy"
-                    className="clippy-img"
-                />
+                <img src="icons/msagent-0.png" alt="Clippy" className="clippy-img" />
             </div>
         </div>
     )

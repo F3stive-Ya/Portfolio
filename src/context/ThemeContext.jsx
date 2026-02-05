@@ -46,7 +46,7 @@ export function ThemeProvider({ children }) {
     }, [soundEnabled])
 
     const updateTheme = (key, value) => {
-        setTheme(prev => ({ ...prev, [key]: value }))
+        setTheme((prev) => ({ ...prev, [key]: value }))
     }
 
     const resetTheme = () => {
@@ -54,11 +54,13 @@ export function ThemeProvider({ children }) {
     }
 
     const toggleSound = () => {
-        setSoundEnabled(prev => !prev)
+        setSoundEnabled((prev) => !prev)
     }
 
     return (
-        <ThemeContext.Provider value={{ theme, updateTheme, resetTheme, defaultTheme, soundEnabled, toggleSound }}>
+        <ThemeContext.Provider
+            value={{ theme, updateTheme, resetTheme, defaultTheme, soundEnabled, toggleSound }}
+        >
             {children}
         </ThemeContext.Provider>
     )

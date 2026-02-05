@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import LetterGlitch from './LetterGlitch'
 
 // System hardware info (shared with My Computer window)
@@ -23,7 +23,7 @@ const BOOT_SEQUENCE = [
     { text: '', delay: 1600 },
     { text: 'Loading BorgesOS...', delay: 1800 },
     { text: '', delay: 2200 },
-    { text: 'Press any key to continue...', delay: 2500 },
+    { text: 'Press any key to continue...', delay: 2500 }
 ]
 
 const SHUTDOWN_SEQUENCE = [
@@ -35,7 +35,7 @@ const SHUTDOWN_SEQUENCE = [
     { text: '', delay: 1200 },
     { text: 'It is now safe to restart your computer.', delay: 1400 },
     { text: '', delay: 1600 },
-    { text: 'Press any key to restart...', delay: 1800 },
+    { text: 'Press any key to restart...', delay: 1800 }
 ]
 
 function BiosScreen({ mode, onComplete }) {
@@ -50,7 +50,7 @@ function BiosScreen({ mode, onComplete }) {
         // Show lines progressively
         const timers = sequence.map((line, index) => {
             return setTimeout(() => {
-                setVisibleLines(prev => [...prev, line.text])
+                setVisibleLines((prev) => [...prev, line.text])
             }, line.delay)
         })
 
@@ -61,11 +61,11 @@ function BiosScreen({ mode, onComplete }) {
 
         // Cursor blink
         const cursorInterval = setInterval(() => {
-            setShowCursor(prev => !prev)
+            setShowCursor((prev) => !prev)
         }, 500)
 
         return () => {
-            timers.forEach(t => clearTimeout(t))
+            timers.forEach((t) => clearTimeout(t))
             clearTimeout(waitTimer)
             clearInterval(cursorInterval)
         }

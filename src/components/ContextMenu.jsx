@@ -51,7 +51,10 @@ function ContextMenu({ x, y, items, onClose }) {
             <div
                 className="context-menu-backdrop"
                 onClick={onClose}
-                onContextMenu={(e) => { e.preventDefault(); onClose() }}
+                onContextMenu={(e) => {
+                    e.preventDefault()
+                    onClose()
+                }}
             />
             <div
                 ref={menuRef}

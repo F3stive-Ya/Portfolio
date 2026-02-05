@@ -10,7 +10,12 @@ function Taskbar({ openWindows, activeWindowId, onTaskClick, onStartClick }) {
     // Close calendar when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (calendarRef.current && !calendarRef.current.contains(event.target) && !event.target.closest('.tray-clock') && !event.target.closest('.tray-date')) {
+            if (
+                calendarRef.current &&
+                !calendarRef.current.contains(event.target) &&
+                !event.target.closest('.tray-clock') &&
+                !event.target.closest('.tray-date')
+            ) {
                 setShowCalendar(false)
             }
         }
@@ -60,14 +65,14 @@ function Taskbar({ openWindows, activeWindowId, onTaskClick, onStartClick }) {
                 Start
             </button>
             <div className="task-buttons">
-                {openWindows.map(id => (
+                {openWindows.map((id) => (
                     <Tooltip key={id} text={formatTitle(id)}>
-                        <div
+                        <button
                             className={`task-btn${activeWindowId === id ? ' active' : ''}`}
                             onClick={() => onTaskClick(id)}
                         >
                             {formatTitle(id)}
-                        </div>
+                        </button>
                     </Tooltip>
                 ))}
             </div>
@@ -75,19 +80,13 @@ function Taskbar({ openWindows, activeWindowId, onTaskClick, onStartClick }) {
                 {/* System tray icons */}
                 <div className="tray-icons">
                     <Tooltip text="Volume">
-                        <div className="tray-icon">
-                            🔊
-                        </div>
+                        <div className="tray-icon">🔊</div>
                     </Tooltip>
                     <Tooltip text="Network Connected">
-                        <div className="tray-icon">
-                            🌐
-                        </div>
+                        <div className="tray-icon">🌐</div>
                     </Tooltip>
                     <Tooltip text="Security Active">
-                        <div className="tray-icon">
-                            🛡️
-                        </div>
+                        <div className="tray-icon">🛡️</div>
                     </Tooltip>
                 </div>
                 <Tooltip text={`${dateTime.date} ${dateTime.time}`}>

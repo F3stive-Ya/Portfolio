@@ -1,0 +1,72 @@
+.menu {
+    position: fixed;
+    left: 6px;
+    bottom: var(--taskbar-h);
+    width: 240px;
+    background: var(--button-bg);
+    border: 2px outset #efefef;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.35);
+    display: none;
+    z-index: 2000;
+}
+
+.menu.open {
+    display: flex;
+}
+
+.banner {
+    width: 32px;
+    background: linear-gradient(to bottom, var(--titlebar-start), #000);
+    color: #fff;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    padding: 10px 6px;
+    font-family: "MS Sans Serif", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    gap: 0;
+}
+
+.sectionLabel {
+    padding: 4px 8px 2px;
+    font-size: 10px;
+    color: #666;
+    font-style: italic;
+    font-family: "MS Sans Serif", sans-serif;
+}
+
+.item {
+    padding: 6px 8px;
+    cursor: pointer;
+    user-select: none;
+    font-family: "MS Sans Serif", sans-serif;
+    color: #000;
+    border: none;
+    background: none;
+    text-align: left;
+    width: 100%;
+    font-size: 11px;
+    display: block;
+}
+
+.item:hover,
+.item:focus {
+    background: var(--titlebar-start);
+    color: #fff;
+    outline: 1px dotted #fff;
+    outline-offset: -2px;
+}
+
+.separator {
+    height: 1px;
+    background: #808080;
+    margin: 4px 0;
+    border-bottom: 1px solid #fff;
+}

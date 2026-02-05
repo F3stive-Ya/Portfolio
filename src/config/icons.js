@@ -3,14 +3,39 @@
 
 export const ICONS = [
     { id: 'about', label: 'About Me', icon: 'icons/notepad_file-0.png', showOnDesktop: true },
-    { id: 'fileexplorer', label: 'File Explorer', icon: 'icons/directory_explorer-5.png', showOnDesktop: true },
-    { id: 'minesweeper', label: 'Minesweeper', icon: 'icons/minesweeper-0.png', showOnDesktop: true },
-    { id: 'terminal', label: 'Command Prompt', icon: 'icons/console_prompt-0.png', showOnDesktop: false },
+    {
+        id: 'fileexplorer',
+        label: 'File Explorer',
+        icon: 'icons/directory_explorer-5.png',
+        showOnDesktop: true
+    },
+    {
+        id: 'minesweeper',
+        label: 'Minesweeper',
+        icon: 'icons/minesweeper-0.png',
+        showOnDesktop: true
+    },
+    {
+        id: 'terminal',
+        label: 'Command Prompt',
+        icon: 'icons/console_prompt-0.png',
+        showOnDesktop: false
+    },
     { id: 'notepad', label: 'Notepad', icon: 'icons/notepad-0.png', showOnDesktop: true },
-    { id: 'outlook', label: 'Outlook Express', icon: 'icons/outlook_express-0.png', showOnDesktop: true },
+    {
+        id: 'outlook',
+        label: 'Outlook Express',
+        icon: 'icons/outlook_express-0.png',
+        showOnDesktop: true
+    },
     { id: 'paint', label: 'Paint', icon: 'icons/paint_file-0.png', showOnDesktop: true },
     { id: 'contact', label: 'Contact', icon: 'icons/mailbox_world-0.png', showOnDesktop: true },
-    { id: 'mycomputer', label: 'My Computer', icon: 'icons/computer_explorer_cool-0.png', showOnDesktop: true },
+    {
+        id: 'mycomputer',
+        label: 'My Computer',
+        icon: 'icons/computer_explorer_cool-0.png',
+        showOnDesktop: true
+    },
     { id: 'resume', label: 'Resume', icon: 'icons/write_file-0.png', showOnDesktop: true },
     { id: 'settings', label: 'Settings', icon: 'icons/settings_gear-0.png', showOnDesktop: true }
 ]

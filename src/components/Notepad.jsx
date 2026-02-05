@@ -3,7 +3,9 @@ import { useState, useRef, useEffect } from 'react'
 const Notepad = () => {
     const [content, setContent] = useState(() => {
         const saved = localStorage.getItem('win95-notepad-content')
-        return saved || `Welcome to Notepad!
+        return (
+            saved ||
+            `Welcome to Notepad!
 ===================
 
 This is Shane's Windows 95 Portfolio.
@@ -15,6 +17,7 @@ Try these keyboard shortcuts:
 - Ctrl+Z: Undo
 
 Have fun exploring! 🖥️`
+        )
     })
 
     const [wordWrap, setWordWrap] = useState(true)
@@ -63,7 +66,9 @@ Have fun exploring! 🖥️`
                     <span className="notepad-menu-label">Edit</span>
                     <div className="notepad-dropdown">
                         <button onClick={() => document.execCommand('undo')}>Undo</button>
-                        <button onClick={() => document.execCommand('selectAll')}>Select All</button>
+                        <button onClick={() => document.execCommand('selectAll')}>
+                            Select All
+                        </button>
                     </div>
                 </div>
                 <div className="notepad-menu-item">
@@ -86,7 +91,9 @@ Have fun exploring! 🖥️`
             <div className="notepad-statusbar">
                 <span>{hasChanges ? 'Modified' : 'Saved'}</span>
                 <span>Ln {lines}, Col 1</span>
-                <span>{words} words, {chars} chars</span>
+                <span>
+                    {words} words, {chars} chars
+                </span>
             </div>
         </div>
     )

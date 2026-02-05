@@ -20,9 +20,9 @@ export function RecentProgramsProvider({ children }) {
     const addRecentProgram = useCallback((programId) => {
         if (!TRACKABLE_PROGRAMS.includes(programId)) return
 
-        setRecentPrograms(prev => {
+        setRecentPrograms((prev) => {
             // Remove if already exists, then add to front
-            const filtered = prev.filter(id => id !== programId)
+            const filtered = prev.filter((id) => id !== programId)
             return [programId, ...filtered].slice(0, MAX_RECENT)
         })
     }, [])
@@ -32,7 +32,9 @@ export function RecentProgramsProvider({ children }) {
     }, [])
 
     return (
-        <RecentProgramsContext.Provider value={{ recentPrograms, addRecentProgram, clearRecentPrograms }}>
+        <RecentProgramsContext.Provider
+            value={{ recentPrograms, addRecentProgram, clearRecentPrograms }}
+        >
             {children}
         </RecentProgramsContext.Provider>
     )

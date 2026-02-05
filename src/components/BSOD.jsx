@@ -30,9 +30,9 @@ const BSOD = ({ onRecover }) => {
                 <p>A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) +</p>
                 <p>00010E36. The current application will be terminated.</p>
                 <br />
-                <p>*  Press any key to terminate the current application.</p>
-                <p>*  Press CTRL+ALT+DEL again to restart your computer. You will</p>
-                <p>   lose any unsaved information in all applications.</p>
+                <p>* Press any key to terminate the current application.</p>
+                <p>* Press CTRL+ALT+DEL again to restart your computer. You will</p>
+                <p> lose any unsaved information in all applications.</p>
                 <br />
                 <br />
                 <p className="bsod-centered">Press any key to continue _</p>

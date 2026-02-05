@@ -66,8 +66,18 @@ function Calendar() {
     }
 
     const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
     ]
 
     return (
@@ -97,7 +107,10 @@ function Calendar() {
                     {weeks.map((week, i) => (
                         <tr key={i}>
                             {week.map((day, j) => (
-                                <td key={j} className={day ? (isToday(day) ? 'today' : '') : 'empty'}>
+                                <td
+                                    key={j}
+                                    className={day ? (isToday(day) ? 'today' : '') : 'empty'}
+                                >
                                     {day}
                                 </td>
                             ))}
@@ -105,9 +118,7 @@ function Calendar() {
                     ))}
                 </tbody>
             </table>
-            <div className="calendar-footer">
-                Today: {date.toLocaleDateString()}
-            </div>
+            <div className="calendar-footer">Today: {date.toLocaleDateString()}</div>
         </div>
     )
 }

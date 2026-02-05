@@ -4,9 +4,12 @@ import { ICONS } from '../config/icons'
 // Generate Desktop children from ICONS array (only those shown on desktop)
 const generateDesktopChildren = () => {
     const children = {}
-    ICONS.filter(icon => icon.showOnDesktop !== false).forEach(icon => {
+    ICONS.filter((icon) => icon.showOnDesktop !== false).forEach((icon) => {
         children[icon.label] = {
-            type: icon.id === 'fileexplorer' || icon.id === 'mycomputer' || icon.id === 'settings' ? 'shortcut' : 'file',
+            type:
+                icon.id === 'fileexplorer' || icon.id === 'mycomputer' || icon.id === 'settings'
+                    ? 'shortcut'
+                    : 'file',
             name: icon.label,
             icon: icon.icon,
             windowId: icon.id
@@ -22,42 +25,72 @@ const FILE_SYSTEM = {
         name: 'Local Disk (C:)',
         icon: 'icons/hard_disk_drive-0.png',
         children: {
-            'Desktop': {
+            Desktop: {
                 type: 'folder',
                 name: 'Desktop',
                 icon: 'icons/directory_closed_cool-0.png',
                 children: generateDesktopChildren()
             },
-            'Documents': {
+            Documents: {
                 type: 'folder',
                 name: 'My Documents',
                 icon: 'icons/directory_closed_cool-0.png',
                 children: {
-                    'Resume.pdf': { type: 'file', name: 'Resume', icon: 'icons/write_file-0.png', windowId: 'resume' }
+                    'Resume.pdf': {
+                        type: 'file',
+                        name: 'Resume',
+                        icon: 'icons/write_file-0.png',
+                        windowId: 'resume'
+                    }
                 }
             },
-            'Projects': {
+            Projects: {
                 type: 'folder',
                 name: 'Projects',
                 icon: 'icons/directory_closed_cool-0.png',
                 children: {
-                    'Python': {
+                    Python: {
                         type: 'folder',
                         name: 'Python',
                         icon: 'icons/directory_closed_cool-0.png',
                         children: {
-                            'DiceGame': { type: 'project', name: 'Dice Game', id: 'dice-game', icon: 'icons/game_solitaire-0.png' },
-                            'CarRacer': { type: 'project', name: 'Car Racer', id: 'car-racer', icon: 'icons/joystick-0.png' },
-                            'PasswordMaker': { type: 'project', name: 'Password Maker', id: 'password-maker', icon: 'icons/key_win-0.png' },
-                            'CommonFactors': { type: 'project', name: 'Common Factors', id: 'common-factors', icon: 'icons/calculator-0.png' }
+                            DiceGame: {
+                                type: 'project',
+                                name: 'Dice Game',
+                                id: 'dice-game',
+                                icon: 'icons/game_solitaire-0.png'
+                            },
+                            CarRacer: {
+                                type: 'project',
+                                name: 'Car Racer',
+                                id: 'car-racer',
+                                icon: 'icons/joystick-0.png'
+                            },
+                            PasswordMaker: {
+                                type: 'project',
+                                name: 'Password Maker',
+                                id: 'password-maker',
+                                icon: 'icons/key_win-0.png'
+                            },
+                            CommonFactors: {
+                                type: 'project',
+                                name: 'Common Factors',
+                                id: 'common-factors',
+                                icon: 'icons/calculator-0.png'
+                            }
                         }
                     },
-                    'Assembly': {
+                    Assembly: {
                         type: 'folder',
                         name: 'Assembly',
                         icon: 'icons/directory_closed_cool-0.png',
                         children: {
-                            'Calculator': { type: 'project', name: 'Assembly Calculator', id: 'assembly-calculator', icon: 'icons/processor-0.png' }
+                            Calculator: {
+                                type: 'project',
+                                name: 'Assembly Calculator',
+                                id: 'assembly-calculator',
+                                icon: 'icons/processor-0.png'
+                            }
                         }
                     }
                 }
@@ -66,7 +99,16 @@ const FILE_SYSTEM = {
     }
 }
 
-function TreeItem({ item, path, level = 0, selectedPath, onSelect, expandedPaths, onToggle, onDoubleClick }) {
+function TreeItem({
+    item,
+    path,
+    level = 0,
+    selectedPath,
+    onSelect,
+    expandedPaths,
+    onToggle,
+    onDoubleClick
+}) {
     const isFolder = item.type === 'folder' || item.type === 'drive'
     const fullPath = path
     const isExpanded = expandedPaths.includes(fullPath)
@@ -93,13 +135,13 @@ function TreeItem({ item, path, level = 0, selectedPath, onSelect, expandedPaths
                 onClick={handleClick}
                 onDoubleClick={handleDoubleClick}
             >
-                {isFolder && (
-                    <span className="tree-item-toggle">
-                        {isExpanded ? '▼' : '▶'}
-                    </span>
-                )}
+                {isFolder && <span className="tree-item-toggle">{isExpanded ? '▼' : '▶'}</span>}
                 <img
-                    src={(isFolder && isExpanded && item.icon === 'icons/directory_closed_cool-0.png') ? 'icons/directory_open_cool-0.png' : (item.icon || 'icons/directory_closed_cool-0.png')}
+                    src={
+                        isFolder && isExpanded && item.icon === 'icons/directory_closed_cool-0.png'
+                            ? 'icons/directory_open_cool-0.png'
+                            : item.icon || 'icons/directory_closed_cool-0.png'
+                    }
                     alt=""
                     className="tree-item-icon"
                 />
@@ -130,10 +172,7 @@ function FileItem({ item, itemKey, onDoubleClick }) {
     const isFolder = item.type === 'folder'
 
     return (
-        <div
-            className="file-item"
-            onDoubleClick={() => onDoubleClick(item, itemKey)}
-        >
+        <div className="file-item" onDoubleClick={() => onDoubleClick(item, itemKey)}>
             <img
                 src={item.icon || 'icons/directory_closed_cool-0.png'}
                 alt=""
@@ -147,7 +186,11 @@ function FileItem({ item, itemKey, onDoubleClick }) {
 function FileExplorer({ onOpenWindow }) {
     const [currentPath, setCurrentPath] = useState('C:\\Desktop')
     const [selectedPath, setSelectedPath] = useState('C:\\Desktop')
-    const [expandedPaths, setExpandedPaths] = useState(['C:', 'C:\\Projects', 'C:\\Projects\\Python'])
+    const [expandedPaths, setExpandedPaths] = useState([
+        'C:',
+        'C:\\Projects',
+        'C:\\Projects\\Python'
+    ])
     const [history, setHistory] = useState(['C:\\Desktop'])
     const [historyIndex, setHistoryIndex] = useState(0)
     const [addressInput, setAddressInput] = useState('C:\\Desktop')
@@ -189,16 +232,14 @@ function FileExplorer({ onOpenWindow }) {
     }, [])
 
     const toggleExpand = (path) => {
-        setExpandedPaths(prev =>
-            prev.includes(path)
-                ? prev.filter(p => p !== path)
-                : [...prev, path]
+        setExpandedPaths((prev) =>
+            prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path]
         )
     }
 
     // Get item at a specific path (moved up for use in navigation)
     const getItemAtPath = (path) => {
-        const parts = path.split('\\').filter(p => p)
+        const parts = path.split('\\').filter((p) => p)
         let current = FILE_SYSTEM[parts[0]]
         for (let i = 1; i < parts.length && current; i++) {
             current = current.children?.[parts[i]]
@@ -231,7 +272,7 @@ function FileExplorer({ onOpenWindow }) {
                 for (let i = 1; i <= parts.length; i++) {
                     pathsToExpand.push(parts.slice(0, i).join('\\'))
                 }
-                setExpandedPaths(prev => [...new Set([...prev, ...pathsToExpand])])
+                setExpandedPaths((prev) => [...new Set([...prev, ...pathsToExpand])])
             }
         }
     }

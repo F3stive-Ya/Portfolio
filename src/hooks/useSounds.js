@@ -23,33 +23,36 @@ export function useSounds() {
     const { soundEnabled } = useTheme()
     const audioRef = useRef({})
 
-    const playSound = useCallback((soundName, volume = 0.3) => {
-        if (!soundEnabled) return
+    const playSound = useCallback(
+        (soundName, volume = 0.3) => {
+            if (!soundEnabled) return
 
-        const basePath = getBasePath()
-        const soundPath = `${basePath}/${SOUNDS[soundName]}`
+            const basePath = getBasePath()
+            const soundPath = `${basePath}/${SOUNDS[soundName]}`
 
-        // Get or create audio element
-        if (!audioRef.current[soundName]) {
-            audioRef.current[soundName] = new Audio(soundPath)
-        }
+            // Get or create audio element
+            if (!audioRef.current[soundName]) {
+                audioRef.current[soundName] = new Audio(soundPath)
+            }
 
-        const audio = audioRef.current[soundName]
-        audio.volume = volume
+            const audio = audioRef.current[soundName]
+            audio.volume = volume
 
-        // Reset and play
-        audio.currentTime = 0
-        audio.play().catch(() => {
-            // Ignore autoplay errors
-        })
-    }, [soundEnabled])
+            // Reset and play
+            audio.currentTime = 0
+            audio.play().catch(() => {
+                // Ignore autoplay errors
+            })
+        },
+        [soundEnabled]
+    )
 
     // Force play startup (bypasses soundEnabled check for first play)
     const forcePlayStartup = useCallback(() => {
         const basePath = getBasePath()
         const audio = new Audio(`${basePath}/${SOUNDS.startup}`)
         audio.volume = 0.5
-        audio.play().catch(() => { })
+        audio.play().catch(() => {})
         return audio
     }, [])
 
