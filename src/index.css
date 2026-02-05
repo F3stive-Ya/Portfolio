@@ -919,7 +919,6 @@ a {
 }
 
 @keyframes blink {
-
     0%,
     49% {
         opacity: 1;
@@ -936,11 +935,13 @@ a {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(0deg,
-            rgba(0, 0, 0, 0.15),
-            rgba(0, 0, 0, 0.15) 1px,
-            transparent 1px,
-            transparent 2px);
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
     pointer-events: none;
 }
 
@@ -988,7 +989,6 @@ a {
 }
 
 @keyframes float {
-
     0%,
     100% {
         transform: translateY(0);
@@ -1212,11 +1212,13 @@ a {
 
 .progress-bar-inner {
     height: 100%;
-    background: repeating-linear-gradient(90deg,
-            var(--titlebar-start) 0px,
-            var(--titlebar-start) 8px,
-            transparent 8px,
-            transparent 10px);
+    background: repeating-linear-gradient(
+        90deg,
+        var(--titlebar-start) 0px,
+        var(--titlebar-start) 8px,
+        transparent 8px,
+        transparent 10px
+    );
     transition: width 0.2s ease-out;
 }
 
@@ -1723,11 +1725,13 @@ a {
 
 .login-progress-bar {
     height: 100%;
-    background: repeating-linear-gradient(90deg,
-            #000080 0px,
-            #000080 8px,
-            #0000a0 8px,
-            #0000a0 10px);
+    background: repeating-linear-gradient(
+        90deg,
+        #000080 0px,
+        #000080 8px,
+        #0000a0 8px,
+        #0000a0 10px
+    );
     transition: width 0.1s linear;
 }
 
@@ -2330,7 +2334,6 @@ a {
 }
 
 @keyframes clippyBounce {
-
     0%,
     100% {
         transform: translateY(0);
@@ -2376,7 +2379,6 @@ a {
 }
 
 @keyframes bsodBlink {
-
     0%,
     49% {
         opacity: 1;

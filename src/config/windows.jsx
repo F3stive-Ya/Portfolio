@@ -1,4 +1,4 @@
-import { SYSTEM_INFO } from '../components/BiosScreen'
+import { SYSTEM_INFO } from './system'
 import Settings from '../components/Settings'
 import Notepad from '../components/Notepad'
 import OutlookExpress from '../components/OutlookExpress'

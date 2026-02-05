@@ -551,10 +551,10 @@ const Minesweeper = ({ onResize, onClose }) => {
                         {gameState === GAME_STATE.WON
                             ? '😎'
                             : gameState === GAME_STATE.LOST
-                                ? '😵'
-                                : isMouseDown
-                                    ? '😮'
-                                    : '🙂'}
+                              ? '😵'
+                              : isMouseDown
+                                ? '😮'
+                                : '🙂'}
                     </button>
 
                     <Counter value={formatNumber(time)} />
@@ -615,20 +615,20 @@ const Minesweeper = ({ onResize, onClose }) => {
                                         cell.neighborCount === 1
                                             ? '#0000ff'
                                             : cell.neighborCount === 2
-                                                ? '#008000'
-                                                : cell.neighborCount === 3
-                                                    ? '#ff0000'
-                                                    : cell.neighborCount === 4
-                                                        ? '#000080'
-                                                        : cell.neighborCount === 5
-                                                            ? '#800000'
-                                                            : cell.neighborCount === 6
-                                                                ? '#008080'
-                                                                : cell.neighborCount === 7
-                                                                    ? '#000000'
-                                                                    : cell.neighborCount === 8
-                                                                        ? '#808080'
-                                                                        : '#000'
+                                              ? '#008000'
+                                              : cell.neighborCount === 3
+                                                ? '#ff0000'
+                                                : cell.neighborCount === 4
+                                                  ? '#000080'
+                                                  : cell.neighborCount === 5
+                                                    ? '#800000'
+                                                    : cell.neighborCount === 6
+                                                      ? '#008080'
+                                                      : cell.neighborCount === 7
+                                                        ? '#000000'
+                                                        : cell.neighborCount === 8
+                                                          ? '#808080'
+                                                          : '#000'
                                 }}
                             >
                                 {cell.state === CELL_STATE.FLAGGED && '🚩'}

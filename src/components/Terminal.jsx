@@ -1,5 +1,20 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 
+// File system simulation
+const fileSystem = {
+    'C:\\': ['PORTFOLIO', 'WINDOWS', 'PROGRAM FILES'],
+    'C:\\PORTFOLIO': ['about.txt', 'projects', 'contact.txt', 'resume.pdf', 'readme.md'],
+    'C:\\PORTFOLIO\\PROJECTS': [
+        'dicegame.exe',
+        'calculator.asm',
+        'carracer.py',
+        'passwordmaker.py',
+        'commonfactors.py'
+    ],
+    'C:\\WINDOWS': ['system32', 'notepad.exe', 'explorer.exe'],
+    'C:\\PROGRAM FILES': ['Internet Explorer', 'Outlook Express']
+}
+
 const Terminal = ({ openWindow, triggerBSOD }) => {
     const [history, setHistory] = useState([])
     const [commandHistory, setCommandHistory] = useState([])
@@ -9,23 +24,9 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
     const inputRef = useRef(null)
     const containerRef = useRef(null)
 
-    // File system simulation
-    const fileSystem = {
-        'C:\\': ['PORTFOLIO', 'WINDOWS', 'PROGRAM FILES'],
-        'C:\\PORTFOLIO': ['about.txt', 'projects', 'contact.txt', 'resume.pdf', 'readme.md'],
-        'C:\\PORTFOLIO\\PROJECTS': [
-            'dicegame.exe',
-            'calculator.asm',
-            'carracer.py',
-            'passwordmaker.py',
-            'commonfactors.py'
-        ],
-        'C:\\WINDOWS': ['system32', 'notepad.exe', 'explorer.exe'],
-        'C:\\PROGRAM FILES': ['Internet Explorer', 'Outlook Express']
-    }
-
     // Welcome message on mount
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHistory([
             {
                 type: 'system',
@@ -652,7 +653,7 @@ const Terminal = ({ openWindow, triggerBSOD }) => {
 
             setHistory((prev) => [...prev, ...output])
         },
-        [currentDir, openWindow, triggerBSOD, fileSystem]
+        [currentDir, openWindow, triggerBSOD]
     )
 
     // Handle key events

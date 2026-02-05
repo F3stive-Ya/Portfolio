@@ -1,9 +1,7 @@
-/* eslint-disable react-refresh/only-export-components */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import PlayingCard from './PlayingCard'
+import { SUITS, RANKS } from '../config/freecell'
 import '../index.css'
-
-const SUITS = ['♠', '♥', '♣', '♦']
-const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
 const Freecell = () => {
     const [board, setBoard] = useState({
@@ -14,7 +12,7 @@ const Freecell = () => {
     const [draggedCard, setDraggedCard] = useState(null)
     const [dragSource, setDragSource] = useState(null) // { type: 'column'|'freecell', index: number }
 
-    const startNewGame = () => {
+    const startNewGame = useCallback(() => {
         const deck = []
         SUITS.forEach((suit) => {
             RANKS.forEach((rank, index) => {
@@ -31,7 +29,7 @@ const Freecell = () => {
         // Fisher-Yates Shuffle
         for (let i = deck.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1))
-                ;[deck[i], deck[j]] = [deck[j], deck[i]]
+            ;[deck[i], deck[j]] = [deck[j], deck[i]]
         }
 
         const newColumns = Array(8)
@@ -46,10 +44,11 @@ const Freecell = () => {
             freecells: Array(4).fill(null),
             foundations: Array(4).fill([])
         })
-    }
+    }, [])
 
     useEffect(() => {
         startNewGame()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const isMoveValid = (card, targetType, targetIndex) => {
@@ -118,7 +117,7 @@ const Freecell = () => {
                             onDrop={() => handleDrop('freecell', i)}
                         >
                             {card && (
-                                <Card
+                                <PlayingCard
                                     card={card}
                                     setDraggedCard={setDraggedCard}
                                     source={{ type: 'freecell', index: i }}
@@ -137,7 +136,7 @@ const Freecell = () => {
                             onDrop={() => handleDrop('foundation', i)}
                         >
                             {pile.length > 0 && (
-                                <Card
+                                <PlayingCard
                                     card={pile[pile.length - 1]}
                                     setDraggedCard={setDraggedCard}
                                     source={{ type: 'foundation', index: i }}
@@ -165,7 +164,7 @@ const Freecell = () => {
                                 className="card-wrapper"
                                 style={{ top: `${idx * 25}px`, zIndex: idx }}
                             >
-                                <Card
+                                <PlayingCard
                                     card={card}
                                     setDraggedCard={setDraggedCard}
                                     source={{ type: 'column', index: i }}
@@ -176,28 +175,6 @@ const Freecell = () => {
                         ))}
                     </div>
                 ))}
-            </div>
-        </div>
-    )
-}
-
-const Card = ({ card, setDraggedCard, source, setDragSource, draggable = true }) => {
-    const handleDragStart = () => {
-        if (!draggable) return
-        setDraggedCard(card)
-        setDragSource(source)
-    }
-
-    return (
-        <div className={`card ${card.color}`} draggable={draggable} onDragStart={handleDragStart}>
-            <div className="card-corner top-left">
-                <span>{card.rank}</span>
-                <span>{card.suit}</span>
-            </div>
-            <div className="card-center">{card.suit}</div>
-            <div className="card-corner bottom-right">
-                <span>{card.rank}</span>
-                <span>{card.suit}</span>
             </div>
         </div>
     )
