@@ -46,10 +46,10 @@ const FILE_SYSTEM = {
                         name: 'Python',
                         icon: 'icons/directory_closed_cool-0.png',
                         children: {
-                            'DiceGame': { type: 'project', name: 'Dice Game', id: 'dice-game' },
-                            'CarRacer': { type: 'project', name: 'Car Racer', id: 'car-racer' },
-                            'PasswordMaker': { type: 'project', name: 'Password Maker', id: 'password-maker' },
-                            'CommonFactors': { type: 'project', name: 'Common Factors', id: 'common-factors' }
+                            'DiceGame': { type: 'project', name: 'Dice Game', id: 'dice-game', icon: 'icons/dice-0.png' },
+                            'CarRacer': { type: 'project', name: 'Car Racer', id: 'car-racer', icon: 'icons/racing_car-0.png' },
+                            'PasswordMaker': { type: 'project', name: 'Password Maker', id: 'password-maker', icon: 'icons/key_win-0.png' },
+                            'CommonFactors': { type: 'project', name: 'Common Factors', id: 'common-factors', icon: 'icons/calculator-0.png' }
                         }
                     },
                     'Assembly': {
@@ -57,7 +57,7 @@ const FILE_SYSTEM = {
                         name: 'Assembly',
                         icon: 'icons/directory_closed_cool-0.png',
                         children: {
-                            'Calculator': { type: 'project', name: 'Assembly Calculator', id: 'assembly-calculator' }
+                            'Calculator': { type: 'project', name: 'Assembly Calculator', id: 'assembly-calculator', icon: 'icons/calculator_cool-0.png' }
                         }
                     }
                 }

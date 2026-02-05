@@ -121,7 +121,7 @@ const ProjectViewer = ({ projectId, onClose }) => {
             <div className="wizard-sidebar">
                 <img src="icons/installer_generic_old-0.png" alt="Setup" className="wizard-sidebar-img" />
                 <div className="wizard-sidebar-text">
-                    ShaneOS Setup
+                    Borges OS Setup
                 </div>
             </div>
 

@@ -181,31 +181,31 @@ const WINDOW_CONFIGS = {
     // Project windows - dynamically created based on project ID
     project_dicegame: {
         title: 'Dice Game - Project',
-        defaultStyle: { top: 80, left: 120, width: 480, height: 360 },
+        defaultStyle: { top: 80, left: 120, width: 480, height: 450 },
         content: null, // Rendered dynamically
         bodyStyle: { padding: 0 }
     },
     project_carracer: {
         title: 'Car Racer - Project',
-        defaultStyle: { top: 90, left: 140, width: 480, height: 360 },
+        defaultStyle: { top: 90, left: 140, width: 480, height: 450 },
         content: null,
         bodyStyle: { padding: 0 }
     },
     project_passwordmaker: {
         title: 'Password Maker - Project',
-        defaultStyle: { top: 100, left: 160, width: 480, height: 360 },
+        defaultStyle: { top: 100, left: 160, width: 480, height: 450 },
         content: null,
         bodyStyle: { padding: 0 }
     },
     project_commonfactors: {
         title: 'Common Factors - Project',
-        defaultStyle: { top: 110, left: 180, width: 480, height: 360 },
+        defaultStyle: { top: 110, left: 180, width: 480, height: 450 },
         content: null,
         bodyStyle: { padding: 0 }
     },
     project_assemblycalculator: {
         title: 'Assembly Calculator - Project',
-        defaultStyle: { top: 120, left: 200, width: 480, height: 360 },
+        defaultStyle: { top: 120, left: 200, width: 480, height: 450 },
         content: null,
         bodyStyle: { padding: 0 }
     }

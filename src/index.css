@@ -2562,6 +2562,12 @@ a {
   border-left: 2px solid #fff;
   border-right: 2px solid #808080;
   border-bottom: 2px solid #808080;
+  align-items: center;
+  /* Center content horizontally */
+  justify-content: center;
+  /* Center content vertically if window is larger */
+  height: 100%;
+  /* Ensure it takes full window height */
 }
 
 .minesweeper-menubar {
