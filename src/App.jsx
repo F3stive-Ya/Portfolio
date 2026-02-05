@@ -750,7 +750,11 @@ function App() {
                     ) : id === 'terminal' ? (
                         <Terminal openWindow={openWindow} triggerBSOD={() => setShowBSOD(true)} />
                     ) : id.startsWith('project_') ? (
-                        <ProjectViewer projectId={id.replace('project_', '')} onOpenWindow={openWindow} />
+                        <ProjectViewer
+                            projectId={id.replace('project_', '')}
+                            onOpenWindow={openWindow}
+                            onClose={() => closeWindow(id)}
+                        />
                     ) : (
                         config.content
                     )}

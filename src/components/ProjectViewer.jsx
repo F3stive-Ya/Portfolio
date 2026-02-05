@@ -224,7 +224,7 @@ const ProjectViewer = ({ projectId, onClose }) => {
                     </button>
                     <button
                         className="wizard-btn"
-                        onClick={() => window.close()}
+                        onClick={onClose}
                     >
                         Cancel
                     </button>
