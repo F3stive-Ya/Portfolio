@@ -18,7 +18,7 @@ const Clippy = ({ onAction, onDismiss }) => {
     const [isVisible, setIsVisible] = useState(false)
     const [isAnimating, setIsAnimating] = useState(false)
 
-    // Check if Clippy should be permanently hidden
+    // Check if Clippy should be permanently hidden (for this session)
     useEffect(() => {
         const isHidden = sessionStorage.getItem('win95-clippy-hidden')
         if (isHidden) {
@@ -40,7 +40,7 @@ const Clippy = ({ onAction, onDismiss }) => {
 
         const tipTimer = setInterval(() => {
             setCurrentTip(prev => (prev + 1) % TIPS.length)
-        }, 15000)
+        }, 30000) // 30 seconds (increased from 8s)
 
         return () => clearInterval(tipTimer)
     }, [isVisible])
