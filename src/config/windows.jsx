@@ -4,7 +4,7 @@ import Notepad from '../components/Notepad'
 import OutlookExpress from '../components/OutlookExpress'
 import Paint from '../components/Paint'
 import Minesweeper from '../components/Games/Minesweeper'
-import Freecell from '../components/Games/Freecell'
+import Solitaire from '../components/Games/Solitaire'
 import Pinball from '../components/Games/Pinball'
 
 import { ICONS, PROJECTS } from './icons'
@@ -219,12 +219,12 @@ export const WINDOW_CONFIGS = {
         bodyStyle: { padding: 0, background: '#c0c0c0' },
         resizable: false
     },
-    freecell: {
-        title: 'FreeCell',
-        icon: getIcon('freecell'),
+    solitaire: {
+        title: 'Solitaire',
+        icon: getIcon('solitaire'),
         defaultStyle: { top: 50, left: 50, width: 640, height: 480 },
-        content: <Freecell />,
-        bodyStyle: { padding: 0, background: '#008000' }
+        content: <Solitaire />,
+        bodyStyle: { padding: 0 }
     },
     pinball: {
         title: '3D Pinball for Windows - Space Cadet',
