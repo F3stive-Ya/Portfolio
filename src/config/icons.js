@@ -55,7 +55,7 @@ export const PROJECTS = [
     {
         id: 'calculator',
         name: 'Assembly Calculator',
-        icon: 'icons/calculator_cool-0.png',
+        icon: 'icons/processor-0.png',
         description: 'A low-level calculator built in x86 Assembly.',
         tech: ['Assembly', 'x86', 'Low-level'],
         github: 'https://github.com/F3stive-Ya/AssemblyCalculator',

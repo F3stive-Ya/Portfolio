@@ -57,7 +57,7 @@ const FILE_SYSTEM = {
                         name: 'Assembly',
                         icon: 'icons/directory_closed_cool-0.png',
                         children: {
-                            'Calculator': { type: 'project', name: 'Assembly Calculator', id: 'assembly-calculator', icon: 'icons/calculator_cool-0.png' }
+                            'Calculator': { type: 'project', name: 'Assembly Calculator', id: 'assembly-calculator', icon: 'icons/processor-0.png' }
                         }
                     }
                 }

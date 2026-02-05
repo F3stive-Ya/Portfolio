@@ -173,9 +173,12 @@ const ProjectViewer = ({ projectId, onClose }) => {
                         </p>
 
                         <div className="wizard-progress-track">
-                            <div className="wizard-progress-fill" style={{ width: `${progress}%` }}></div>
+                            {/* Chunks style progress bar */}
                             {Array.from({ length: 20 }).map((_, i) => (
-                                <div key={i} className="wizard-progress-chunk"></div>
+                                <div
+                                    key={i}
+                                    className={`wizard-progress-chunk ${i < Math.floor(progress / 5) ? 'filled' : ''}`}
+                                ></div>
                             ))}
                         </div>
 

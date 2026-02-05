@@ -206,7 +206,7 @@ const WINDOW_CONFIGS = {
     },
     project_assemblycalculator: {
         title: 'Assembly Calculator - Project',
-        defaultStyle: { top: 120, left: 200, width: 480, height: 450 },
+        defaultStyle: { top: 120, left: 200, width: 500, height: 480 },
         content: null,
         bodyStyle: { padding: 0 }
     }

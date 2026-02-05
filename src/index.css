@@ -2971,6 +2971,10 @@ a {
 .wizard-progress-chunk {
   width: 10px;
   height: 100%;
-  background: #000080;
+  background: transparent;
   flex-shrink: 0;
+}
+
+.wizard-progress-chunk.filled {
+  background: #000080;
 }
