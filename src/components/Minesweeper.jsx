@@ -62,13 +62,13 @@ const Minesweeper = ({ onResize, onClose }) => {
         //
         // Total Height Required = BoardHeight + ContentOverhead + ChromeOverhead
         // Height = (Rows * 16) + 82 + 38 = (Rows * 16) + 120
-        // Adding slight buffer for safety -> 128px
+        // Adding slight buffer for safety -> 140px
 
         const boardWidth = cols * 16
         const boardHeight = rows * 16
 
         const width = boardWidth + 40 // Ensure enough horizontal space
-        const height = boardHeight + 128
+        const height = boardHeight + 140
 
         onResize(width, height)
     }, [onResize])
@@ -372,7 +372,9 @@ const Minesweeper = ({ onResize, onClose }) => {
                 display: 'flex',
                 padding: '2px 0 2px 0',
                 background: '#c0c0c0',
-                userSelect: 'none'
+                userSelect: 'none',
+                flexShrink: 0,
+                minHeight: '24px'
             }}>
                 <div style={{ position: 'relative' }}>
                     <div

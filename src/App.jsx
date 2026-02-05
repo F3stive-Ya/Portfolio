@@ -369,7 +369,7 @@ function App() {
             <Window
                 id="run"
                 title="Run"
-                icon="icons/run.png"
+                icon="icons/file_program_group-0.png"
                 state={windowStates.run}
                 hideMaximize={true}
                 isActive={activeWindowId === 'run'}
@@ -385,34 +385,38 @@ function App() {
                 }}
                 onResizeStart={(e, direction) => handleResizeStart(e, 'run', direction)}
                 className="run-window"
-                bodyStyle={{ padding: '16px' }}
+                bodyStyle={{ padding: '14px' }}
             >
                 <form onSubmit={handleRunSubmit} className="run-form">
-                    <div className="run-content">
-                        <img src="icons/run.png" alt="Run" className="run-icon" />
-                        <div className="run-info">
+                    <div className="run-top-section">
+                        <img src="icons/file_program_group-0.png" alt="" className="run-dialog-icon" />
+                        <div className="run-description">
                             <p>
-                                Type the name of a program, folder, or document, and Windows will
-                                open it for you.
+                                Type the name of a program, folder, document, or Internet
+                                resource, and Windows will open it for you.
                             </p>
-                            <label>
-                                Open:
-                                <input
-                                    type="text"
-                                    value={runInput}
-                                    onChange={(e) => setRunInput(e.target.value)}
-                                    autoFocus
-                                    placeholder="Type 'about', 'projects'..."
-                                />
-                            </label>
                         </div>
                     </div>
+
+                    <div className="run-input-section">
+                        <label>Open:</label>
+                        <div className="run-combobox">
+                            <input
+                                type="text"
+                                value={runInput}
+                                onChange={(e) => setRunInput(e.target.value)}
+                                autoFocus
+                                className="combobox-input"
+                            />
+                            <div className="combobox-button"><span>▼</span></div>
+                        </div>
+                    </div>
+
                     <div className="run-buttons">
-                        <button type="submit">OK</button>
-                        <button type="button" onClick={() => closeWindow('run')}>
+                        <button type="submit" className="run-btn">OK</button>
+                        <button type="button" className="run-btn" onClick={() => closeWindow('run')}>
                             Cancel
                         </button>
-                        <button type="button" disabled>Browse...</button>
                     </div>
                 </form>
             </Window>
