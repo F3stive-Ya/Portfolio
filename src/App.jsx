@@ -311,6 +311,9 @@ function App() {
                     if (action === 'properties') {
                         openWindow('settings')
                     }
+                    if (action === 'system_properties') {
+                        openWindow('system_properties')
+                    }
                 }}
             />
 
@@ -320,6 +323,7 @@ function App() {
                     key={id}
                     id={id}
                     title={config.title}
+                    icon={config.icon}
                     state={windowStates[id]}
                     isActive={activeWindowId === id}
                     onClose={() => closeWindow(id)}
@@ -362,7 +366,9 @@ function App() {
             <Window
                 id="run"
                 title="Run"
+                icon="icons/run.png"
                 state={windowStates.run}
+                hideMaximize={true}
                 isActive={activeWindowId === 'run'}
                 onClose={() => closeWindow('run')}
                 onMinimize={() => minimizeWindow('run')}
@@ -403,7 +409,7 @@ function App() {
                         <button type="button" onClick={() => closeWindow('run')}>
                             Cancel
                         </button>
-                        <button type="button">Browse...</button>
+                        <button type="button" disabled>Browse...</button>
                     </div>
                 </form>
             </Window>

@@ -342,7 +342,11 @@ function Desktop({ icons, onIconDoubleClick, onContextMenuAction }) {
             label: 'Properties',
             onClick: () => {
                 setIconContextMenu(null)
-                setPropertiesDialog(getIconProperties(icon))
+                if (icon.id === 'mycomputer') {
+                    onContextMenuAction?.('system_properties')
+                } else {
+                    setPropertiesDialog(getIconProperties(icon))
+                }
             }
         }
     ]

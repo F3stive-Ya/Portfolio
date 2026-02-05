@@ -4,6 +4,11 @@ import Notepad from '../components/Notepad'
 import OutlookExpress from '../components/OutlookExpress'
 import Paint from '../components/Paint'
 import Minesweeper from '../components/Minesweeper'
+import SystemProperties from '../components/SystemProperties'
+import { ICONS, PROJECTS } from './icons'
+
+const getIcon = (id) => ICONS.find((i) => i.id === id)?.icon || 'icons/application-0.png'
+const getProjectIcon = (id) => PROJECTS.find((p) => p.id === id)?.icon || 'icons/joystick-0.png'
 
 // My Computer content
 const MyComputerContent = () => (
@@ -43,6 +48,7 @@ const MyComputerContent = () => (
 export const WINDOW_CONFIGS = {
     about: {
         title: 'About Me',
+        icon: getIcon('about'),
         defaultStyle: { top: 100, left: 100, width: 360, height: 260 },
         content: (
             <p>
@@ -54,6 +60,7 @@ export const WINDOW_CONFIGS = {
     },
     projects: {
         title: 'Projects',
+        icon: 'icons/directory_open_file_mydocs-4.png', // Custom Folder Icon
         defaultStyle: { top: 140, left: 220, width: 420, height: 320 },
         content: (
             <>
@@ -119,6 +126,7 @@ export const WINDOW_CONFIGS = {
     },
     contact: {
         title: 'Contact',
+        icon: getIcon('contact'),
         defaultStyle: { top: 120, left: 320, width: 360, height: 240 },
         content: (
             <>
@@ -140,11 +148,13 @@ export const WINDOW_CONFIGS = {
     },
     mycomputer: {
         title: 'My Computer',
+        icon: getIcon('mycomputer'),
         defaultStyle: { top: 200, left: 150, width: 420, height: 340 },
         content: <MyComputerContent />
     },
     resume: {
         title: 'Resume',
+        icon: getIcon('resume'),
         defaultStyle: { top: 170, left: 180, width: 760, height: 520 },
         content: (
             <div style={{ padding: 0, height: '100%' }}>
@@ -157,6 +167,7 @@ export const WINDOW_CONFIGS = {
     },
     fileexplorer: {
         title: 'File Explorer',
+        icon: getIcon('fileexplorer'),
         defaultStyle: { top: 80, left: 140, width: 600, height: 440 },
         // Content rendered dynamically to receive openWindow prop
         content: null,
@@ -164,12 +175,14 @@ export const WINDOW_CONFIGS = {
     },
     settings: {
         title: 'Settings',
+        icon: getIcon('settings'),
         defaultStyle: { top: 130, left: 200, width: 400, height: 420 },
         content: <Settings />,
         bodyStyle: { padding: '12px' }
     },
     terminal: {
         title: 'Command Prompt',
+        icon: getIcon('terminal'),
         defaultStyle: { top: 100, left: 150, width: 680, height: 420 },
         // Content rendered dynamically to receive props
         content: null,
@@ -177,24 +190,28 @@ export const WINDOW_CONFIGS = {
     },
     notepad: {
         title: 'Notepad - Untitled',
+        icon: getIcon('notepad'),
         defaultStyle: { top: 120, left: 180, width: 500, height: 400 },
         content: <Notepad />,
         bodyStyle: { padding: 0 }
     },
     outlook: {
         title: 'Outlook Express',
+        icon: getIcon('outlook'),
         defaultStyle: { top: 90, left: 160, width: 560, height: 440 },
         content: <OutlookExpress />,
         bodyStyle: { padding: 0 }
     },
     paint: {
         title: 'Paint',
+        icon: getIcon('paint'),
         defaultStyle: { top: 60, left: 100, width: 720, height: 540 },
         content: <Paint />,
         bodyStyle: { padding: 0 }
     },
     minesweeper: {
         title: 'Minesweeper',
+        icon: getIcon('minesweeper'),
         defaultStyle: { top: 100, left: 100, width: 220, height: 320 },
         content: <Minesweeper />,
         bodyStyle: { padding: 0, background: '#c0c0c0' },
@@ -203,30 +220,35 @@ export const WINDOW_CONFIGS = {
     // Project windows - dynamically created based on project ID
     project_dicegame: {
         title: 'Dice Game - Project',
+        icon: getProjectIcon('dicegame'),
         defaultStyle: { top: 80, left: 120, width: 480, height: 450 },
         content: null, // Rendered dynamically
         bodyStyle: { padding: 0 }
     },
     project_carracer: {
         title: 'Car Racer - Project',
+        icon: getProjectIcon('carracer'),
         defaultStyle: { top: 90, left: 140, width: 480, height: 450 },
         content: null,
         bodyStyle: { padding: 0 }
     },
     project_passwordmaker: {
         title: 'Password Maker - Project',
+        icon: getProjectIcon('passwordmaker'),
         defaultStyle: { top: 100, left: 160, width: 480, height: 450 },
         content: null,
         bodyStyle: { padding: 0 }
     },
     project_commonfactors: {
         title: 'Common Factors - Project',
+        icon: getProjectIcon('commonfactors'),
         defaultStyle: { top: 110, left: 180, width: 480, height: 450 },
         content: null,
         bodyStyle: { padding: 0 }
     },
     project_assemblycalculator: {
         title: 'Assembly Calculator - Project',
+        icon: getProjectIcon('calculator'),
         defaultStyle: { top: 120, left: 200, width: 500, height: 480 },
         content: null,
         bodyStyle: { padding: 0 }

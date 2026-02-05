@@ -13,7 +13,8 @@ function Window({
     children,
     bodyStyle = {},
     className = '',
-    hideMaximize = false
+    hideMaximize = false,
+    icon
 }) {
     if (!state) return null
 
@@ -116,6 +117,8 @@ function Window({
                 onMouseDown={handleTitlebarMouseDown}
                 onDoubleClick={handleTitlebarDoubleClick}
             >
+                {/* Window Icon */}
+                {icon && <img src={icon} alt="" className="window-icon" />}
                 <div className="title">{title}</div>
                 <div className="window-controls">
                     <div
