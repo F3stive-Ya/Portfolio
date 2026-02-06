@@ -16,7 +16,7 @@ function Window({
     hideMaximize = false,
     icon
 }) {
-    if (!state) return null
+    if (!state || !state.isOpen) return null
 
     const { isOpen, isMinimized, isMaximized, zIndex, position } = state
 
