@@ -1,0 +1,231 @@
+/* ===== Paint Application Styles ===== */
+.paint-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #c0c0c0;
+    font-size: 11px;
+}
+
+.paint-menubar {
+    display: flex;
+    gap: 2px;
+    padding: 2px 4px;
+    background: #c0c0c0;
+    border-bottom: 1px solid #808080;
+}
+
+.paint-menu-item {
+    position: relative;
+}
+
+.paint-menu-label {
+    padding: 2px 8px;
+    cursor: pointer;
+}
+
+.paint-menu-label:hover {
+    background: #000080;
+    color: #fff;
+}
+
+.paint-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #c0c0c0;
+    border: 2px outset #dfdfdf;
+    min-width: 120px;
+    z-index: 100;
+}
+
+.paint-menu-item:hover .paint-dropdown {
+    display: block;
+}
+
+.paint-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 4px 16px;
+    text-align: left;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.paint-dropdown button:hover:not(:disabled) {
+    background: #000080;
+    color: #fff;
+}
+
+.paint-dropdown button:disabled {
+    color: #808080;
+}
+
+.paint-main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.paint-toolbar {
+    width: 52px;
+    background: #c0c0c0;
+    border-right: 1px solid #808080;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.paint-tool-btn {
+    width: 22px;
+    height: 22px;
+    border: 2px outset #dfdfdf;
+    background: #c0c0c0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    padding: 0;
+}
+
+.paint-tool-btn:hover {
+    background: #d4d0c8;
+}
+
+.paint-tool-btn.active {
+    border: 2px inset #808080;
+    background: #d4d0c8;
+}
+
+.paint-tool-separator {
+    height: 1px;
+    background: #808080;
+    margin: 4px 0;
+}
+
+.paint-size-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.paint-size-btn {
+    width: 22px;
+    height: 22px;
+    border: 1px solid #808080;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.paint-size-btn.active {
+    border: 2px inset #000080;
+    background: #e0e0ff;
+}
+
+.paint-canvas-area {
+    flex: 1;
+    background: #808080;
+    overflow: auto;
+    padding: 8px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.paint-canvas-wrapper {
+    position: relative;
+    border: 1px inset #404040;
+    box-shadow: inset 1px 1px 0 #000;
+}
+
+.paint-canvas {
+    display: block;
+    background: #fff;
+    cursor: crosshair;
+}
+
+.paint-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.paint-palette {
+    width: 52px;
+    background: #c0c0c0;
+    border-left: 1px solid #808080;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.paint-current-colors {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    margin: 4px auto;
+}
+
+.paint-color-display {
+    position: absolute;
+    border: 1px solid #000;
+}
+
+.paint-color-display.primary {
+    width: 24px;
+    height: 24px;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.paint-color-display.secondary {
+    width: 24px;
+    height: 24px;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+}
+
+.paint-colors {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+}
+
+.paint-color-btn {
+    width: 20px;
+    height: 12px;
+    border: 1px solid #000;
+    cursor: pointer;
+    padding: 0;
+}
+
+.paint-color-btn:hover {
+    border: 2px solid #fff;
+}
+
+.paint-color-btn.active {
+    border: 2px solid #000;
+    outline: 1px solid #fff;
+}
+
+.paint-statusbar {
+    display: flex;
+    gap: 16px;
+    padding: 2px 8px;
+    background: #c0c0c0;
+    border-top: 1px solid #808080;
+    font-size: 11px;
+    color: #000;
+}

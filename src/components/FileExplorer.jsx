@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { ICONS } from '../config/icons'
+import './FileExplorer.css'
 
 // Generate Desktop children from ICONS array (only those shown on desktop)
 const generateDesktopChildren = () => {
@@ -10,6 +11,20 @@ const generateDesktopChildren = () => {
                 icon.id === 'fileexplorer' || icon.id === 'mycomputer' || icon.id === 'settings'
                     ? 'shortcut'
                     : 'file',
+            name: icon.label,
+            icon: icon.icon,
+            windowId: icon.id
+        }
+    })
+    return children
+}
+
+// Generate Games children dynamically from ICONS config
+const generateGamesChildren = () => {
+    const children = {}
+    ICONS.filter((i) => i.category === 'games').forEach((icon) => {
+        children[icon.label] = {
+            type: 'file',
             name: icon.label,
             icon: icon.icon,
             windowId: icon.id
@@ -99,26 +114,7 @@ const FILE_SYSTEM = {
                 type: 'folder',
                 name: 'Games',
                 icon: 'icons/directory_closed_cool-0.png',
-                children: {
-                    Minesweeper: {
-                        type: 'file',
-                        name: 'Minesweeper',
-                        icon: 'icons/minesweeper-0.png',
-                        windowId: 'minesweeper'
-                    },
-                    Solitaire: {
-                        type: 'file',
-                        name: 'Solitaire',
-                        icon: 'icons/game_solitaire-0.png',
-                        windowId: 'solitaire'
-                    },
-                    Pinball: {
-                        type: 'file',
-                        name: 'Pinball',
-                        icon: 'icons/joystick-2.png',
-                        windowId: 'pinball'
-                    }
-                }
+                children: generateGamesChildren()
             }
         }
     }

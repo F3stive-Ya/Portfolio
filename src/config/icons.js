@@ -2,54 +2,110 @@
 // showOnDesktop: false means it only appears in File Explorer and Start Menu
 
 export const ICONS = [
-    { id: 'about', label: 'About Me', icon: 'icons/notepad_file-0.png', showOnDesktop: true },
+    {
+        id: 'about',
+        label: 'About Me',
+        icon: 'icons/notepad_file-0.png',
+        showOnDesktop: true,
+        category: 'favorites',
+        emoji: '📄'
+    },
     {
         id: 'fileexplorer',
         label: 'File Explorer',
         icon: 'icons/directory_explorer-5.png',
-        showOnDesktop: true
+        showOnDesktop: true,
+        category: 'favorites',
+        emoji: '📁'
     },
     {
         id: 'minesweeper',
         label: 'Minesweeper',
         icon: 'icons/minesweeper-0.png',
-        showOnDesktop: false
+        showOnDesktop: false,
+        category: 'games',
+        emoji: '💣'
     },
     {
         id: 'solitaire',
         label: 'Solitaire',
         icon: 'icons/game_solitaire-0.png',
-        showOnDesktop: false
+        showOnDesktop: false,
+        category: 'games',
+        emoji: '♠️'
     },
     {
         id: 'pinball',
         label: 'Pinball',
         icon: 'icons/joystick-2.png',
-        showOnDesktop: false
+        showOnDesktop: false,
+        category: 'games',
+        emoji: '🕹️'
     },
     {
         id: 'terminal',
         label: 'Command Prompt',
         icon: 'icons/console_prompt-0.png',
-        showOnDesktop: false
+        showOnDesktop: false,
+        category: 'favorites',
+        emoji: '💻'
     },
-    { id: 'notepad', label: 'Notepad', icon: 'icons/notepad-0.png', showOnDesktop: true },
+    {
+        id: 'notepad',
+        label: 'Notepad',
+        icon: 'icons/notepad-0.png',
+        showOnDesktop: true,
+        category: 'favorites',
+        emoji: '📝'
+    },
     {
         id: 'outlook',
         label: 'Outlook Express',
         icon: 'icons/outlook_express-0.png',
-        showOnDesktop: true
+        showOnDesktop: true,
+        category: 'favorites',
+        emoji: '📧'
     },
-    { id: 'paint', label: 'Paint', icon: 'icons/paint_file-0.png', showOnDesktop: true },
-    { id: 'contact', label: 'Contact', icon: 'icons/mailbox_world-0.png', showOnDesktop: true },
+    {
+        id: 'paint',
+        label: 'Paint',
+        icon: 'icons/paint_file-0.png',
+        showOnDesktop: true,
+        category: 'favorites',
+        emoji: '🎨'
+    },
+    {
+        id: 'contact',
+        label: 'Contact',
+        icon: 'icons/mailbox_world-0.png',
+        showOnDesktop: true,
+        category: 'favorites',
+        emoji: '📬'
+    },
     {
         id: 'mycomputer',
         label: 'My Computer',
         icon: 'icons/computer_explorer_cool-0.png',
-        showOnDesktop: true
+        showOnDesktop: true,
+        category: 'favorites',
+        emoji: '💾'
     },
-    { id: 'resume', label: 'Resume', icon: 'icons/write_file-0.png', showOnDesktop: true },
-    { id: 'settings', label: 'Settings', icon: 'icons/settings_gear-0.png', showOnDesktop: true }
+    {
+        id: 'resume',
+        label: 'Resume',
+        icon: 'icons/write_file-0.png',
+        showOnDesktop: true,
+        category: 'favorites',
+        emoji: '📋'
+    },
+    {
+        id: 'settings',
+        label: 'Settings',
+        icon: 'icons/settings_gear-0.png',
+        showOnDesktop: true,
+        category: 'system',
+        emoji: '⚙️'
+    }
 ]
 
 // Projects that appear as executable programs in File Explorer

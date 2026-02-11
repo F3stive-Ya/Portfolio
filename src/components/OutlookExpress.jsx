@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './OutlookExpress.css'
 
 const OutlookExpress = () => {
     const [formData, setFormData] = useState({

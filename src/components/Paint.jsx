@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import './Paint.css'
 
 const TOOLS = {
     PENCIL: 'pencil',

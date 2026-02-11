@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import './Terminal.css'
 
 // File system simulation
 const fileSystem = {
     'C:\\': ['PORTFOLIO', 'WINDOWS', 'PROGRAM FILES', 'GAMES'],
-    'C:\\GAMES': ['minesweeper.exe', 'freecell.exe', 'pinball.exe'],
+    'C:\\GAMES': ['minesweeper.exe', 'solitaire.exe', 'pinball.exe'],
     'C:\\PORTFOLIO': ['about.txt', 'projects', 'contact.txt', 'resume.pdf', 'readme.md'],
     'C:\\PORTFOLIO\\PROJECTS': [
         'dicegame.exe',

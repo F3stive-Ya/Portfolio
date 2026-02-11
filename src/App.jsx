@@ -1,19 +1,21 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react'
 import Desktop from './components/Desktop'
 import Taskbar from './components/Taskbar'
 import Window from './components/Window'
 import StartMenu from './components/StartMenu'
 import BiosScreen from './components/BiosScreen'
-import FileExplorer from './components/FileExplorer'
 import LoginScreen from './components/LoginScreen'
 import ErrorDialog from './components/ErrorDialog'
-import Terminal from './components/Terminal'
-import ProjectViewer from './components/ProjectViewer'
-import Minesweeper from './components/Games/Minesweeper'
-import Solitaire from './components/Games/Solitaire'
-import Pinball from './components/Games/Pinball'
 import BSOD from './components/BSOD'
 import MobilePortfolio from './components/MobilePortfolio'
+
+// Lazy-loaded components (only loaded when their window is opened)
+const FileExplorer = lazy(() => import('./components/FileExplorer'))
+const Terminal = lazy(() => import('./components/Terminal'))
+const Minesweeper = lazy(() => import('./components/Games/Minesweeper'))
+const Solitaire = lazy(() => import('./components/Games/Solitaire'))
+const Pinball = lazy(() => import('./components/Games/Pinball'))
+const ProjectViewer = lazy(() => import('./components/ProjectViewer'))
 
 import { useSounds } from './hooks/useSounds'
 import { useWindowManager } from './hooks/useWindowManager'
@@ -318,124 +320,130 @@ function App() {
             />
 
             {/* Regular windows */}
-            {Object.entries(WINDOW_CONFIGS).map(([id, config]) => (
-                <Window
-                    key={id}
-                    id={id}
-                    title={config.title}
-                    icon={config.icon}
-                    state={windowStates[id]}
-                    isActive={activeWindowId === id}
-                    onClose={() => closeWindow(id)}
-                    onMinimize={() => minimizeWindow(id)}
-                    onMaximize={() => toggleMaximize(id)}
-                    onTitlebarMouseDown={(e) => handleDragStart(e, id)}
-                    onTitlebarDoubleClick={() => toggleMaximize(id)}
-                    onWindowMouseDown={() => {
-                        if (windowStates[id].isOpen && !windowStates[id].isMinimized) {
-                            bringToFront(id)
+            {Object.entries(WINDOW_CONFIGS)
+                .filter(([id]) => windowStates[id]?.isOpen)
+                .map(([id, config]) => (
+                    <Window
+                        key={id}
+                        id={id}
+                        title={config.title}
+                        icon={config.icon}
+                        state={windowStates[id]}
+                        isActive={activeWindowId === id}
+                        onClose={() => closeWindow(id)}
+                        onMinimize={() => minimizeWindow(id)}
+                        onMaximize={() => toggleMaximize(id)}
+                        onTitlebarMouseDown={(e) => handleDragStart(e, id)}
+                        onTitlebarDoubleClick={() => toggleMaximize(id)}
+                        onWindowMouseDown={() => {
+                            if (windowStates[id].isOpen && !windowStates[id].isMinimized) {
+                                bringToFront(id)
+                            }
+                        }}
+                        onResizeStart={
+                            config.resizable !== false
+                                ? (e, direction) => handleResizeStart(e, id, direction)
+                                : undefined
                         }
-                    }}
-                    onResizeStart={
-                        config.resizable !== false
-                            ? (e, direction) => handleResizeStart(e, id, direction)
-                            : undefined
-                    }
-                    bodyStyle={config.bodyStyle}
-                >
-                    {id === 'fileexplorer' ? (
-                        <FileExplorer onOpenWindow={openWindow} />
-                    ) : id === 'terminal' ? (
-                        <Terminal openWindow={openWindow} triggerBSOD={() => setShowBSOD(true)} />
-                    ) : id === 'minesweeper' ? (
-                        <Minesweeper
-                            onResize={(w, h) => handleContentResize(id, w, h)}
-                            onClose={() => closeWindow(id)}
-                        />
-                    ) : id === 'solitaire' ? (
-                        <Solitaire />
-                    ) : id === 'pinball' ? (
-                        <Pinball />
-                    ) : id.startsWith('project_') ? (
-                        <ProjectViewer
-                            projectId={id.replace('project_', '')}
-                            isOpen={windowStates[id]?.isOpen}
-                            onOpenWindow={openWindow}
-                            onClose={() => closeWindow(id)}
-                        />
-                    ) : (
-                        config.content
-                    )}
-                </Window>
-            ))}
+                        bodyStyle={config.bodyStyle}
+                    >
+                        <Suspense fallback={<div className="loading-placeholder">Loading...</div>}>
+                            {id === 'fileexplorer' ? (
+                                <FileExplorer onOpenWindow={openWindow} />
+                            ) : id === 'terminal' ? (
+                                <Terminal openWindow={openWindow} triggerBSOD={() => setShowBSOD(true)} />
+                            ) : id === 'minesweeper' ? (
+                                <Minesweeper
+                                    onResize={(w, h) => handleContentResize(id, w, h)}
+                                    onClose={() => closeWindow(id)}
+                                />
+                            ) : id === 'solitaire' ? (
+                                <Solitaire />
+                            ) : id === 'pinball' ? (
+                                <Pinball />
+                            ) : id.startsWith('project_') ? (
+                                <ProjectViewer
+                                    projectId={id.replace('project_', '')}
+                                    isOpen={windowStates[id]?.isOpen}
+                                    onOpenWindow={openWindow}
+                                    onClose={() => closeWindow(id)}
+                                />
+                            ) : (
+                                config.content
+                            )}
+                        </Suspense>
+                    </Window>
+                ))}
 
             {/* Run window */}
-            <Window
-                id="run"
-                title="Run"
-                icon="icons/file_program_group-0.png"
-                state={windowStates.run}
-                hideMaximize={true}
-                isActive={activeWindowId === 'run'}
-                onClose={() => closeWindow('run')}
-                onMinimize={() => minimizeWindow('run')}
-                onMaximize={() => toggleMaximize('run')}
-                onTitlebarMouseDown={(e) => handleDragStart(e, 'run')}
-                onTitlebarDoubleClick={() => toggleMaximize('run')}
-                onWindowMouseDown={() => {
-                    if (windowStates.run?.isOpen && !windowStates.run?.isMinimized) {
-                        bringToFront('run')
-                    }
-                }}
-                onResizeStart={(e, direction) => handleResizeStart(e, 'run', direction)}
-                className="run-window"
-                bodyStyle={{ padding: '14px' }}
-            >
-                <form onSubmit={handleRunSubmit} className="run-form">
-                    <div className="run-top-section">
-                        <img
-                            src="icons/file_program_group-0.png"
-                            alt=""
-                            className="run-dialog-icon"
-                        />
-                        <div className="run-description">
-                            <p>
-                                Type the name of a program, folder, document, or Internet resource,
-                                and Windows will open it for you.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="run-input-section">
-                        <label>Open:</label>
-                        <div className="run-combobox">
-                            <input
-                                type="text"
-                                value={runInput}
-                                onChange={(e) => setRunInput(e.target.value)}
-                                autoFocus
-                                className="combobox-input"
+            {windowStates.run?.isOpen && (
+                <Window
+                    id="run"
+                    title="Run"
+                    icon="icons/file_program_group-0.png"
+                    state={windowStates.run}
+                    hideMaximize={true}
+                    isActive={activeWindowId === 'run'}
+                    onClose={() => closeWindow('run')}
+                    onMinimize={() => minimizeWindow('run')}
+                    onMaximize={() => toggleMaximize('run')}
+                    onTitlebarMouseDown={(e) => handleDragStart(e, 'run')}
+                    onTitlebarDoubleClick={() => toggleMaximize('run')}
+                    onWindowMouseDown={() => {
+                        if (windowStates.run?.isOpen && !windowStates.run?.isMinimized) {
+                            bringToFront('run')
+                        }
+                    }}
+                    onResizeStart={(e, direction) => handleResizeStart(e, 'run', direction)}
+                    className="run-window"
+                    bodyStyle={{ padding: '14px' }}
+                >
+                    <form onSubmit={handleRunSubmit} className="run-form">
+                        <div className="run-top-section">
+                            <img
+                                src="icons/file_program_group-0.png"
+                                alt=""
+                                className="run-dialog-icon"
                             />
-                            <div className="combobox-button">
-                                <span>▼</span>
+                            <div className="run-description">
+                                <p>
+                                    Type the name of a program, folder, document, or Internet resource,
+                                    and Windows will open it for you.
+                                </p>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="run-buttons">
-                        <button type="submit" className="run-btn">
-                            OK
-                        </button>
-                        <button
-                            type="button"
-                            className="run-btn"
-                            onClick={() => closeWindow('run')}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </Window>
+                        <div className="run-input-section">
+                            <label>Open:</label>
+                            <div className="run-combobox">
+                                <input
+                                    type="text"
+                                    value={runInput}
+                                    onChange={(e) => setRunInput(e.target.value)}
+                                    autoFocus
+                                    className="combobox-input"
+                                />
+                                <div className="combobox-button">
+                                    <span>▼</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="run-buttons">
+                            <button type="submit" className="run-btn">
+                                OK
+                            </button>
+                            <button
+                                type="button"
+                                className="run-btn"
+                                onClick={() => closeWindow('run')}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </Window>
+            )}
 
             {/* BSOD */}
             {showBSOD && <BSOD onRestart={handleShutdownComplete} />}

@@ -1,0 +1,98 @@
+/* ===== Terminal Styles ===== */
+.xterm-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.xterm-container .xterm {
+    height: 100%;
+    padding: 4px;
+}
+
+.xterm-container .xterm-viewport {
+    overflow-y: auto !important;
+}
+
+.terminal-container {
+    background: #0c0c0c;
+    color: #c0c0c0;
+    font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    height: 100%;
+    overflow-y: auto;
+    padding: 8px;
+    cursor: text;
+}
+
+.terminal-output {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.terminal-line {
+    min-height: 1.4em;
+}
+
+.terminal-line.input {
+    color: #fff;
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+}
+
+.terminal-prompt {
+    color: #c0c0c0;
+    white-space: nowrap;
+    margin-right: 4px;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+    caret-color: #c0c0c0;
+}
+
+.terminal-error {
+    color: #ff6b6b;
+}
+
+.terminal-success {
+    color: #51cf66;
+}
+
+.terminal-warning {
+    color: #ffd43b;
+}
+
+.terminal-system {
+    color: #74c0fc;
+}
+
+.terminal-dir {
+    color: #4dabf7;
+}
+
+.terminal-command {
+    color: #ffd43b;
+}
+
+/* ===== XTerm Focus Fix ===== */
+.xterm-container:focus-within {
+    outline: none;
+}
+
+.xterm-container .xterm-helper-textarea {
+    opacity: 0;
+    position: absolute;
+    left: -9999px;
+}

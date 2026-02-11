@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
 import PlayingCard from './PlayingCard'
-import { SUITS, RANKS } from '../../config/freecell'
-import '../../index.css'
+import './Solitaire.css'
+const SUITS = ['♠', '♥', '♣', '♦']
+const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
 const Solitaire = () => {
     const [board, setBoard] = useState({
         columns: Array(7).fill([]),
-        foundations: Array(4).fill().map(() => []),
+        foundations: Array(4)
+            .fill()
+            .map(() => []),
         stock: [],
         waste: []
     })
@@ -36,7 +39,9 @@ const Solitaire = () => {
         }
 
         // 3. Deal Columns
-        const newColumns = Array(7).fill().map(() => [])
+        const newColumns = Array(7)
+            .fill()
+            .map(() => [])
         let cardIndex = 0
 
         for (let col = 0; col < 7; col++) {
@@ -48,11 +53,13 @@ const Solitaire = () => {
         }
 
         // 4. Remaining to Stock
-        const newStock = deck.slice(cardIndex).map(c => ({ ...c, faceUp: false }))
+        const newStock = deck.slice(cardIndex).map((c) => ({ ...c, faceUp: false }))
 
         setBoard({
             columns: newColumns,
-            foundations: Array(4).fill().map(() => []),
+            foundations: Array(4)
+                .fill()
+                .map(() => []),
             stock: newStock,
             waste: []
         })
@@ -120,7 +127,10 @@ const Solitaire = () => {
 
             // 1. Remove from Source
             if (dragSource.type === 'column') {
-                newBoard.columns[dragSource.index] = newBoard.columns[dragSource.index].slice(0, dragSource.cardIndex)
+                newBoard.columns[dragSource.index] = newBoard.columns[dragSource.index].slice(
+                    0,
+                    dragSource.cardIndex
+                )
                 // Reveal new top card if needed
                 const sourceLen = newBoard.columns[dragSource.index].length
                 if (sourceLen > 0) {
@@ -138,7 +148,10 @@ const Solitaire = () => {
             if (targetType === 'column') {
                 newBoard.columns[targetIndex] = [...newBoard.columns[targetIndex], ...cardsToMove]
             } else if (targetType === 'foundation') {
-                newBoard.foundations[targetIndex] = [...newBoard.foundations[targetIndex], cardsToMove[0]]
+                newBoard.foundations[targetIndex] = [
+                    ...newBoard.foundations[targetIndex],
+                    cardsToMove[0]
+                ]
             }
 
             setBoard(newBoard)
@@ -152,8 +165,8 @@ const Solitaire = () => {
         if (board.stock.length === 0) {
             // Recycle waste to stock
             if (board.waste.length === 0) return
-            const newStock = [...board.waste].reverse().map(c => ({ ...c, faceUp: false }))
-            setBoard(prev => ({ ...prev, stock: newStock, waste: [] }))
+            const newStock = [...board.waste].reverse().map((c) => ({ ...c, faceUp: false }))
+            setBoard((prev) => ({ ...prev, stock: newStock, waste: [] }))
         } else {
             // Deal 1 card
             const newBoard = { ...board }
@@ -203,15 +216,40 @@ const Solitaire = () => {
 
     // Custom FaceDown Card Component
     const CardBack = ({ style }) => (
-        <div className="card back" style={{ ...style, background: 'repeating-linear-gradient(45deg, #000080 0, #000080 5px, #fff 5px, #fff 10px)' }}>
+        <div
+            className="card back"
+            style={{
+                ...style,
+                background:
+                    'repeating-linear-gradient(45deg, #000080 0, #000080 5px, #fff 5px, #fff 10px)'
+            }}
+        >
             <div className="pattern" style={{ width: '100%', height: '100%', opacity: 0.5 }}></div>
         </div>
     )
 
     return (
-        <div className="solitaire-container" style={{ padding: '10px', height: '100%', display: 'flex', flexDirection: 'column', gap: '20px', background: '#008000', color: 'white' }}>
+        <div
+            className="solitaire-container"
+            style={{
+                padding: '10px',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+                background: '#008000',
+                color: 'white'
+            }}
+        >
             {/* Top Area: Stock, Waste, Foundations */}
-            <div className="top-area" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div
+                className="top-area"
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start'
+                }}
+            >
                 <div style={{ display: 'flex', gap: '20px' }}>
                     <div className="stock-waste" style={{ display: 'flex', gap: '10px' }}>
                         {/* Stock */}
@@ -228,10 +266,39 @@ const Solitaire = () => {
                                 justifyContent: 'center'
                             }}
                         >
-                            {board.stock.length > 0 ? <CardBack style={{ pointerEvents: 'none' }} /> : <div className="empty-slot" style={{ pointerEvents: 'none', border: '2px solid rgba(255,255,255,0.3)', borderRadius: '4px', width: '71px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>RELOAD</div>}
+                            {board.stock.length > 0 ? (
+                                <CardBack style={{ pointerEvents: 'none' }} />
+                            ) : (
+                                <div
+                                    className="empty-slot"
+                                    style={{
+                                        pointerEvents: 'none',
+                                        border: '2px solid rgba(255,255,255,0.3)',
+                                        borderRadius: '4px',
+                                        width: '71px',
+                                        height: '96px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'rgba(255,255,255,0.5)',
+                                        fontSize: '12px'
+                                    }}
+                                >
+                                    RELOAD
+                                </div>
+                            )}
                         </div>
                         {/* Waste */}
-                        <div className="card-slot waste" style={{ width: '80px', height: '105px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div
+                            className="card-slot waste"
+                            style={{
+                                width: '80px',
+                                height: '105px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
                             {board.waste.length > 0 && (
                                 <PlayingCard
                                     card={board.waste[board.waste.length - 1]}
@@ -266,7 +333,15 @@ const Solitaire = () => {
                         <div
                             key={`found-${i}`}
                             className="card-slot foundation"
-                            style={{ border: '1px inset #fff', borderRadius: '4px', width: '80px', height: '105px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            style={{
+                                border: '1px inset #fff',
+                                borderRadius: '4px',
+                                width: '80px',
+                                height: '105px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={() => handleDrop('foundation', i)}
                         >
@@ -279,7 +354,17 @@ const Solitaire = () => {
                                     draggable={true}
                                 />
                             ) : (
-                                <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'rgba(255,255,255,0.3)', fontSize: '24px' }}>
+                                <div
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        color: 'rgba(255,255,255,0.3)',
+                                        fontSize: '24px'
+                                    }}
+                                >
                                     {['♠', '♥', '♣', '♦'][i]}
                                 </div>
                             )}
@@ -289,14 +374,28 @@ const Solitaire = () => {
             </div>
 
             {/* Columns */}
-            <div className="columns" style={{ display: 'flex', justifyContent: 'space-between', flex: 1 }}>
+            <div
+                className="columns"
+                style={{ display: 'flex', justifyContent: 'space-between', flex: 1 }}
+            >
                 {board.columns.map((col, i) => {
                     const renderRecursiveStack = (index) => {
                         if (index >= col.length) return null
                         const card = col[index]
 
                         return (
-                            <div style={index > 0 ? { position: 'absolute', top: '25px', width: '100%', zIndex: 1 } : {}}>
+                            <div
+                                style={
+                                    index > 0
+                                        ? {
+                                            position: 'absolute',
+                                            top: '25px',
+                                            width: '100%',
+                                            zIndex: 1
+                                        }
+                                        : {}
+                                }
+                            >
                                 <PlayingCard
                                     card={card}
                                     setDraggedCard={setDraggedCard}
@@ -313,7 +412,7 @@ const Solitaire = () => {
                     // Separation of concerns: Face-down cards (flat) vs Face-up stack (nested/recursive)
                     // Actually, simpler: nested everything is cleaner but face-down cards aren't draggable.
                     // Keep face-down flat, face-up nested.
-                    const firstFaceUpIdx = col.findIndex(c => c.faceUp)
+                    const firstFaceUpIdx = col.findIndex((c) => c.faceUp)
 
                     return (
                         <div
@@ -331,7 +430,11 @@ const Solitaire = () => {
                                 return (
                                     <div
                                         key={card.id}
-                                        style={{ position: 'absolute', top: `${idx * 10}px`, zIndex: idx }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: `${idx * 10}px`,
+                                            zIndex: idx
+                                        }}
                                     >
                                         <CardBack />
                                     </div>
@@ -340,7 +443,13 @@ const Solitaire = () => {
 
                             {/* Start Recursive Stack from first FaceUp card */}
                             {firstFaceUpIdx !== -1 && (
-                                <div style={{ position: 'absolute', top: `${firstFaceUpIdx * 10}px`, zIndex: firstFaceUpIdx }}>
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: `${firstFaceUpIdx * 10}px`,
+                                        zIndex: firstFaceUpIdx
+                                    }}
+                                >
                                     {renderRecursiveStack(firstFaceUpIdx)}
                                 </div>
                             )}

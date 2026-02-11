@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Tooltip from './Tooltip'
 import Calendar from './Calendar'
+import { WINDOW_CONFIGS } from '../config/windows'
 
 function Taskbar({ openWindows, activeWindowId, onTaskClick, onStartClick }) {
     const [dateTime, setDateTime] = useState({ date: '', time: '' })
@@ -52,12 +53,8 @@ function Taskbar({ openWindows, activeWindowId, onTaskClick, onStartClick }) {
         return () => clearInterval(interval)
     }, [])
 
-    // Format window ID for display
-    const formatTitle = (id) => {
-        if (id === 'mycomputer') return 'My Computer'
-        if (id === 'fileexplorer') return 'File Explorer'
-        return id.charAt(0).toUpperCase() + id.slice(1)
-    }
+    // Format window ID for display (config-driven)
+    const formatTitle = (id) => WINDOW_CONFIGS[id]?.title || id
 
     return (
         <div className="taskbar">

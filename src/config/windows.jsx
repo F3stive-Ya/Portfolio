@@ -1,11 +1,16 @@
+import { lazy } from 'react'
 import { SYSTEM_INFO } from './system'
 import Settings from '../components/Settings'
 import Notepad from '../components/Notepad'
-import OutlookExpress from '../components/OutlookExpress'
-import Paint from '../components/Paint'
-import Minesweeper from '../components/Games/Minesweeper'
-import Solitaire from '../components/Games/Solitaire'
-import Pinball from '../components/Games/Pinball'
+
+// Heavy components — lazy-loaded for code splitting
+const OutlookExpress = lazy(() => import('../components/OutlookExpress'))
+const Paint = lazy(() => import('../components/Paint'))
+const Minesweeper = lazy(() => import('../components/Games/Minesweeper'))
+const Solitaire = lazy(() => import('../components/Games/Solitaire'))
+const Pinball = lazy(() => import('../components/Games/Pinball'))
+const Terminal = lazy(() => import('../components/Terminal'))
+const ProjectViewer = lazy(() => import('../components/ProjectViewer'))
 
 import { ICONS, PROJECTS } from './icons'
 

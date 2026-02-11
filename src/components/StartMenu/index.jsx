@@ -1,16 +1,15 @@
 import { useRef, useEffect } from 'react'
 import { useRecentPrograms } from '../../context/RecentProgramsContext'
+import { ICONS } from '../../config/icons'
+import { WINDOW_CONFIGS } from '../../config/windows'
 import styles from './StartMenu.module.css'
 
-// Program labels for display
-const PROGRAM_LABELS = {
-    about: 'About Me',
-    projects: 'Projects',
-    contact: 'Contact',
-    mycomputer: 'My Computer',
-    resume: 'Resume',
-    settings: 'Settings'
-}
+// Derive label from ICONS or WINDOW_CONFIGS (single source of truth)
+const getLabel = (id) => ICONS.find((i) => i.id === id)?.label || WINDOW_CONFIGS[id]?.title || id
+
+// Pre-filter icon categories
+const favoriteIcons = ICONS.filter((i) => i.category === 'favorites')
+const gameIcons = ICONS.filter((i) => i.category === 'games')
 
 function StartMenu({ isOpen, onItemClick }) {
     const { recentPrograms } = useRecentPrograms()
@@ -61,7 +60,7 @@ function StartMenu({ isOpen, onItemClick }) {
                                 data-open={programId}
                                 role="menuitem"
                             >
-                                {PROGRAM_LABELS[programId] || programId}
+                                {getLabel(programId)}
                             </button>
                         ))}
                         <div className={styles.separator}></div>
@@ -84,31 +83,31 @@ function StartMenu({ isOpen, onItemClick }) {
                     </>
                 )}
 
-                {/* Fixed items */}
+                {/* Favorites — dynamically generated from ICONS config */}
                 <div className={styles.sectionLabel}>Favorites</div>
-                <button className={styles.item} data-open="fileexplorer" role="menuitem">
-                    📁 File Explorer
-                </button>
-                <button className={styles.item} data-open="terminal" role="menuitem">
-                    💻 Command Prompt
-                </button>
-                <button className={styles.item} data-open="notepad" role="menuitem">
-                    📝 Notepad
-                </button>
-                <button className={styles.item} data-open="mycomputer" role="menuitem">
-                    💾 My Computer
-                </button>
+                {favoriteIcons.map((icon) => (
+                    <button
+                        key={icon.id}
+                        className={styles.item}
+                        data-open={icon.id}
+                        role="menuitem"
+                    >
+                        {icon.emoji} {icon.label}
+                    </button>
+                ))}
 
+                {/* Games — dynamically generated from ICONS config */}
                 <div className={styles.sectionLabel}>Games</div>
-                <button className={styles.item} data-open="minesweeper" role="menuitem">
-                    💣 Minesweeper
-                </button>
-                <button className={styles.item} data-open="freecell" role="menuitem">
-                    ♠️ FreeCell
-                </button>
-                <button className={styles.item} data-open="pinball" role="menuitem">
-                    🕹️ Pinball
-                </button>
+                {gameIcons.map((icon) => (
+                    <button
+                        key={icon.id}
+                        className={styles.item}
+                        data-open={icon.id}
+                        role="menuitem"
+                    >
+                        {icon.emoji} {icon.label}
+                    </button>
+                ))}
                 <div className={styles.separator}></div>
                 <button className={styles.item} data-open="settings" role="menuitem">
                     ⚙️ Settings
